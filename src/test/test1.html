@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title class="text">Algorithm Visualizer</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+        <!-- <link rel="stylesheet" href="bootstrap-5.2.3/dist/css/"> -->
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+
+    <body class="back">
+        <!-- Top Bar -->
+        <div class="container-fluid">
+            <div class="row top-bar align-items-center">
+                <!-- Logo -->
+                <div class="col-auto text-start text"><a href="index.html"><img class="" src="Assets/icon.png" width="50" aria-label="Logo" alt="Logo"></a></div>
+
+                <!-- Title -->
+                <h1 class="col d-none d-sm-inline text" id="Header">Algorithm Visualizer</h1>
+
+                <!-- intro button -->
+                <img src="Assets/info-circle.svg" height=30 width=30 class="col-auto gx-0 navbar-image ms-auto" data-bs-toggle="modal" data-bs-target="#introModal" aria-label="Info" alt="Info">
+
+                <!-- Settings Button -->
+                <div class="col-auto text-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" height = 50 fill="white" class="justify-content-end btn" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#settingModal">
+                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setting Modal -->
+        <div class="modal fade" id="settingModal" aria-labelledby="Settings" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+            <div id="settingModalDialog" class="modal-dialog modal-sm modal-setting">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text" id="Settings">Settings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mt-1">
+                            <div class="col text">
+                                <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
+                            </div>
+                            <div class="col-2 form-check form-switch">
+                                <input type="checkbox" class="form-check-input" role="switch" id="darkModeSwitch" aria-label="Dark Mode">
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div id="textSize" class="col text">Text Size</div>
+                            <div class="col-4 btn-group btn-group-sm" role="group" aria-label="Increase or decrease text size">
+                                <button type="button" class="btn btn-outline-dark btnResize text" id="fontIncrease">+</button>
+                                <button type="button" class="btn btn-outline-dark btnResize text" id="fontDecrease">-</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-orangeRed text" aria-label="Save changes" id="resetSettings">Reset</button>
+                        <button type="button" class="btn btn-orangeRed text" data-bs-dismiss="modal" aria-label="Save changes">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Introduction Modal-->
+        <div class="modal fade introModal" id="introModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text" id="exampleModalLabel">Welcome</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="text">Welcome to Algorithm Visualizer.<br><br>
+                        This webapp will help you understand what common algorithms are doing visually.<br><br>
+                        There are three different types of algorithms and even more algorithms that are specific to that type.<br><br>
+                        To get started, just click "Go" on an algorithm type and select a specific algorithm.<br><br>
+                      </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu -->
+        <div class="container-fluid" style="padding: 0;">
+            <!-- Main menu -->
+            <div id="algorithmsMenu" class="container-fluid position-absolute" style="visibility: visible; opacity: 1; padding-top: 20px;">
+                <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 g-4" style="margin: 0;">
+                    <div class="col">
+                        <div id="sortingAlgorithmsGo" class="card menu-card card-algorithm-type mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Sorting Algorithms</h4>
+                                <p id="sortDesc" class="text">A sorting algorithm is an algorithm that puts elements of a list into an order.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn menu-button btn-orangeRed text" id="sortingGo"><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div id="searchingAlgorithmsGo" class="card menu-card card-algorithm-type mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Searching Algorithms</h4>
+                                <p class="text">Searching Algorithms are designed to check for an element or retrieve an element from any data structure where it is stored.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button disabled class="btn menu-button btn-orangeRed justify-content-end text" id="searchingGo"><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div id="pathfindingAlgorithmsGo" class="col menu-card card card-algorithm-type mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Pathfinding Algorithms</h4>
+                                <p class="text">Pathfinding is the plotting of the shortest route between two points.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn menu-button btn-orangeRed justify-content-end text" id="pathfindingGo"><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sorting Menu -->
+            <div id="sortingMenu" class="container-fluid position-absolute" style="visibility: hidden; opacity: 0; padding-top: 20px;">
+                <button class="btn btn-orangeRed back-btn text" id="sortingBack"><strong>&lt; Back</strong></button>
+                <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 g-4" style="margin: 0;">
+                    <div class="col">
+                        <div class="card menu-card card-algorithm-type mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Sorting Algorithms</h4>
+                                <p class="text">A sorting algorithm is an algorithm that puts elements of a list into an order.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Insertion Sort</h4>
+                                <p class="text">Insertion sort is a sorting algorithm that places an <strong>unsorted element</strong> at its suitable place in each iteration.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='Sorting/sorting.html?func=insertionsort'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>                               
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Selection Sort</h4>
+                                <p class="text">The selection sort algorithm sorts an array by <strong>repeatedly finding the minimum element</strong> (considering ascending order) from the unsorted part and putting it at the beginning.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='Sorting/sorting.html?func=selectionsort'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Bubble Sort</h4>
+                                <p class="text">Bubble Sort is the <strong>simplest</strong> sorting algorithm that works by repeatedly swapping the adjacent elements if they are in the wrong order.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='Sorting/sorting.html?func=bubblesort'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Quick Sort</h4>
+                                <p class="text">QuickSort is a <strong>Divide and Conquer algorithm</strong>. It picks an element as a pivot and partitions the given array around the picked pivot.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='Sorting/sorting.html?func=quicksort'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+            <!-- Searching Menu -->
+            <div id="searchingMenu" class="container-fluid position-absolute" style="visibility: hidden; opacity: 0; padding-top: 20px;">
+                <button class="btn btn-orangeRed back-btn" id="searchingBack"><strong>&lt; Back</strong></button>
+                <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 g-4" style="margin: 0;">
+                    <div class="col">
+                        <div class="card menu-card card-algorithm-type mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Searching Algorithms</h4>
+                                <p class="text">Searching Algorithms are designed to check for an element or retrieve an element from any data structure where it is stored.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Linear Search</h4>
+                                <p class="text">Linear Search is a <strong>sequential</strong> search algorithm that starts at one end and goes through each element of a list until the desired element is found.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='Searching/searching.html?func=linearsearch'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Binary Search</h4>
+                                <p class="text">Binary Search is a searching algorithm used in a sorted array by <strong>repeatedly dividing the search interval in half</strong>.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='Searching/searching.html?func=binarysearch'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Pathfinding Menu -->
+            <div id="pathfindingMenu" class="container-fluid position-absolute" style="visibility: hidden; opacity: 0; padding-top: 20px;">
+                <button class="btn btn-orangeRed back-btn" id="pathfindingBack"><strong>&lt; Back</strong></button>
+                <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 g-4" style="margin: 0;">
+                    <div class="col">
+                        <div class="card menu-card card-algorithm-type mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Pathfinding Algorithms</h4>
+                                <p class="text">Pathfinding is the plotting of the shortest route between two points.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">A* Pathfinding</h4>
+                                <p class="text">A* is <strong>more efficient</strong> than Djikstra's and guarantees the shortest path between two points.</p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='pathfinding/pathfind.html?func=astar'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Djikstra's Algorithm</h4>
+                                <p class="text">Djikstra's is <strong>unweighted</strong> and finds the shortest path between one point and the <strong>rest of the map.</strong></p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='pathfinding/pathfind.html?func=djikstra'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card menu-card card-algorithm mx-auto">
+                            <div class="card-body">
+                                <h4 class="card-title text">Jump Point Search</h4>
+                                <p class="text">Jump Point Search is an <strong>extension of A*.</strong> It eliminates symmetrical paths and <strong>jumps over</strong> redundant nodes. Only works on uniform-cost grids.</strong></p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="window.location.href='pathfinding/pathfind.html?func=jps'" class="btn text menu-button btn-navajoWhite justify-content-end" ><strong>Go</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>    
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="container-fluid d-none d-lg-block">
+            <div class="row fixed-bottom bottom-bar align-items-center"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js" integrity="sha256-0H3Nuz3aug3afVbUlsu12Puxva3CP4EhJtPExqs54Vg=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+        <script src="js/main.js" type="module" defer></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    </body>
+</html>
