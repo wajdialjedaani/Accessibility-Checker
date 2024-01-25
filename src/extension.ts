@@ -6,6 +6,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as cheerio from "cheerio";
 import { Cheerio, Element, AnyNode } from "cheerio";
+import * as guideline from "./guidelines/guidelines";
+
+let activeEditor = vscode.window.activeTextEditor;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -33,6 +36,10 @@ export function activate(context: vscode.ExtensionContext) {
 // This method is called when your extension is deactivated
 export function deactivate() {}
 
+function highlight(element: Cheerio<AnyNode>){
+
+}
+
 function TraverseDocument(document: string) {
   const $ = cheerio.load(document);
   //console.log($.html());
@@ -45,7 +52,7 @@ function TraverseDocument(document: string) {
       if (this.nodeType === NodeType.TEXT_NODE) {
         console.log("text");
       } else if (this.nodeType === NodeType.ELEMENT_NODE) {
-        console.log(this.name);
+        console.log($(this).attr());
         traverse($(this));
       }
     });
