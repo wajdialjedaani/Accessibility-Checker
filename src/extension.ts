@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
 import { isElement } from "./util";
-import { CheckHTMLTags, CheckImageTags } from "./guidelineChecks";
+import { CheckHTMLTags, CheckImageTags, CheckATags, /*CheckTableTags*/ } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
   //This collection will persist throughout life of extension
@@ -39,6 +39,7 @@ export function deactivate() {}
 
 //Recurses through document, calling appropriate functions for each tag type. Adds diagnostics to a list and returns it.
 function ParseDocument(document: TextDocument) {
+  let containsTitle = 0;
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });
   let diagnostics: Diagnostic[] = []; //Overall list of diagnostics. Appended to each time an error is found
@@ -53,10 +54,19 @@ function ParseDocument(document: TextDocument) {
         tempDiagnostics = tempDiagnostics.concat(CheckHTMLTags($, node));
       } else if (node.name === "img") {
         tempDiagnostics = tempDiagnostics.concat(CheckImageTags($, node));
+      } else if (node.name === "a") {
+        tempDiagnostics = tempDiagnostics.concat(CheckATags($, node));
+      } else if (node.name === "title") {
+        containsTitle = 1;
+      } else if (node.name === "table") {
+        //Not sure how to handle this one
       }
       diagnostics = diagnostics.concat(tempDiagnostics);
       traverse($(node));
     });
+  }
+  if(containsTitle === 0){
+    window.showErrorMessage("Document needs title");
   }
   return diagnostics;
 }

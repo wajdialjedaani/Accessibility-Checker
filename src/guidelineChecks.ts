@@ -36,6 +36,42 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
+export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
+  if (!element.attribs.href) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "",
+        message: "Include an href attribute to make text a hyperlink.",
+        range: new Range(range[0], range[1]),
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  return [];
+}
+
+/*
+export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
+  if (!element.attribs.caption) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "",
+        message: "Include a caption attribute to describe tables.",
+        range: new Range(range[0], range[1]),
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  return [];
+}
+*/
+
 function GetStartTagPosition(element: Element): Position[] | undefined {
   const location = element.sourceCodeLocation;
   if (!location || !location.startTag) {
