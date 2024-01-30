@@ -22,6 +22,7 @@ export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for lang attribute when using html tag
   if (!element.attribs.lang) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -39,6 +40,7 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for href attribute when using "a" tag
   if (!element.attribs.href) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -54,7 +56,9 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
   }
   return [];
 }
+
 export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for title tag when using head tag
   let containsTitle = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -78,24 +82,30 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   return []; 
 }
 
-/*
 export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if (!element.attribs.caption) {
-    const range = GetStartTagPosition(element);
-    if (!range) return [];
+  //Check for captions for table
+  let containsCaption = 0;
+  const range = GetStartTagPosition(element);
+  if (!range) return [];
+  const children = $(element).children();
+  for(let child of children) {
+    if (child.name === "caption"){
+      containsCaption = 1;
+    }
+  }
+  if (containsCaption === 0){
     return [
       {
         code: "",
-        message: "Include a caption attribute to describe tables.",
+        message: "Include a caption for each table.",
         range: new Range(range[0], range[1]),
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
       },
     ];
   }
-  return [];
+  return [];  
 }
-*/
 
 function GetStartTagPosition(element: Element): Position[] | undefined {
   const location = element.sourceCodeLocation;

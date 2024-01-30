@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
 import { isElement } from "./util";
-import { CheckHTMLTags, CheckImageTags, CheckATags, CheckTitleTags /*CheckTableTags*/ } from "./guidelineChecks";
+import { CheckHTMLTags, CheckImageTags, CheckATags, CheckTitleTags, CheckTableTags } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
   //This collection will persist throughout life of extension
@@ -59,7 +59,7 @@ function ParseDocument(document: TextDocument) {
       } else if (node.name === "head") {
         tempDiagnostics = tempDiagnostics.concat(CheckTitleTags($, node));
       } else if (node.name === "table") {
-        //Not sure how to handle this one
+        tempDiagnostics = tempDiagnostics.concat(CheckTableTags($, node));
       }
       diagnostics = diagnostics.concat(tempDiagnostics);
       traverse($(node));
