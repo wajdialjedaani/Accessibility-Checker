@@ -5,7 +5,7 @@ import { isElement } from "./util";
 
 export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for an alt attribute on each img
-  if (element.attribs.alt === undefined) {
+  if (!element.attribs.alt) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
     return [
