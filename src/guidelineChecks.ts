@@ -41,6 +41,7 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
+  if(element.name !== "a") return [];
   if (!element.attribs.href) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -59,6 +60,7 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for title tag when using head tag
+  if(element.name !== 'head') return [];
   let containsTitle = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -84,6 +86,7 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for captions for table
+  if(element.name !== 'table') return [];
   let containsCaption = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -104,7 +107,7 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
       },
     ];
   }
-  return [];  
+  return [];
 }
 
 function GetStartTagPosition(element: Element): Position[] | undefined {

@@ -60,6 +60,8 @@ function ParseDocument(document: TextDocument) {
         tempDiagnostics = tempDiagnostics.concat(CheckTitleTags($, node));
       } else if (node.name === "table") {
         tempDiagnostics = tempDiagnostics.concat(CheckTableTags($, node));
+      } else if (node.name === "div"){
+        tempDiagnostics = tempDiagnostics.concat(CheckDivTags($, node));
       }
       diagnostics = diagnostics.concat(tempDiagnostics);
       traverse($(node));
