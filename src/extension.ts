@@ -3,7 +3,15 @@ import * as cheerio from "cheerio";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
 import { isElement } from "./util";
-import { CheckHTMLTags, CheckImageTags, CheckATags, CheckTitleTags, CheckTableTags } from "./guidelineChecks";
+import {
+  CheckHTMLTags,
+  CheckImageTags,
+  CheckATags,
+  CheckTitleTags,
+  CheckTableTags,
+  CheckOneH1Tag,
+  CheckHeadingOrder,
+} from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
   //This collection will persist throughout life of extension
@@ -39,7 +47,15 @@ export function deactivate() {}
 
 //Recurses through document, calling appropriate functions for each tag type. Adds diagnostics to a list and returns it.
 function ParseDocument(document: TextDocument) {
-  let containsTitle = 0;
+  const guidelines = [
+    CheckHTMLTags,
+    CheckImageTags,
+    CheckATags,
+    CheckTitleTags,
+    CheckTableTags,
+    CheckOneH1Tag,
+    CheckHeadingOrder,
+  ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });
   let diagnostics: Diagnostic[] = []; //Overall list of diagnostics. Appended to each time an error is found
@@ -50,19 +66,11 @@ function ParseDocument(document: TextDocument) {
       if (!isElement(node)) return;
       //List of diagnostics pertaining to this node. We combine them all then add to the overall list
       let tempDiagnostics: Diagnostic[] = [];
-      if (node.name === "html") {
-        tempDiagnostics = tempDiagnostics.concat(CheckHTMLTags($, node));
-      } else if (node.name === "img") {
-        tempDiagnostics = tempDiagnostics.concat(CheckImageTags($, node));
-      } else if (node.name === "a") {
-        tempDiagnostics = tempDiagnostics.concat(CheckATags($, node));
-      } else if (node.name === "head") {
-        tempDiagnostics = tempDiagnostics.concat(CheckTitleTags($, node));
-      } else if (node.name === "table") {
-        tempDiagnostics = tempDiagnostics.concat(CheckTableTags($, node));
-      } else if (node.name === "div"){
-        tempDiagnostics = tempDiagnostics.concat(CheckDivTags($, node));
-      }
+
+      guidelines.forEach((func) => {
+        tempDiagnostics = tempDiagnostics.concat(func($, node));
+      });
+
       diagnostics = diagnostics.concat(tempDiagnostics);
       traverse($(node));
     });
@@ -78,6 +86,5 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
     return;
   }
   const newDiagnostics = ParseDocument(document);
-  console.log(newDiagnostics);
   diagnostics.set(document.uri, newDiagnostics);
 }
