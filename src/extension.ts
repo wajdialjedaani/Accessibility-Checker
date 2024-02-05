@@ -11,6 +11,8 @@ import {
   CheckTableTags,
   CheckOneH1Tag,
   CheckHeadingOrder,
+  CheckVideoAndAudioTags,
+  CheckButtons,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -55,6 +57,8 @@ function ParseDocument(document: TextDocument) {
     CheckTableTags,
     CheckOneH1Tag,
     CheckHeadingOrder,
+    CheckVideoAndAudioTags,
+    CheckButtons,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });

@@ -238,6 +238,42 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
   return errors;
 }
 
+export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== "video" && element.name !== "audio") return [];
+  if(element.attribs.controls === undefined){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Video and audio tags should have control attribute for pausing and volume",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  return [];
+}
+
+export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'button') return [];
+  if(element.attribs.type !== 'button'){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Buttons should have button type",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+  return [];
+}
+
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;
   if (!location || !location.startTag) {
