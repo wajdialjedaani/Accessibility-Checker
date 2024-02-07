@@ -13,6 +13,7 @@ import {
   CheckHeadingOrder,
   CheckVideoAndAudioTags,
   CheckButtons,
+  CheckInput,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -59,6 +60,7 @@ function ParseDocument(document: TextDocument) {
     CheckHeadingOrder,
     CheckVideoAndAudioTags,
     CheckButtons,
+    CheckInput,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });

@@ -2,6 +2,7 @@ import { Cheerio, CheerioAPI, Element, AnyNode } from "cheerio";
 import * as cheerio from "cheerio";
 import { Diagnostic, DiagnosticSeverity, Position, Range } from "vscode";
 import { isElement } from "./util";
+import { isText } from "domhandler";
 
 export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "img") return [];
@@ -271,6 +272,28 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
       }
     ]
   }
+  return [];
+}
+
+export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'input') return [];
+  if(element.attribs.type='text'){
+    let elementID = element.attribs.id;
+    if(elementID){
+      
+    }
+  }
+  return [];
+
+
+}
+
+export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'label') return [];
+  console.log("Label");
+  $(element).contents().each((i,e) => {
+    console.log(e);
+  });
   return [];
 }
 
