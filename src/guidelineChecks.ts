@@ -58,6 +58,25 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
       },
     ];
   }
+  let foundText = false;
+  $(element).contents().each((i,e) => {
+    if(e.type === 'text'){
+      foundText = true;
+    }
+  });
+  if (!foundText) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "",
+        message: "Anchor tags should have associated text.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
   return [];
 }
 
@@ -277,10 +296,39 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
   if(element.name !== 'input') return [];
-  if(element.attribs.type='text'){
+  if(element.attribs.type === 'text'){
     let elementID = element.attribs.id;
-    if(elementID){
-      
+    let foundLabel = 0;
+    $('label').each((i, e) => {
+      if(e.attribs.for === elementID){
+        foundLabel++;
+      }
+    });
+    if(!foundLabel){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "Input elements with type 'text' should have an associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+    else if(foundLabel > 1){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "Input elements should only have one associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
     }
   }
   return [];
@@ -290,13 +338,55 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
   if(element.name !== 'label') return [];
-  console.log("Label");
+  let foundText = false;
   $(element).contents().each((i,e) => {
-    console.log(e);
+    if(e.type === 'text'){
+      foundText = true;
+    }
   });
+  if(!foundText){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Labels should have associated text.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
   return [];
 }
 
+export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  if(!element.attribs.id) return [];
+
+  let ID = element.attribs.id;
+  let foundID = 0;
+  $('[id]').each((i, e) => {
+    if(e.attribs.id === ID){
+      foundID++;
+    }
+  });
+
+  if(foundID > 1){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "IDs must be unique",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  } 
+  return [];
+}
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;
   if (!location || !location.startTag) {
