@@ -16,6 +16,7 @@ import {
   CheckInput,
   CheckLabel,
   CheckID,
+  CheckOnMouseLeave,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -65,6 +66,7 @@ function ParseDocument(document: TextDocument) {
     CheckInput,
     CheckLabel,
     CheckID,
+    CheckOnMouseLeave,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });

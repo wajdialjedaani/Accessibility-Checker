@@ -387,6 +387,28 @@ export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
   } 
   return [];
 }
+
+export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  if(!element.attribs.onmouseleave) return [];
+  
+  if(!element.attribs.onblur) {
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "onmouse is missing onblur attribute",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+  
+  return [];
+}
+
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;
   if (!location || !location.startTag) {
