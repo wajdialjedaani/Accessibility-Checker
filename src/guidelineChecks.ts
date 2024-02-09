@@ -41,13 +41,10 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
     ];
   }
 
-  const docLang = `'${element.attribs.lang}'`;
-  console.log(docLang);
-  const code2BList = Object.keys(by639_2B);
   const code1List = Object.keys(by639_1);
-  const code2TList = Object.keys(by639_2T);
 
-  if(!(docLang in code2BList) && !(docLang in code1List) && !(docLang in code2TList)){
+  if(!(code1List.includes(element.attribs.lang.toString()))){
+
     const range = GetStartTagPosition(element);
     if (!range) return [];
     return [
