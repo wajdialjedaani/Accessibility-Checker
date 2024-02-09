@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import { Diagnostic, DiagnosticSeverity, Position, Range } from "vscode";
 import { isElement } from "./util";
 import { isText } from "domhandler";
-import codes, {by639_1, by639_2T, by639_2B} from "iso-language-codes";
+import {by639_1} from "iso-language-codes";
 
 export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "img") return [];
@@ -41,9 +41,7 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
     ];
   }
 
-  const code1List = Object.keys(by639_1);
-
-  if(!(code1List.includes(element.attribs.lang.toString()))){
+  if(!(Object.keys(by639_1).includes(element.attribs.lang.toString()))){
 
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -120,6 +118,32 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
         source: "Accessibility Checker",
       },
     ];
+  }
+
+  return [];
+}
+
+export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'title') return [];
+
+  let foundText = false;
+  $(element).contents().each((i,e) => {
+    if(e.type === 'text'){
+      foundText = true;
+    }
+  });
+  if(!foundText){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Titles should have associated text.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
   }
   return [];
 }
@@ -432,47 +456,154 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
+export function CheckOnMouse($: CheerioAPI, element: Element): Diagnostic[] {
   if(!element.attribs) return [];
-  if(!element.attribs.onmouseout) return [];
-  
-  if(!element.attribs.onblur) {
-    const range = GetStartTagPosition(element);
-    if(!range) return [];
-    return [
-      {
-        code: "",
-        message: "onmouseout is missing onblur attribute",
-        range: range,
-        severity: DiagnosticSeverity.Error,
-        source: "Accessibility Checker",
-      }
-    ]
+  if(!(element.attribs.onmouseout || element.attribs.onmouseover || element.attribs.onmousedown)) return [];
+
+  if(element.attribs.onmouseout){
+    if(!element.attribs.onblur) {
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "onmouseout is missing onblur attribute",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+  }
+  else if(element.attribs.onmouseover){
+    if(!element.attribs.onfocus) {
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "onmouseover is missing onfocus attribute",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+  }
+  else if(element.attribs.onmousedown){
+    if(!element.attribs.onkeydown) {
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "onmousedown is missing onkeydown attribute",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
   }
   
   return [];
 }
 
-export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
-  if(!element.attribs) return [];
-  if(!element.attribs.onmouseover) return [];
-  
-  if(!element.attribs.onfocus) {
-    const range = GetStartTagPosition(element);
-    if(!range) return [];
+export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'select') return [];
+
+  let elementID = element.attribs.id;
+    let foundLabel = 0;
+    $('label').each((i, e) => {
+      if(e.attribs.for === elementID){
+        foundLabel++;
+      }
+    });
+    if(!foundLabel){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "Select elements should have an associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+    else if(foundLabel > 1){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "Select elements should only have one associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+  return [];
+}
+
+/*
+export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for title tag when using head tag
+  if (element.name !== "form") return [];
+  let containsFieldset = 0;
+  let containsLegend = 0;
+  const range = GetStartTagPosition(element);
+  if (!range) return [];
+  const children = $(element).children();
+  for (let child of children) {
+    if (child.name === "fieldset") {
+      containsFieldset++;
+      const fieldChildren = $(child).children();
+      for(let newChild of fieldChildren) {
+        if(newChild.name === 'legend') containsLegend++;
+      }
+    }
+    else if(child.name === 'legend') containsLegend++;
+  }
+  if (containsFieldset === 0 && containsLegend == 0) {
     return [
       {
         code: "",
-        message: "onmouseover is missing onfocus attribute",
+        message: "Forms should have a fieldset and a legend",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
-  
+  else if(containsFieldset == 1 && containsLegend == 0){
+    return [
+      {
+        code: "",
+        message: "Forms should have a legend",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  else if(containsFieldset == 0 && containsLegend == 1){
+    return [
+      {
+        code: "",
+        message: "Forms should have a fieldset",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+
   return [];
 }
+*/
 
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;

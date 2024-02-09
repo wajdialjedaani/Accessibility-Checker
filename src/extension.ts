@@ -8,6 +8,7 @@ import {
   CheckImageTags,
   CheckATags,
   CheckTitleTags,
+  CheckTitleText,
   CheckTableTags,
   CheckOneH1Tag,
   CheckHeadingOrder,
@@ -16,8 +17,9 @@ import {
   CheckInput,
   CheckLabel,
   CheckID,
-  CheckOnMouseOut,
-  CheckOnMouseOver,
+  CheckOnMouse,
+  CheckSelectTag,
+  //CheckFormTags,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -59,6 +61,7 @@ function ParseDocument(document: TextDocument) {
     CheckImageTags,
     CheckATags,
     CheckTitleTags,
+    CheckTitleText,
     CheckTableTags,
     CheckOneH1Tag,
     CheckHeadingOrder,
@@ -67,8 +70,9 @@ function ParseDocument(document: TextDocument) {
     CheckInput,
     CheckLabel,
     CheckID,
-    CheckOnMouseOut,
-    CheckOnMouseOver,
+    CheckOnMouse,
+    CheckSelectTag,
+    //CheckFormTags,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });
