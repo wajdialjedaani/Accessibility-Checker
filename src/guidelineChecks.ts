@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { Diagnostic, DiagnosticSeverity, Position, Range } from "vscode";
 import { isElement } from "./util";
 import { isText } from "domhandler";
+import codes, {by639_1, by639_2T, by639_2B} from "iso-language-codes";
 
 export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "img") return [];
@@ -39,7 +40,27 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
       },
     ];
   }
-  return [];
+
+  const docLang = `'${element.attribs.lang}'`;
+  console.log(docLang);
+  const code2BList = Object.keys(by639_2B);
+  const code1List = Object.keys(by639_1);
+  const code2TList = Object.keys(by639_2T);
+
+  if(!(docLang in code2BList) && !(docLang in code1List) && !(docLang in code2TList)){
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "",
+        message: "Language is not recognized by HTML.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+return [];
 }
 
 export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
@@ -404,6 +425,48 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
       {
         code: "",
         message: "onmouse is missing onblur attribute",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+  
+  return [];
+}
+
+export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  if(!element.attribs.onmouseout) return [];
+  
+  if(!element.attribs.onblur) {
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "onmouseout is missing onblur attribute",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+  
+  return [];
+}
+
+export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  if(!element.attribs.onmouseover) return [];
+  
+  if(!element.attribs.onfocus) {
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "onmouseover is missing onfocus attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
