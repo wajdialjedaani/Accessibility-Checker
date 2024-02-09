@@ -296,7 +296,12 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
   if(element.name !== 'input') return [];
-  if(element.attribs.type === 'text'){
+  if(element.attribs.type === 'text' || 
+    element.attribs.type === 'password' || 
+    element.attribs.type === 'radio' ||
+    element.attribs.type === 'checkbox' ||
+    element.attribs.type === 'file'){
+
     let elementID = element.attribs.id;
     let foundLabel = 0;
     $('label').each((i, e) => {
@@ -310,7 +315,7 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
       return [
         {
           code: "",
-          message: "Input elements with type 'text' should have an associated label.",
+          message: "Always use the <label> tag to define labels for <input type=\"text\">, <input type=\"checkbox\">, <input type=\"radio\">, <input type=\"file\">, and <input type=\"password\">.",
           range: range,
           severity: DiagnosticSeverity.Error,
           source: "Accessibility Checker",
