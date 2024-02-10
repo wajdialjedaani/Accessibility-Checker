@@ -343,7 +343,7 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
     element.attribs.type === 'radio' ||
     element.attribs.type === 'checkbox' ||
     element.attribs.type === 'file'){
-
+    
     let elementID = element.attribs.id;
     let foundLabel = 0;
     $('label').each((i, e) => {
@@ -379,8 +379,26 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
     }
   }
   return [];
+}
 
+export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== "input") return [];
+  if(!element.attribs.type) return [];
+  if(element.attribs.type === 'image') return [];
+  const range = GetStartTagPosition(element);
+  if(element.attribs.alt){
+    return [
+      {
+        code: "",
+        message: "Input elements should not an alt attribute unless it is of time 'int'.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
 
+  return [];
 }
 
 export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
@@ -604,6 +622,65 @@ export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 */
+
+export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'textarea') return [];
+
+  let elementID = element.attribs.id;
+  let foundLabel = 0;
+  $('label').each((i, e) => {
+    if(e.attribs.for === elementID){
+      foundLabel++;
+    }
+  });
+  if(!foundLabel){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Textarea tags should have an associated label",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+  else if(foundLabel > 1){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Elements should only have one associated label.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+
+  return [];
+}
+
+export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'marquee') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "The marquee tag has been depreciated by HTML 5 and should no longer be used.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+  
+  
+  return [];
+}
+
 
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;

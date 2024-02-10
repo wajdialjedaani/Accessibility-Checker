@@ -15,11 +15,14 @@ import {
   CheckVideoAndAudioTags,
   CheckButtons,
   CheckInput,
+  CheckInputAlt,
   CheckLabel,
   CheckID,
   CheckOnMouse,
   CheckSelectTag,
   //CheckFormTags,
+  CheckTextAreaTags,
+  CheckMarqueeTags,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -68,11 +71,14 @@ function ParseDocument(document: TextDocument) {
     CheckVideoAndAudioTags,
     CheckButtons,
     CheckInput,
+    CheckInputAlt,
     CheckLabel,
     CheckID,
     CheckOnMouse,
     CheckSelectTag,
     //CheckFormTags,
+    CheckTextAreaTags,
+    CheckMarqueeTags,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });
