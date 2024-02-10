@@ -387,10 +387,11 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
   if(element.attribs.type === 'image') return [];
   const range = GetStartTagPosition(element);
   if(element.attribs.alt){
+    if(!range) return [];
     return [
       {
         code: "",
-        message: "Input elements should not an alt attribute unless it is of time 'int'.",
+        message: "Input elements should not an alt attribute unless it is of time 'image'.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
