@@ -23,6 +23,7 @@ import {
   //CheckFormTags,
   CheckTextAreaTags,
   CheckMarqueeTags,
+  CheckForMetaTimeout,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -79,6 +80,7 @@ function ParseDocument(document: TextDocument) {
     //CheckFormTags,
     CheckTextAreaTags,
     CheckMarqueeTags,
+    CheckForMetaTimeout,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });

@@ -682,6 +682,26 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
   return [];
 }
 
+export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'meta') return [];
+  if(!element.attribs['http-equiv']) return [];
+  if(element.attribs['http-equiv'] == 'refresh'){
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "Using a meta refresh with a timeout is not considered in line with best accessibility practices.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
+  }
+
+  return [];
+}
+
 
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;
