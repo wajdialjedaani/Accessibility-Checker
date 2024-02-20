@@ -41,6 +41,14 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
     ];
   }
 
+return [];
+}
+
+export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[] {
+  if (element.name !== "html") return [];
+  //Check for lang attribute when using html tag
+  if(!element.attribs.lang) return [];
+
   if(!(Object.keys(by639_1).includes(element.attribs.lang.toString()))){
 
     const range = GetStartTagPosition(element);
@@ -74,6 +82,13 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
       },
     ];
   }
+  return [];
+}
+
+export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for href attribute when using "a" tag
+  if (element.name !== "a") return [];
+  
   let foundText = false;
   $(element).contents().each((i,e) => {
     if(e.type === 'text'){
@@ -381,6 +396,40 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
+export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'input') return [];
+  if(element.attribs.type === 'text' || 
+    element.attribs.type === 'password' || 
+    element.attribs.type === 'radio' ||
+    element.attribs.type === 'checkbox' ||
+    element.attribs.type === 'file'){
+    
+    let elementID = element.attribs.id;
+    let foundLabel = 0;
+    $('label').each((i, e) => {
+      if(e.attribs.for === elementID){
+        foundLabel++;
+      }
+    });
+    if(!foundLabel) return [];
+
+    else if(foundLabel > 1){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "",
+          message: "Input elements should only have one associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+  }
+  return [];
+}
+
 export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
   if(element.name !== "input") return [];
   if(!element.attribs.type) return [];
@@ -464,7 +513,7 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
     return [
       {
         code: "",
-        message: "onmouse is missing onblur attribute",
+        message: "onmouseleave is missing onblur attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -475,54 +524,62 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-export function CheckOnMouse($: CheerioAPI, element: Element): Diagnostic[] {
+export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
   if(!element.attribs) return [];
-  if(!(element.attribs.onmouseout || element.attribs.onmouseover || element.attribs.onmousedown)) return [];
+  if(!element.attribs.onmouseout) return [];
 
-  if(element.attribs.onmouseout){
-    if(!element.attribs.onblur) {
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "",
-          message: "onmouseout is missing onblur attribute",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
-    }
+  if(!element.attribs.onblur) {
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "onmouseout is missing onblur attribute",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
   }
-  else if(element.attribs.onmouseover){
-    if(!element.attribs.onfocus) {
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "",
-          message: "onmouseover is missing onfocus attribute",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
-    }
+  
+  return [];
+}
+export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  if(!element.attribs.onmouseover) return [];
+
+  if(!element.attribs.onfocus) {
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "onmouseover is missing onfocus attribute",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
   }
-  else if(element.attribs.onmousedown){
-    if(!element.attribs.onkeydown) {
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "",
-          message: "onmousedown is missing onkeydown attribute",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
-    }
+  return [];
+}
+
+export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  if(!element.attribs.onmousedown) return [];
+
+  if(!element.attribs.onkeydown) {
+    const range = GetStartTagPosition(element);
+    if(!range) return [];
+    return [
+      {
+        code: "",
+        message: "onmousedown is missing onkeydown attribute",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      }
+    ]
   }
   
   return [];
@@ -551,7 +608,20 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
         }
       ]
     }
-    else if(foundLabel > 1){
+  return [];
+}
+
+export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'select') return [];
+
+  let elementID = element.attribs.id;
+    let foundLabel = 0;
+    $('label').each((i, e) => {
+      if(e.attribs.for === elementID){
+        foundLabel++;
+      }
+    });
+    if(foundLabel > 1){
       const range = GetStartTagPosition(element);
       if(!range) return [];
       return [
@@ -647,7 +717,20 @@ export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[]
       }
     ]
   }
-  else if(foundLabel > 1){
+  return [];
+}
+
+export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'textarea') return [];
+
+  let elementID = element.attribs.id;
+  let foundLabel = 0;
+  $('label').each((i, e) => {
+    if(e.attribs.for === elementID){
+      foundLabel++;
+    }
+  });
+  if(foundLabel > 1){
     const range = GetStartTagPosition(element);
     if(!range) return [];
     return [
