@@ -754,7 +754,7 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
   return [
     {
       code: "",
-      message: "The marquee tag has been depreciated by HTML 5 and should no longer be used.",
+      message: "The <marquee> tag is depreciated, use CSS animation or transform properties instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
@@ -785,6 +785,328 @@ export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic
   return [];
 }
 
+export function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'acronym') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<acronym> tag is depreciated, use <abbr> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'applet') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<applet> tag is depreciated, use <object> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'basefront') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<basefront> tag is depreciated.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'big') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<big> tag is depreciated, use CSS Styles instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'blink') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<blink> tag is depreciated, consider using CSS Animation instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'center') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<center> tag is depreciated, use CSS text-align property instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'dir') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<dir> tag is depreciated, use <ul> tag or CSS list-style property instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'embed') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<embed> tag is depreciated, use <object> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'font') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<font> tag is depreciated, use CSS styles instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'frame') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<frame> tag is depreciated, use <iframe> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'frameset') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<frameset> tag is depreciated.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'isindex') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<isindex> tag is depreciated, use <form> tag instead",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'noframes') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<noframes> tag is depreciated.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'menu') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<menu> tag is depreciated, use <ul> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'plaintext') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<plaintext> tag is depreciated, use <pre> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 's') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<s> tag is depreciated, use CSS text-decoration instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'strike') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<strike> tag is depreciated, use <del> tag instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'tt') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<tt> tag is depreciated.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'u') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "<u> tag is depreciated, use CSS text-decoration property instead.",
+      range: range,
+      severity: DiagnosticSeverity.Error,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
 
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;
