@@ -23,6 +23,316 @@
         "command": "accessibility-checker.generateReport",
         "title": "Generate Report"
       }
+    ],
+    "configuration": [
+      {
+        "title": "Perceivable",
+        "properties": {
+          "accessibilityChecker.guidelines.perceivable": {
+						"type": "object",
+						"order": 1,
+						"description": "Enable and disable specific guidelines.",
+						"properties": {
+							"Alt Attribute Present in Image Element": {
+                "type": "boolean"
+              },
+							"Alt Attribute Present in Input Element": {
+								"type": "boolean"
+							}
+						},
+						"additionalProperties": false,
+						"default": {
+							"Alt Attribute Present in Image Element": true,
+							"Alt Attribute Present in Input Element": true
+						}
+					},
+          "accessibilityChecker.guidelines.operable": {
+						"type": "object",
+						"order": 2,
+						"description": "Enable and disable specific guidelines.",
+						"properties": {
+							"Lang Attribute Present in HTML element": {
+								"type": "boolean"
+							},
+							"Lang Attribute is a Valid Language": {
+								"type": "boolean"
+							}
+						},
+						"additionalProperties": false,
+						"default": {
+							"Lang Attribute Present in HTML element": true,
+							"Lang Attribute is a Valid Language": true
+						}
+					},
+          "accessibilityChecker.guidelines.understandable": {
+						"type": "object",
+						"order": 3,
+						"description": "Enable and disable specific guidelines.",
+						"properties": {
+							"Lang Attribute Present in HTML element": {
+								"type": "boolean"
+							},
+							"Lang Attribute is a Valid Language": {
+								"type": "boolean"
+							}
+						},
+						"additionalProperties": false,
+						"default": {
+							"Lang Attribute Present in HTML element": true,
+							"Lang Attribute is a Valid Language": true
+						}
+					},
+          "accessibilityChecker.guidelines.robust": {
+						"type": "object",
+						"order": 4,
+						"description": "Enable and disable specific guidelines.",
+						"properties": {
+							"Lang Attribute Present in HTML element": {
+								"type": "boolean"
+							},
+							"Lang Attribute is a Valid Language": {
+								"type": "boolean"
+							}
+						},
+						"additionalProperties": false,
+						"default": {
+							"Lang Attribute Present in HTML element": true,
+							"Lang Attribute is a Valid Language": true
+						}
+					}
+      }
+    },
+    {
+      "title": "Operable",
+      "properties": {
+        "accessibilityChecker.guidelines.2.1": {
+          "type": "object",
+          "order": 1,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Alt Attribute Present in Image Element": {
+              "type": "boolean"
+            },
+            "Alt Attribute Present in Input Element": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Alt Attribute Present in Image Element": true,
+            "Alt Attribute Present in Input Element": true
+          }
+        },
+        "accessibilityChecker.guidelines.2.2": {
+          "type": "object",
+          "order": 2,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        },
+        "accessibilityChecker.guidelines.2.3": {
+          "type": "object",
+          "order": 3,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        },
+        "accessibilityChecker.guidelines.2.4": {
+          "type": "object",
+          "order": 4,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        }
+    }
+    },
+    {
+      "title": "Understandable",
+      "properties": {
+        "accessibilityChecker.guidelines.3.1": {
+          "type": "object",
+          "order": 1,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Alt Attribute Present in Image Element": {
+              "type": "boolean"
+            },
+            "Alt Attribute Present in Input Element": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Alt Attribute Present in Image Element": true,
+            "Alt Attribute Present in Input Element": true
+          }
+        },
+        "accessibilityChecker.guidelines.3.2": {
+          "type": "object",
+          "order": 2,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        },
+        "accessibilityChecker.guidelines.3.3": {
+          "type": "object",
+          "order": 3,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        },
+        "accessibilityChecker.guidelines.3.4": {
+          "type": "object",
+          "order": 4,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        }
+    }
+    },
+    {
+      "title": "Robust",
+      "properties": {
+        "accessibilityChecker.guidelines.4.1": {
+          "type": "object",
+          "order": 1,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Alt Attribute Present in Image Element": {
+              "type": "boolean"
+            },
+            "Alt Attribute Present in Input Element": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Alt Attribute Present in Image Element": true,
+            "Alt Attribute Present in Input Element": true
+          }
+        },
+        "accessibilityChecker.guidelines.4.2": {
+          "type": "object",
+          "order": 2,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        },
+        "accessibilityChecker.guidelines.4.3": {
+          "type": "object",
+          "order": 3,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        },
+        "accessibilityChecker.guidelines.4.4": {
+          "type": "object",
+          "order": 4,
+          "description": "Enable and disable specific guidelines.",
+          "properties": {
+            "Lang Attribute Present in HTML element": {
+              "type": "boolean"
+            },
+            "Lang Attribute is a Valid Language": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "Lang Attribute Present in HTML element": true,
+            "Lang Attribute is a Valid Language": true
+          }
+        }
+    }
+    }
     ]
   },
   "scripts": {

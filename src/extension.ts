@@ -56,6 +56,17 @@ import {
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
+  let config = vscode.workspace.getConfiguration("accessibilityChecker");
+  console.log(config)
+  //Update config object throughout extension upon configuration change
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration("accessibilityChecker")) {
+        config = vscode.workspace.getConfiguration("accessibilityChecker");
+      }
+    })
+  );
+
   //This collection will persist throughout life of extension
   const diagnostics = languages.createDiagnosticCollection("Test");
   const document = window.activeTextEditor?.document;
