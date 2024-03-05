@@ -1108,6 +1108,40 @@ export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
+export function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'i') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "Consider using the <em> tag instead of <i>, as it provides information for screen readers.",
+      range: range,
+      severity: DiagnosticSeverity.Warning,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
+export function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
+  if(element.name !== 'b') return [];
+  const range = GetStartTagPosition(element);
+  if(!range) return [];
+  return [
+    {
+      code: "",
+      message: "Consider using the <strong> tag instead of <b>, as it provides information for screen readers.",
+      range: range,
+      severity: DiagnosticSeverity.Warning,
+      source: "Accessibility Checker",
+    }
+  ]
+
+  return [];
+}
+
 function GetStartTagPosition(element: Element): Range | undefined {
   const location = element.sourceCodeLocation;
   if (!location || !location.startTag) {

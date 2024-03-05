@@ -51,6 +51,8 @@ import {
   CheckForStrike,
   CheckForTt,
   CheckForU,
+  CheckForItalic,
+  CheckForBold,
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -135,6 +137,8 @@ function ParseDocument(document: TextDocument) {
     CheckForStrike,
     CheckForTt,
     CheckForU,
+    CheckForItalic,
+    CheckForBold,
   ];
   const text = document.getText();
   const $ = cheerio.load(text, { sourceCodeLocationInfo: true });
