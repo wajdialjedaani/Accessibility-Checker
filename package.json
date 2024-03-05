@@ -18,6 +18,10 @@
       {
         "command": "accessibility-checker.ParseDocument",
         "title": "Parse Document"
+      },
+      {
+        "command": "accessibility-checker.generateReport",
+        "title": "Generate Report"
       }
     ]
   },

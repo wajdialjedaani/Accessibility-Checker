@@ -172,3 +172,7 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
   const newDiagnostics = ParseDocument(document);
   diagnostics.set(document.uri, newDiagnostics);
 }
+
+function GenerateReport(): void {
+  
+}
