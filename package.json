@@ -9,13 +9,19 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "accessibility-checker.helloWorld",
-        "title": "Hello World"
+        "command": "accessibility-checker.ParseDocument",
+        "title": "Parse Document"
+      },
+      {
+        "command": "accessibility-checker.generateReport",
+        "title": "Generate Report"
       }
     ]
   },
@@ -45,6 +51,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "iso-language-codes": "^2.0.0"
   }
 }
