@@ -57,7 +57,7 @@ import {
 
 export function activate(context: vscode.ExtensionContext) {
   let config = vscode.workspace.getConfiguration("accessibilityChecker");
-  console.log(config)
+  
   //Update config object throughout extension upon configuration change
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {

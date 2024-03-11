@@ -28,58 +28,118 @@
       {
         "title": "Perceivable",
         "properties": {
-          "accessibilityChecker.guidelines.perceivable": {
+          "accessibilityChecker.perceivable.textAlternatives": {
 						"type": "object",
 						"order": 1,
 						"description": "Enable and disable specific guidelines.",
 						"properties": {
-							"Alt Attribute Present in Image Element": {
+							"Image used as anchor is missing valid Alt text.": {
                 "type": "boolean"
               },
-							"Alt Attribute Present in Input Element": {
+							"img element missing alt attribute": {
+								"type": "boolean"
+							},
+              "input element has alt attribute": {
 								"type": "boolean"
 							}
 						},
 						"additionalProperties": false,
 						"default": {
-							"Alt Attribute Present in Image Element": true,
-							"Alt Attribute Present in Input Element": true
+							"Image used as anchor is missing valid Alt text.": true,
+							"img element missing alt attribute": true,
+              "input element has alt attribute": true
 						}
 					},
-          "accessibilityChecker.guidelines.operable": {
+          "accessibilityChecker.perceivable.adaptable": {
 						"type": "object",
 						"order": 2,
 						"description": "Enable and disable specific guidelines.",
 						"properties": {
-							"Lang Attribute Present in HTML element": {
+							"input element, type of 'text', has no text in label.": {
 								"type": "boolean"
 							},
-							"Lang Attribute is a Valid Language": {
+							"input element, type of 'text', missing an associated label.": {
+								"type": "boolean"
+							},
+              "input element, type of 'password', missing an associated label.": {
+								"type": "boolean"
+							},
+              "input element, type of 'radio', missing an associated label": {
+								"type": "boolean"
+							},
+              "input element, type of 'radio', has no text in label": {
+								"type": "boolean"
+							},
+              "textarea element missing an associated label.": {
+								"type": "boolean"
+							},
+              "Label text is empty for select statement.": {
+								"type": "boolean"
+							},
+              "input element, type of 'file', has no text in label": {
+								"type": "boolean"
+							},
+              "input element, type of 'file', missing an associated label.": {
+								"type": "boolean"
+							},
+              "input element, type of 'password', has no text in label.": {
+								"type": "boolean"
+							},
+              "select element missing an associated label": {
+								"type": "boolean"
+							},
+              "input element, type of 'checkbox', has no text in label.": {
+								"type": "boolean"
+							},
+              "button has no text in label": {
 								"type": "boolean"
 							}
 						},
 						"additionalProperties": false,
 						"default": {
-							"Lang Attribute Present in HTML element": true,
-							"Lang Attribute is a Valid Language": true
+							"input element, type of 'text', has no text in label.": true,
+              "input element, type of 'text', missing an associated label.": true,
+              "input element, type of 'password', missing an associated label.": true,
+              "input element, type of 'radio', missing an associated label": true,
+              "input element, type of 'radio', has no text in label": true,
+              "textarea element missing an associated label.": true,
+              "Label text is empty for select statement.": true,
+              "input element, type of 'file', has no text in label": true,
+              "input element, type of 'file', missing an associated label.": true,
+              "input element, type of 'password', has no text in label.": true,
+              "select element missing an associated label": true,
+              "input element, type of 'checkbox', has no text in label.": true,
+              "button has no text in label": true
 						}
 					},
-          "accessibilityChecker.guidelines.understandable": {
+          "accessibilityChecker.perceivable.distinguishable": {
 						"type": "object",
 						"order": 3,
 						"description": "Enable and disable specific guidelines.",
 						"properties": {
-							"Lang Attribute Present in HTML element": {
+							"font used": {
 								"type": "boolean"
 							},
-							"Lang Attribute is a Valid Language": {
+							"i (italic) element used": {
 								"type": "boolean"
-							}
+							},
+              "b (bold) element used": {
+                "type": "boolean"
+              },
+              "bold element used": {
+                "type": "boolean"
+              },
+              "italic element used": {
+                "type": "boolean"
+              }
 						},
 						"additionalProperties": false,
 						"default": {
-							"Lang Attribute Present in HTML element": true,
-							"Lang Attribute is a Valid Language": true
+							"font used.": true,
+							"i (italic) element used": true,
+              "b (bold) element used": true,
+              "bold element used": true,
+              "italic element used": true
 						}
 					},
           "accessibilityChecker.guidelines.robust": {
