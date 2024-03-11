@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as cheerio from "cheerio";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
-import { isElement } from "./util";
+import { isElement, Configuration } from "./util";
 import {
   CheckHTMLTags,
   CheckLangRecognize,
@@ -56,16 +56,7 @@ import {
 } from "./guidelineChecks";
 
 export function activate(context: vscode.ExtensionContext) {
-  let config = vscode.workspace.getConfiguration("accessibilityChecker");
-  
-  //Update config object throughout extension upon configuration change
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeConfiguration((event) => {
-      if (event.affectsConfiguration("accessibilityChecker")) {
-        config = vscode.workspace.getConfiguration("accessibilityChecker");
-      }
-    })
-  );
+  let config = new Configuration(context);
 
   //This collection will persist throughout life of extension
   const diagnostics = languages.createDiagnosticCollection("Test");
@@ -86,6 +77,15 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     workspace.onDidChangeTextDocument((editor) => {
       GenerateDiagnostics(editor.document, diagnostics);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      const document = window.activeTextEditor?.document;
+      if (event.affectsConfiguration("accessibilityChecker") && document) {
+        GenerateDiagnostics(document, diagnostics);
+      }
     })
   );
 

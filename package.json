@@ -29,75 +29,75 @@
         "title": "Perceivable",
         "properties": {
           "accessibilityChecker.perceivable.textAlternatives": {
-						"type": "object",
-						"order": 1,
-						"description": "Enable and disable specific guidelines.",
-						"properties": {
-							"Image used as anchor is missing valid Alt text.": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "Image used as anchor is missing valid Alt text.": {
                 "type": "boolean"
               },
-							"img element missing alt attribute": {
-								"type": "boolean"
-							},
+              "img element missing alt attribute": {
+                "type": "boolean"
+              },
               "input element has alt attribute": {
-								"type": "boolean"
-							}
-						},
-						"additionalProperties": false,
-						"default": {
-							"Image used as anchor is missing valid Alt text.": true,
-							"img element missing alt attribute": true,
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "Image used as anchor is missing valid Alt text.": true,
+              "img element missing alt attribute": true,
               "input element has alt attribute": true
-						}
-					},
+            }
+          },
           "accessibilityChecker.perceivable.adaptable": {
-						"type": "object",
-						"order": 2,
-						"description": "Enable and disable specific guidelines.",
-						"properties": {
-							"input element, type of 'text', has no text in label.": {
-								"type": "boolean"
-							},
-							"input element, type of 'text', missing an associated label.": {
-								"type": "boolean"
-							},
+            "type": "object",
+            "order": 2,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "input element, type of 'text', has no text in label.": {
+                "type": "boolean"
+              },
+              "input element, type of 'text', missing an associated label.": {
+                "type": "boolean"
+              },
               "input element, type of 'password', missing an associated label.": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "input element, type of 'radio', missing an associated label": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "input element, type of 'radio', has no text in label": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "textarea element missing an associated label.": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "Label text is empty for select statement.": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "input element, type of 'file', has no text in label": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "input element, type of 'file', missing an associated label.": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "input element, type of 'password', has no text in label.": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "select element missing an associated label": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "input element, type of 'checkbox', has no text in label.": {
-								"type": "boolean"
-							},
+                "type": "boolean"
+              },
               "button has no text in label": {
-								"type": "boolean"
-							}
-						},
-						"additionalProperties": false,
-						"default": {
-							"input element, type of 'text', has no text in label.": true,
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "input element, type of 'text', has no text in label.": true,
               "input element, type of 'text', missing an associated label.": true,
               "input element, type of 'password', missing an associated label.": true,
               "input element, type of 'radio', missing an associated label": true,
@@ -110,19 +110,19 @@
               "select element missing an associated label": true,
               "input element, type of 'checkbox', has no text in label.": true,
               "button has no text in label": true
-						}
-					},
+            }
+          },
           "accessibilityChecker.perceivable.distinguishable": {
-						"type": "object",
-						"order": 3,
-						"description": "Enable and disable specific guidelines.",
-						"properties": {
-							"font used": {
-								"type": "boolean"
-							},
-							"i (italic) element used": {
-								"type": "boolean"
-							},
+            "type": "object",
+            "order": 3,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "font used": {
+                "type": "boolean"
+              },
+              "i (italic) element used": {
+                "type": "boolean"
+              },
               "b (bold) element used": {
                 "type": "boolean"
               },
@@ -132,267 +132,153 @@
               "italic element used": {
                 "type": "boolean"
               }
-						},
-						"additionalProperties": false,
-						"default": {
-							"font used.": true,
-							"i (italic) element used": true,
+            },
+            "additionalProperties": false,
+            "default": {
+              "font used.": true,
+              "i (italic) element used": true,
               "b (bold) element used": true,
               "bold element used": true,
               "italic element used": true
-						}
-					},
-          "accessibilityChecker.guidelines.robust": {
-						"type": "object",
-						"order": 4,
-						"description": "Enable and disable specific guidelines.",
-						"properties": {
-							"Lang Attribute Present in HTML element": {
-								"type": "boolean"
-							},
-							"Lang Attribute is a Valid Language": {
-								"type": "boolean"
-							}
-						},
-						"additionalProperties": false,
-						"default": {
-							"Lang Attribute Present in HTML element": true,
-							"Lang Attribute is a Valid Language": true
-						}
-					}
+            }
+          }
+        }
+      },
+      {
+        "title": "Operable",
+        "properties": {
+          "accessibilityChecker.operable.keyboardAccessible": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "onmouseover event handler missing onfocus event handler": {
+                "type": "boolean"
+              },
+              "script not keyboard accessible - onmouse missing onblur": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "onmouseover event handler missing onfocus event handler": true,
+              "script not keyboard accessible - onmouse missing onblur": true
+            }
+          },
+          "accessibilityChecker.operable.enoughTime": {
+            "type": "object",
+            "order": 2,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "Marquee element used": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "Marquee element used": true
+            }
+          },
+          "accessibilityChecker.operable.navigable": {
+            "type": "object",
+            "order": 3,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "title element is empty": {
+                "type": "boolean"
+              },
+              "Document missing title element": {
+                "type": "boolean"
+              },
+              "Anchor contains no text.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h1 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h2 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h3 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h4 is incorrect.": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "title element is empty": true,
+              "Document missing title element": true,
+              "Anchor contains no text.": true,
+              "Header nesting - header following h1 is incorrect.": true,
+              "Header nesting - header following h2 is incorrect.": true,
+              "Header nesting - header following h3 is incorrect.": true,
+              "Header nesting - header following h4 is incorrect.": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Understandable",
+        "properties": {
+          "accessibilityChecker.understandable.readable": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "document language not identified": {
+                "type": "boolean"
+              },
+              "document has invalid language code": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "document language not identified": true,
+              "document has invalid language code": true
+            }
+          },
+          "accessibilityChecker.understandable.inputAssistance": {
+            "type": "object",
+            "order": 2,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "label text is empty": {
+                "type": "boolean"
+              },
+              "input element has more than one associated label": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "label text is empty": true,
+              "input element has more than one associated label": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Robust",
+        "properties": {
+          "accessibilityChecker.robust.compatible": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "id attribute is not unique": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "id attribute is not unique": true
+            }
+          }
+        }
       }
-    },
-    {
-      "title": "Operable",
-      "properties": {
-        "accessibilityChecker.guidelines.2.1": {
-          "type": "object",
-          "order": 1,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Alt Attribute Present in Image Element": {
-              "type": "boolean"
-            },
-            "Alt Attribute Present in Input Element": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Alt Attribute Present in Image Element": true,
-            "Alt Attribute Present in Input Element": true
-          }
-        },
-        "accessibilityChecker.guidelines.2.2": {
-          "type": "object",
-          "order": 2,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        },
-        "accessibilityChecker.guidelines.2.3": {
-          "type": "object",
-          "order": 3,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        },
-        "accessibilityChecker.guidelines.2.4": {
-          "type": "object",
-          "order": 4,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        }
-    }
-    },
-    {
-      "title": "Understandable",
-      "properties": {
-        "accessibilityChecker.guidelines.3.1": {
-          "type": "object",
-          "order": 1,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Alt Attribute Present in Image Element": {
-              "type": "boolean"
-            },
-            "Alt Attribute Present in Input Element": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Alt Attribute Present in Image Element": true,
-            "Alt Attribute Present in Input Element": true
-          }
-        },
-        "accessibilityChecker.guidelines.3.2": {
-          "type": "object",
-          "order": 2,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        },
-        "accessibilityChecker.guidelines.3.3": {
-          "type": "object",
-          "order": 3,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        },
-        "accessibilityChecker.guidelines.3.4": {
-          "type": "object",
-          "order": 4,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        }
-    }
-    },
-    {
-      "title": "Robust",
-      "properties": {
-        "accessibilityChecker.guidelines.4.1": {
-          "type": "object",
-          "order": 1,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Alt Attribute Present in Image Element": {
-              "type": "boolean"
-            },
-            "Alt Attribute Present in Input Element": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Alt Attribute Present in Image Element": true,
-            "Alt Attribute Present in Input Element": true
-          }
-        },
-        "accessibilityChecker.guidelines.4.2": {
-          "type": "object",
-          "order": 2,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        },
-        "accessibilityChecker.guidelines.4.3": {
-          "type": "object",
-          "order": 3,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        },
-        "accessibilityChecker.guidelines.4.4": {
-          "type": "object",
-          "order": 4,
-          "description": "Enable and disable specific guidelines.",
-          "properties": {
-            "Lang Attribute Present in HTML element": {
-              "type": "boolean"
-            },
-            "Lang Attribute is a Valid Language": {
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "Lang Attribute Present in HTML element": true,
-            "Lang Attribute is a Valid Language": true
-          }
-        }
-    }
-    }
     ]
   },
   "scripts": {
