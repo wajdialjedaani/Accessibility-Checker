@@ -93,6 +93,12 @@
               },
               "button has no text in label": {
                 "type": "boolean"
+              },
+              "Include a caption for each table.": {
+                "type": "boolean"
+              },
+              "Buttons should have button type": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
@@ -100,16 +106,18 @@
               "input element, type of 'text', has no text in label.": true,
               "input element, type of 'text', missing an associated label.": true,
               "input element, type of 'password', missing an associated label.": true,
-              "input element, type of 'radio', missing an associated label": true,
-              "input element, type of 'radio', has no text in label": true,
+              "input element, type of 'radio', missing an associated label.": true,
+              "input element, type of 'radio', has no text in label.": true,
               "textarea element missing an associated label.": true,
               "Label text is empty for select statement.": true,
-              "input element, type of 'file', has no text in label": true,
+              "input element, type of 'file', has no text in label.": true,
               "input element, type of 'file', missing an associated label.": true,
               "input element, type of 'password', has no text in label.": true,
-              "select element missing an associated label": true,
+              "select element missing an associated label.": true,
               "input element, type of 'checkbox', has no text in label.": true,
-              "button has no text in label": true
+              "button has no text in label.": true,
+              "Include a caption for each table.": true,
+              "Buttons should have button type": true
             }
           },
           "accessibilityChecker.perceivable.distinguishable": {
@@ -131,6 +139,9 @@
               },
               "italic element used": {
                 "type": "boolean"
+              },
+              "Video and audio tags should have control attribute for pausing and volume": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
@@ -139,7 +150,8 @@
               "i (italic) element used": true,
               "b (bold) element used": true,
               "bold element used": true,
-              "italic element used": true
+              "italic element used": true,
+              "Video and audio tags should have control attribute for pausing and volume": true
             }
           }
         }
@@ -204,6 +216,12 @@
               },
               "Header nesting - header following h4 is incorrect.": {
                 "type": "boolean"
+              },
+              "Include an href attribute to make text a hyperlink": {
+                "type": "boolean"
+              },
+              "There should only be one <h1> per page": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
@@ -214,7 +232,9 @@
               "Header nesting - header following h1 is incorrect.": true,
               "Header nesting - header following h2 is incorrect.": true,
               "Header nesting - header following h3 is incorrect.": true,
-              "Header nesting - header following h4 is incorrect.": true
+              "Header nesting - header following h4 is incorrect.": true,
+              "Include an href attribute to make text a hyperlink": true,
+              "There should only be one <h1> per page": true
             }
           }
         }

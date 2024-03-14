@@ -1,8 +1,6 @@
-import { Cheerio, CheerioAPI, Element, AnyNode } from "cheerio";
-import * as cheerio from "cheerio";
+import { CheerioAPI, Element } from "cheerio";
 import { Diagnostic, DiagnosticSeverity, Position, Range } from "vscode";
-import { isElement, Configuration } from "./util";
-import { isText } from "domhandler";
+import { Configuration } from "./util";
 import { by639_1 } from "iso-language-codes";
 
 export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
@@ -81,7 +79,11 @@ export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[
 
 export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
-  if (element.name !== "a") return [];
+  if (
+    element.name !== "a" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["Include an href attribute to make text a hyperlink"]
+  )
+    return [];
   if (!element.attribs.href) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -100,7 +102,8 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
-  if (element.name !== "a") return [];
+  if (element.name !== "a" || !Configuration.GetInstance().get()["operable"]["navigable"]["Anchor contains no text."])
+    return [];
 
   let foundText = false;
   $(element)
@@ -128,7 +131,11 @@ export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for title tag when using head tag
-  if (element.name !== "head") return [];
+  if (
+    element.name !== "head" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["Document missing title element"]
+  )
+    return [];
   let containsTitle = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -154,7 +161,8 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "title") return [];
+  if (element.name !== "title" || !Configuration.GetInstance().get()["operable"]["navigable"]["title element is empty"])
+    return [];
 
   let foundText = false;
   $(element)
@@ -182,7 +190,11 @@ export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for captions for table
-  if (element.name !== "table") return [];
+  if (
+    element.name !== "table" ||
+    !Configuration.GetInstance().get()["perceivacle"]["adaptable"]["Include a caption for each table."]
+  )
+    return [];
   let containsCaption = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -207,7 +219,11 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "h1") return [];
+  if (
+    element.name !== "h1" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["There should only be one <h1> per page"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   if ($("h1").length > 1) {
@@ -244,7 +260,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
     severity: DiagnosticSeverity.Error,
     source: "Accessibility Checker",
   };
-  if (element.name === "h1") {
+  if (
+    element.name === "h1" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h1 is incorrect."]
+  ) {
     $("h2").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -271,7 +290,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h2") {
+  if (
+    element.name === "h2" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h2 is incorrect."]
+  ) {
     $("h3").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -293,7 +315,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h3") {
+  if (
+    element.name === "h3" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h3 is incorrect."]
+  ) {
     $("h4").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -310,7 +335,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h4") {
+  if (
+    element.name === "h4" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h4 is incorrect."]
+  ) {
     $("h5").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -322,7 +350,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h5") {
+  if (
+    element.name === "h5" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h5 is incorrect."]
+  ) {
     $("h6").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -332,8 +363,15 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
   return errors;
 }
 
+//TODO: Controls only necessary if autoplay is enabled
 export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "video" && element.name !== "audio") return [];
+  if (
+    (element.name !== "video" && element.name !== "audio") ||
+    !Configuration.GetInstance().get()["perceivable"]["distinguishable"][
+      "Video and audio tags should have control attribute for pausing and volume"
+    ]
+  )
+    return [];
   if (element.attribs.controls === undefined) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -350,8 +388,14 @@ export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnos
   return [];
 }
 
+//TODO: Point of guideline is not for buttons to have type="button", but for buttons to always have a
+//type of some kind set
 export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "button") return [];
+  if (
+    element.name !== "button" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Buttons should have button type"]
+  )
+    return [];
   if (element.attribs.type !== "button") {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -368,8 +412,10 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
+//TODO: Add settings for multiple labels. Currently only have settings for missing labels
 export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "input") return [];
+
   if (
     element.attribs.type === "text" ||
     element.attribs.type === "password" ||
@@ -387,6 +433,29 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
     if (!foundLabel) {
       const range = GetStartTagPosition(element);
       if (!range) return [];
+      if (
+        (element.attribs.type === "text" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'text', missing an associated label."
+          ]) ||
+        (element.attribs.type === "password" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'password', missing an associated label."
+          ]) ||
+        (element.attribs.type === "radio" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'radio', missing an associated label."
+          ]) ||
+        (element.attribs.type === "checkbox" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'checkbox', missing an associated label."
+          ]) ||
+        (element.attribs.type === "file" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'file', missing an associated label."
+          ])
+      )
+        return [];
       return [
         {
           code: "",
@@ -415,7 +484,13 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "input") return [];
+  if (
+    element.name !== "input" ||
+    !Configuration.GetInstance().get()["understandable"]["inputAssistance"][
+      "input element has more than one associated label"
+    ]
+  )
+    return [];
   if (
     element.attribs.type === "text" ||
     element.attribs.type === "password" ||
@@ -458,7 +533,7 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
     return [
       {
         code: "",
-        message: "Input elements should not an alt attribute unless it is of time 'image'.",
+        message: "Input elements should not have an alt attribute unless it is of type 'image'.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
