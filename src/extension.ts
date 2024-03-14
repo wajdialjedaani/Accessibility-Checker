@@ -61,6 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
   //This collection will persist throughout life of extension
   const diagnostics = languages.createDiagnosticCollection("Test");
   const document = window.activeTextEditor?.document;
+  const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1000);
 
   //Run check once on startup and then listen for document changes for future checks
   if (document) {
@@ -79,6 +80,12 @@ export function activate(context: vscode.ExtensionContext) {
       GenerateDiagnostics(editor.document, diagnostics);
     })
   );
+  checkerStatusBar.command = "accessibility-checker.generateReport";
+  checkerStatusBar.text = "$(file) Generate Report";
+  context.subscriptions.push(checkerStatusBar);
+  checkerStatusBar.show();
+  let dispo = vscode.commands.registerCommand("accessibility-checker.generateReport", GenerateReport);
+  context.subscriptions.push(dispo);
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {
@@ -185,5 +192,98 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
 }
 
 function GenerateReport(): void {
+  const document = window.activeTextEditor?.document;
+  let newDiagnostics: Diagnostic[];
+  let names: String[];
+  let tallies: number[] = [0, 0, 0, 0];
+
+  if(document){
+    newDiagnostics = ParseDocument(document);
+  }
+  else{
+    newDiagnostics = [];
+  }
+
+  tallies = getTallies(newDiagnostics);
+  let total = tallies[0] + tallies[1] + tallies[2] + tallies[3];
+  let perceivable = ((tallies[0] / total) * 360).toFixed();
+  let operable = ((tallies[1] / total) * 360).toFixed();
+  let understandable = ((tallies[2] / total) * 360).toFixed();
+  let robust = ((tallies[3] / total) * 360).toFixed();
+  //console.log(tallies[0], tallies[1], tallies[2], tallies[3]);
+
+
+
+
+  window.showInformationMessage("Generating Report...");
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <body>
+    
+    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+    
+    <script>
+    const xValues = ["Perceivable", "Operable", "Understandable", "Robust"];
+    const yValues = ["${tallies[0]}", "${tallies[1]}", "${tallies[2]}", "${tallies[3]}"];
+    const barColors = [
+      "#b91d47",
+      "#00aba9",
+      "#2b5797",
+      "#e8c3b9",
+      "#1e7145"
+    ];
+    
+    new Chart("myChart", {
+      type: "pie",
+      data: {
+        labels: xValues,
+        datasets: [{
+          backgroundColor: barColors,
+          data: yValues
+        }]
+      },
+      options: {
+        title: {
+          display: true,
+          text: "Accessibility Checker Report"
+        }
+      }
+    });
+    </script>
+    
+    </body>
+    </html>
   
+  `;
+
+  // Create a webview panel
+  const panel = vscode.window.createWebviewPanel(
+    'dataVisualization',
+    'Data Visualization',
+    vscode.ViewColumn.One,
+    {enableScripts:true}
+  );
+
+  // Set the HTML content
+  panel.webview.html = htmlContent;
+
+}
+
+function getTallies(diagnostics: Diagnostic[]){
+  let tallies: number[] = [0, 0, 0, 0];
+
+  diagnostics.forEach((func) => {
+    if(func.code === 1){
+      tallies[0] += 1;
+    } else if(func.code === 2){
+      tallies[1] += 1;
+    } else if(func.code === 3){
+      tallies[2] += 1;
+    }else if(func.code === 4){  
+      tallies[3] += 1;
+    }
+  });
+  return tallies;
 }
