@@ -196,6 +196,8 @@ function GenerateReport(): void {
   let newDiagnostics: Diagnostic[];
   let names: String[];
   let tallies: number[] = [0, 0, 0, 0];
+  let guidelines: string[] = [];
+  let amount: number[] = [];
 
   if(document){
     newDiagnostics = ParseDocument(document);
@@ -203,17 +205,11 @@ function GenerateReport(): void {
   else{
     newDiagnostics = [];
   }
-
-  tallies = getTallies(newDiagnostics);
-  let total = tallies[0] + tallies[1] + tallies[2] + tallies[3];
-  let perceivable = ((tallies[0] / total) * 360).toFixed();
-  let operable = ((tallies[1] / total) * 360).toFixed();
-  let understandable = ((tallies[2] / total) * 360).toFixed();
-  let robust = ((tallies[3] / total) * 360).toFixed();
-  //console.log(tallies[0], tallies[1], tallies[2], tallies[3]);
-
-
-
+  
+  guidelines = getTallies(newDiagnostics).guidelines;
+  tallies = getTallies(newDiagnostics).tallies;
+  amount = getTallies(newDiagnostics).amount;
+  console.log(amount);
 
   window.showInformationMessage("Generating Report...");
   const htmlContent = `
@@ -223,6 +219,8 @@ function GenerateReport(): void {
     <body>
     
     <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+    <break></break>
+    <canvas id="myChart2" style="width:100%;max-width:1000px"></canvas>
     
     <script>
     const xValues = ["Perceivable", "Operable", "Understandable", "Robust"];
@@ -251,8 +249,39 @@ function GenerateReport(): void {
         }
       }
     });
-    </script>
-    
+
+    const aValues = ${JSON.stringify(guidelines)};
+    const bValues = "${amount}";
+
+    new Chart("myChart2", {
+      type: "horizontalBar",
+      data: {
+        labels: aValues,
+        datasets: [{
+          axis: 'y',
+          backgroundColor: barColors,
+          data: bValues
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        legend: {display: false},
+        title: {
+          display: true,
+          text: "Guideline Report"
+        },
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
+            }
+          ]
+        }
+      }
+    });
+    </script>  
     </body>
     </html>
   
@@ -273,17 +302,33 @@ function GenerateReport(): void {
 
 function getTallies(diagnostics: Diagnostic[]){
   let tallies: number[] = [0, 0, 0, 0];
-
+  let guidelines: string[] = [];
+  let amount: number[] = [];
+  let i = 0;
   diagnostics.forEach((func) => {
-    if(func.code === 1){
-      tallies[0] += 1;
-    } else if(func.code === 2){
-      tallies[1] += 1;
-    } else if(func.code === 3){
-      tallies[2] += 1;
-    }else if(func.code === 4){  
-      tallies[3] += 1;
+    if(func.code){
+      if(func.code.toString().at(0) === "1"){
+        tallies[0] += 1;
+      } else if(func.code.toString().at(0) === "2"){
+        tallies[1] += 1;
+      } else if(func.code.toString().at(0) === "3"){
+        tallies[2] += 1;
+      } else if(func.code.toString().at(0) === "4"){
+        tallies[3] += 1;
+      }
+
+
+      if(guidelines.includes(func.code.toString())){
+        amount[i] += 1;
+        
+      } else{
+        guidelines.push(func.code.toString());
+        console.log(func.code.toString());
+        amount.push(1);
+      }
+      i++;
     }
   });
-  return tallies;
+
+  return {guidelines, tallies, amount};
 }

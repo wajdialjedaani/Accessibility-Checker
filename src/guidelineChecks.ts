@@ -17,7 +17,7 @@ export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "1.1.1",
         message: "Include an alt attribute on every image",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -40,7 +40,7 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "3.1.1",
         message: "Include a lang attribute to provide the page's language.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -66,7 +66,7 @@ export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[
     if (!range) return [];
     return [
       {
-        code: 3,
+        code: "3.1.1",
         message: "Language is not recognized by HTML.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -89,7 +89,7 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "1.3.1",
         message: "Include an href attribute to make text a hyperlink.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -118,7 +118,7 @@ export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.4.4",
         message: "Anchor tags should have associated text.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -148,7 +148,7 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (containsTitle === 0) {
     return [
       {
-        code: 2,
+        code: "2.4.2",
         message: "Include a title for each page.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -177,7 +177,7 @@ export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.4.2",
         message: "Titles should have associated text.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -207,7 +207,7 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (containsCaption === 0) {
     return [
       {
-        code: 2,
+        code: "2.4.6",
         message: "Include a caption for each table.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -229,7 +229,7 @@ export function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
   if ($("h1").length > 1) {
     return [
       {
-        code: 2,
+        code: "2.4.6",
         message: "There should only be one <h1> per page. Consider using <h2>-<h4> instead.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -254,7 +254,7 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
   const errors: Diagnostic[] = [];
   if (!range) return [];
   const genericError = {
-    code: 2,
+    code: "2.4.6",
     message: "Headings are out of order - place more important headings before less important ones.",
     range: range,
     severity: DiagnosticSeverity.Error,
@@ -377,7 +377,7 @@ export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnos
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "2.1.1",
         message: "Video and audio tags should have control attribute for pausing and volume",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -401,7 +401,7 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "1.3.1",
         message: "Buttons should have button type",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -458,6 +458,7 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
         return [];
       return [
         {
+<<<<<<< HEAD
           code: 1,
           message:
             'Always use the <label> tag to define labels for <input type="text">, <input type="checkbox">, <input type="radio">, <input type="file">, and <input type="password">.',
@@ -480,8 +481,20 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
       ];
     }
   }
+=======
+          code: "1.3.1",
+          message: "Always use the <label> tag to define labels for <input type=\"text\">, <input type=\"checkbox\">, <input type=\"radio\">, <input type=\"file\">, and <input type=\"password\">.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+    }
+  }    
+>>>>>>> 0a97f1c (Started working on bar chart)
   return [];
 }
+
 
 export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
   if (
@@ -511,7 +524,7 @@ export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagn
       if (!range) return [];
       return [
         {
-          code: 3,
+          code: "3.2.2",
           message: "Input elements should only have one associated label.",
           range: range,
           severity: DiagnosticSeverity.Error,
@@ -536,8 +549,13 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
+<<<<<<< HEAD
         code: 1,
         message: "Input elements should not have an alt attribute unless it is of type 'image'.",
+=======
+        code: "1.1.1",
+        message: "Input elements should not an alt attribute unless it is of type 'image'.",
+>>>>>>> 0a97f1c (Started working on bar chart)
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -568,7 +586,7 @@ export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "1.3.1",
         message: "Labels should have associated text.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -600,7 +618,7 @@ export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 4,
+        code: "4.1.1",
         message: "IDs must be unique",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -626,7 +644,7 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.1.1",
         message: "onmouseleave is missing onblur attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -653,7 +671,7 @@ export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.1.1",
         message: "onmouseout is missing onblur attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -680,7 +698,7 @@ export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] 
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.1.1",
         message: "onmouseover is missing onfocus attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -704,7 +722,7 @@ export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] 
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.1.1",
         message: "onmousedown is missing onkeydown attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -724,10 +742,31 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
     return [];
 
   let elementID = element.attribs.id;
+<<<<<<< HEAD
   let foundLabel = 0;
   $("label").each((i, e) => {
     if (e.attribs.for === elementID) {
       foundLabel++;
+=======
+    let foundLabel = 0;
+    $('label').each((i, e) => {
+      if(e.attribs.for === elementID){
+        foundLabel++;
+      }
+    });
+    if(!foundLabel){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "1.3.1",
+          message: "Select elements should have an associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+>>>>>>> 0a97f1c (Started working on bar chart)
     }
   });
   if (!foundLabel) {
@@ -756,10 +795,31 @@ export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnosti
     return [];
 
   let elementID = element.attribs.id;
+<<<<<<< HEAD
   let foundLabel = 0;
   $("label").each((i, e) => {
     if (e.attribs.for === elementID) {
       foundLabel++;
+=======
+    let foundLabel = 0;
+    $('label').each((i, e) => {
+      if(e.attribs.for === elementID){
+        foundLabel++;
+      }
+    });
+    if(foundLabel > 1){
+      const range = GetStartTagPosition(element);
+      if(!range) return [];
+      return [
+        {
+          code: "3.3.2",
+          message: "Select elements should only have one associated label.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        }
+      ]
+>>>>>>> 0a97f1c (Started working on bar chart)
     }
   });
   if (foundLabel > 1) {
@@ -854,7 +914,7 @@ export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[]
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "1.3.1",
         message: "Textarea tags should have an associated label",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -886,8 +946,13 @@ export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnos
     if (!range) return [];
     return [
       {
+<<<<<<< HEAD
         code: 3,
         message: "Textarea elements should only have one associated label.",
+=======
+        code: "3.3.2",
+        message: "Elements should only have one associated label.",
+>>>>>>> 0a97f1c (Started working on bar chart)
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -908,7 +973,7 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "2.2.2",
       message: "The <marquee> tag is depreciated, use CSS animation or transform properties instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -931,7 +996,7 @@ export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic
     if (!range) return [];
     return [
       {
-        code: 2,
+        code: "2.2.1",
         message: "Using a meta refresh with a timeout is not considered in line with best accessibility practices.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -949,7 +1014,7 @@ export function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<acronym> tag is depreciated, use <abbr> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -966,7 +1031,7 @@ export function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<applet> tag is depreciated, use <object> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -983,7 +1048,7 @@ export function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[]
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<basefront> tag is depreciated.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1000,7 +1065,7 @@ export function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<big> tag is depreciated, use CSS Styles instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1017,7 +1082,7 @@ export function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "2.2.2",
       message: "<blink> tag is depreciated, consider using CSS Animation instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1034,7 +1099,7 @@ export function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<center> tag is depreciated, use CSS text-align property instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1051,7 +1116,7 @@ export function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<dir> tag is depreciated, use <ul> tag or CSS list-style property instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1068,7 +1133,7 @@ export function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<embed> tag is depreciated, use <object> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1085,7 +1150,7 @@ export function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "1.4.4",
       message: "<font> tag is depreciated, use CSS styles instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1102,7 +1167,7 @@ export function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<frame> tag is depreciated, use <iframe> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1119,7 +1184,7 @@ export function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] 
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<frameset> tag is depreciated.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1136,7 +1201,7 @@ export function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<isindex> tag is depreciated, use <form> tag instead",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1153,7 +1218,7 @@ export function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] 
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<noframes> tag is depreciated.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1170,7 +1235,7 @@ export function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<menu> tag is depreciated, use <ul> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1187,7 +1252,7 @@ export function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[]
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<plaintext> tag is depreciated, use <pre> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1204,7 +1269,7 @@ export function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<s> tag is depreciated, use CSS text-decoration instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1221,7 +1286,7 @@ export function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<strike> tag is depreciated, use <del> tag instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1238,7 +1303,7 @@ export function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<tt> tag is depreciated.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1255,7 +1320,7 @@ export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "<u> tag is depreciated, use CSS text-decoration property instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1272,7 +1337,7 @@ export function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "Consider using the <em> tag instead of <i>, as it provides information for screen readers.",
       range: range,
       severity: DiagnosticSeverity.Warning,
@@ -1289,7 +1354,7 @@ export function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
   if (!range) return [];
   return [
     {
-      code: 2,
+      code: "",
       message: "Consider using the <strong> tag instead of <b>, as it provides information for screen readers.",
       range: range,
       severity: DiagnosticSeverity.Warning,
