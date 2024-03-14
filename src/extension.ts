@@ -194,33 +194,93 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
 function GenerateReport(): void {
   const document = window.activeTextEditor?.document;
   let newDiagnostics: Diagnostic[];
-  let names: String[];
   let tallies: number[] = [0, 0, 0, 0];
   let guidelines: string[] = [];
-  let amount: number[] = [];
+  let amount: string[] = [];
+  let messages: string[] = [];
 
   if(document){
     newDiagnostics = ParseDocument(document);
+    newDiagnostics.sort((one, two) => {
+      if(one && two && one.code !== undefined && two.code !== undefined){
+        return one.code < two.code ? -1 : 1;
+      } else {
+        throw new Error('one or two are undefined or their code is undefined');
+      }
+    })
+
   }
   else{
     newDiagnostics = [];
   }
   
-  guidelines = getTallies(newDiagnostics).guidelines;
-  tallies = getTallies(newDiagnostics).tallies;
-  amount = getTallies(newDiagnostics).amount;
-  console.log(amount);
+  let result = getTallies(newDiagnostics);
+  guidelines = result.guidelines;
+  tallies = result.tallies;
+  amount = result.amntStrg;
+  messages = result.messages;
+
 
   window.showInformationMessage("Generating Report...");
   const htmlContent = `
     <!DOCTYPE html>
     <html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Checker Report</title>
+    <style>
+      .title-container {
+        width: 1000px;
+        text-align: center;
+      }
+
+
+      .chart-container {
+        border: 1px solid;
+        margin-bottom: 20px;
+        padding: 10px;
+        width: 1000px;
+        text-align: center;
+      }
+
+      .chart-container canvas {
+        display: inline-block;
+        margin: 0 auto;
+      }
+
+      .table-container {
+        border: 1px solid;
+        margin-bottom: 20px;
+        padding: 10px;
+        width: 1000px;
+        text-align: center;
+        color: white;
+      }
+
+      .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      .table-container th, .table-container td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <body>
-    
-    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-    <break></break>
-    <canvas id="myChart2" style="width:100%;max-width:1000px"></canvas>
+    <div class="title-container">
+      <h1>Accessibility Checker Report</h1>
+    </div>
+    <div class="chart-container">
+      <canvas id="myChart" style="width:100%;max-width:800px"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="myChart2" style="width:100%;max-width:800px"></canvas>
+    </div>
     
     <script>
     const xValues = ["Perceivable", "Operable", "Understandable", "Robust"];
@@ -230,28 +290,41 @@ function GenerateReport(): void {
       "#00aba9",
       "#2b5797",
       "#e8c3b9",
-      "#1e7145"
+      "#1e7145",
+      "#00bf7d",
+      "#8babf1",
+      "#e6308a",
+      "#89ce00"
     ];
-    
+    Chart.defaults.color = 'white';
+
     new Chart("myChart", {
       type: "pie",
       data: {
         labels: xValues,
+        fontColor: "white",
         datasets: [{
           backgroundColor: barColors,
-          data: yValues
+          data: yValues,
+          fontColor: 'white'
         }]
       },
       options: {
         title: {
           display: true,
-          text: "Accessibility Checker Report"
+          text: "Guideline Category",
+          fontColor: 'white'
+        },
+        legend: {
+          labels: {
+            fontColor: 'white'
+          }
         }
       }
     });
 
     const aValues = ${JSON.stringify(guidelines)};
-    const bValues = "${amount}";
+    const bValues = ${JSON.stringify(amount)};
 
     new Chart("myChart2", {
       type: "horizontalBar",
@@ -260,7 +333,9 @@ function GenerateReport(): void {
         datasets: [{
           axis: 'y',
           backgroundColor: barColors,
-          data: bValues
+          data: bValues,
+          fontColor: '#ffffff',
+          borderColor: 'white'
         }]
       },
       options: {
@@ -268,20 +343,75 @@ function GenerateReport(): void {
         legend: {display: false},
         title: {
           display: true,
-          text: "Guideline Report"
+          text: "Guideline Frequency",
+          fontColor: "#ffffff"
         },
         scales: {
           yAxes: [
             {
               ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                fontColor: 'white'
+              }
+            }
+          ],
+          xAxes: [
+            {
+              ticks: {
+                fontColor: 'white',
               }
             }
           ]
         }
       }
     });
+
     </script>  
+
+    <div class="table-container">
+      <h2>Guideline Codes</h2>
+      <table id="data-table">
+      <thead>
+          <tr>
+              <th>Code</th>
+              <th>Message</th>
+          </tr>
+      </thead>
+      <tbody>
+          <!-- Table rows will be added dynamically by JavaScript -->
+      </tbody>
+      </table>
+    </div>
+
+    <script>
+    // Example arrays for codes and messages
+    var codeArray = ${JSON.stringify(guidelines)};
+    var messageArray = ${JSON.stringify(messages)};
+
+    // Function to fill the table with data from the arrays
+    function fillTable(codeArray, messageArray) {
+        var tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+        
+        // Ensure both arrays are of equal length
+        if (codeArray.length !== messageArray.length) {
+            console.error("Arrays must be of equal length.");
+            return;
+        }
+
+        // Iterate over the arrays and create rows in the table
+        for (var i = 0; i < codeArray.length; i++) {
+            var row = tableBody.insertRow();
+            var codeCell = row.insertCell(0);
+            var messageCell = row.insertCell(1);
+            
+            codeCell.textContent = codeArray[i];
+            messageCell.textContent = messageArray[i];
+        }
+    }
+
+    // Call the function to fill the table with the provided arrays
+    fillTable(codeArray, messageArray);
+    </script>
     </body>
     </html>
   
@@ -302,9 +432,13 @@ function GenerateReport(): void {
 
 function getTallies(diagnostics: Diagnostic[]){
   let tallies: number[] = [0, 0, 0, 0];
+  let guideAmounts: [[string, number]] = [["", 0]]
   let guidelines: string[] = [];
   let amount: number[] = [];
-  let i = 0;
+  let amntStrg: string[] = [];
+  let messages: string[] = [];
+  let storage: string[] = [];
+
   diagnostics.forEach((func) => {
     if(func.code){
       if(func.code.toString().at(0) === "1"){
@@ -316,19 +450,22 @@ function getTallies(diagnostics: Diagnostic[]){
       } else if(func.code.toString().at(0) === "4"){
         tallies[3] += 1;
       }
-
+      
 
       if(guidelines.includes(func.code.toString())){
-        amount[i] += 1;
+        amount[guidelines.indexOf(func.code.toString())] += 1;
+        
         
       } else{
-        guidelines.push(func.code.toString());
-        console.log(func.code.toString());
+        guidelines.push(func.code.toString())
+        messages.push(func.message);
         amount.push(1);
       }
-      i++;
     }
   });
-
-  return {guidelines, tallies, amount};
+  
+  amount.forEach((func) => {
+    amntStrg.push(func.toString());
+  });
+  return {guidelines, tallies, amntStrg, messages};
 }
