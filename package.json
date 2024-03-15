@@ -91,6 +91,9 @@
               "input element, type of 'checkbox', has no text in label.": {
                 "type": "boolean"
               },
+              "input element, type of 'checkbox', missing an associated label.": {
+                "type": "boolean"
+              },
               "button has no text in label": {
                 "type": "boolean"
               },
@@ -121,6 +124,7 @@
               "input element, type of 'password', has no text in label.": true,
               "select element missing an associated label.": true,
               "input element, type of 'checkbox', has no text in label.": true,
+              "input element, type of 'checkbox', missing an associated label.": true,
               "button has no text in label.": true,
               "Include a caption for each table.": true,
               "Buttons should have button type": true,
@@ -237,6 +241,9 @@
               "Header nesting - header following h4 is incorrect.": {
                 "type": "boolean"
               },
+              "Header nesting - header following h5 is incorrect.": {
+                "type": "boolean"
+              },
               "Include an href attribute to make text a hyperlink": {
                 "type": "boolean"
               },
@@ -253,6 +260,7 @@
               "Header nesting - header following h2 is incorrect.": true,
               "Header nesting - header following h3 is incorrect.": true,
               "Header nesting - header following h4 is incorrect.": true,
+              "Header nesting - header following h5 is incorrect.": true,
               "Include an href attribute to make text a hyperlink": true,
               "There should only be one <h1> per page": true
             }

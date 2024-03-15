@@ -55,10 +55,7 @@ export class Configuration {
     );
   }
 
-  get(section?: string): vscode.WorkspaceConfiguration | any {
-    if (section) {
-      return this.#config.get(section);
-    }
+  get(section?: string): ConfigType {
     return this.#config;
   }
 }
@@ -82,6 +79,7 @@ export const ConfigSchema = z.object({
       "Header nesting - header following h2 is incorrect.": z.boolean(),
       "Header nesting - header following h3 is incorrect.": z.boolean(),
       "Header nesting - header following h4 is incorrect.": z.boolean(),
+      "Header nesting - header following h5 is incorrect.": z.boolean(),
       "Include an href attribute to make text a hyperlink": z.boolean(),
       "There should only be one <h1> per page": z.boolean(),
       "title element is empty": z.boolean(),
@@ -108,6 +106,7 @@ export const ConfigSchema = z.object({
       "Buttons should have button type": z.boolean(),
       "Include a caption for each table.": z.boolean(),
       "input element, type of 'checkbox', has no text in label.": z.boolean(),
+      "input element, type of 'checkbox', missing an associated label.": z.boolean(),
       "input element, type of 'file', has no text in label.": z.boolean(),
       "input element, type of 'file', missing an associated label.": z.boolean(),
       "input element, type of 'password', has no text in label.": z.boolean(),

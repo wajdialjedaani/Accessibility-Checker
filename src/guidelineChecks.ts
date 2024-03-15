@@ -192,7 +192,7 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for captions for table
   if (
     element.name !== "table" ||
-    !Configuration.GetInstance().get()["perceivacle"]["adaptable"]["Include a caption for each table."]
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Include a caption for each table."]
   )
     return [];
   let containsCaption = 0;
@@ -719,7 +719,7 @@ export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] 
 export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "select" ||
-    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["select element missing an associated label"]
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["select element missing an associated label."]
   )
     return [];
 
