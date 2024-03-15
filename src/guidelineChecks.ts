@@ -432,8 +432,8 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
     });
     if (!foundLabel) {
       const range = GetStartTagPosition(element);
-      if (!range) return [];
       if (
+        !range ||
         (element.attribs.type === "text" &&
           !Configuration.GetInstance().get()["perceivable"]["adaptable"][
             "input element, type of 'text', missing an associated label."
@@ -524,9 +524,13 @@ export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagn
 }
 
 export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "input") return [];
-  if (!element.attribs.type) return [];
-  if (element.attribs.type === "image") return [];
+  if (
+    element.name !== "input" ||
+    !element.attribs.type ||
+    element.attribs.type === "image" ||
+    !Configuration.GetInstance().get()["perceivable"]["textAlternatives"]["input element has alt attribute"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
   if (element.attribs.alt) {
     if (!range) return [];
@@ -544,8 +548,13 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
+//TODO: Remove extra configuration properties for 'no text' in each of the input types
 export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "label") return [];
+  if (
+    element.name !== "label" ||
+    !Configuration.GetInstance().get()["understandable"]["inputAssistance"]["label text is empty"]
+  )
+    return [];
   let foundText = false;
   $(element)
     .contents()
@@ -571,8 +580,12 @@ export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
-  if (!element.attribs) return [];
-  if (!element.attribs.id) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.id ||
+    !Configuration.GetInstance().get()["robust"]["compatible"]["id attribute is not unique"]
+  )
+    return [];
 
   let ID = element.attribs.id;
   let foundID = 0;
@@ -599,8 +612,14 @@ export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[] {
-  if (!element.attribs) return [];
-  if (!element.attribs.onmouseleave) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.onmouseleave ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"][
+      "script not keyboard accessible - onmouse missing onblur"
+    ]
+  )
+    return [];
 
   if (!element.attribs.onblur) {
     const range = GetStartTagPosition(element);
@@ -620,8 +639,14 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
 }
 
 export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
-  if (!element.attribs) return [];
-  if (!element.attribs.onmouseout) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.onmouseout ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"][
+      "script not keyboard accessible - onmouse missing onblur"
+    ]
+  )
+    return [];
 
   if (!element.attribs.onblur) {
     const range = GetStartTagPosition(element);
@@ -639,9 +664,16 @@ export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
 
   return [];
 }
+
 export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
-  if (!element.attribs) return [];
-  if (!element.attribs.onmouseover) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.onmouseover ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"][
+      "onmouseover event handler missing onfocus event handler"
+    ]
+  )
+    return [];
 
   if (!element.attribs.onfocus) {
     const range = GetStartTagPosition(element);
@@ -660,8 +692,12 @@ export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] 
 }
 
 export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] {
-  if (!element.attribs) return [];
-  if (!element.attribs.onmousedown) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.onmousedown ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"]["onmousedown event missing onkeydown event"]
+  )
+    return [];
 
   if (!element.attribs.onkeydown) {
     const range = GetStartTagPosition(element);
@@ -681,7 +717,11 @@ export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] 
 }
 
 export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "select") return [];
+  if (
+    element.name !== "select" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["select element missing an associated label"]
+  )
+    return [];
 
   let elementID = element.attribs.id;
   let foundLabel = 0;
@@ -707,7 +747,13 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "select") return [];
+  if (
+    element.name !== "select" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+      "Select elements should only have one associated label"
+    ]
+  )
+    return [];
 
   let elementID = element.attribs.id;
   let foundLabel = 0;
@@ -790,7 +836,11 @@ export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
 */
 
 export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "textarea") return [];
+  if (
+    element.name !== "textarea" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["textarea element missing an associated label."]
+  )
+    return [];
 
   let elementID = element.attribs.id;
   let foundLabel = 0;
@@ -816,7 +866,13 @@ export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[]
 }
 
 export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "textarea") return [];
+  if (
+    element.name !== "textarea" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+      "Textarea elements should only have one associated label"
+    ]
+  )
+    return [];
 
   let elementID = element.attribs.id;
   let foundLabel = 0;
@@ -831,7 +887,7 @@ export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnos
     return [
       {
         code: "",
-        message: "Elements should only have one associated label.",
+        message: "Textarea elements should only have one associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -843,7 +899,11 @@ export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnos
 }
 
 export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "marquee") return [];
+  if (
+    element.name !== "marquee" ||
+    !Configuration.GetInstance().get()["operable"]["enoughTime"]["Marquee element used"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -860,7 +920,11 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
 }
 
 export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "meta") return [];
+  if (
+    element.name !== "meta" ||
+    !Configuration.GetInstance().get()["operable"]["enoughTime"]["Meta refresh with a time-out is used"]
+  )
+    return [];
   if (!element.attribs["http-equiv"]) return [];
   if (element.attribs["http-equiv"] == "refresh") {
     const range = GetStartTagPosition(element);

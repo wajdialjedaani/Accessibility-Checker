@@ -99,6 +99,12 @@
               },
               "Buttons should have button type": {
                 "type": "boolean"
+              },
+              "Select elements should only have one associated label": {
+                "type": "boolean"
+              },
+              "Textarea elements should only have one associated label": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
@@ -117,7 +123,9 @@
               "input element, type of 'checkbox', has no text in label.": true,
               "button has no text in label.": true,
               "Include a caption for each table.": true,
-              "Buttons should have button type": true
+              "Buttons should have button type": true,
+              "Select elements should only have one associated label": true,
+              "Textarea elements should only have one associated label": true
             }
           },
           "accessibilityChecker.perceivable.distinguishable": {
@@ -167,6 +175,12 @@
               "onmouseover event handler missing onfocus event handler": {
                 "type": "boolean"
               },
+              "script not keyboard accessible - onmouseout missing onblur": {
+                "type": "boolean"
+              },
+              "onmousedown event missing onkeydown event": {
+                "type": "boolean"
+              },
               "script not keyboard accessible - onmouse missing onblur": {
                 "type": "boolean"
               }
@@ -174,6 +188,8 @@
             "additionalProperties": false,
             "default": {
               "onmouseover event handler missing onfocus event handler": true,
+              "script not keyboard accessible - onmouseout missing onblur": true,
+              "onmousedown event missing onkeydown event": true,
               "script not keyboard accessible - onmouse missing onblur": true
             }
           },
@@ -182,12 +198,16 @@
             "order": 2,
             "description": "Enable and disable specific guidelines.",
             "properties": {
+              "Meta refresh with a time-out is used": {
+                "type": "boolean"
+              },
               "Marquee element used": {
                 "type": "boolean"
               }
             },
             "additionalProperties": false,
             "default": {
+              "Meta refresh with a time-out is used": true,
               "Marquee element used": true
             }
           },
@@ -328,6 +348,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "iso-language-codes": "^2.0.0"
+    "iso-language-codes": "^2.0.0",
+    "zod": "^3.22.4"
   }
 }

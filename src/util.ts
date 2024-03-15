@@ -1,5 +1,6 @@
 import { AnyNode, Element } from "cheerio";
 import * as vscode from "vscode";
+import z from "zod";
 
 export function isElement(node: AnyNode): node is Element {
   return node.nodeType === NodeType.ELEMENT_NODE;
@@ -16,7 +17,7 @@ export enum NodeType {
 //Singleton class that allows for synchronized settings across the project with auto-updating
 export class Configuration {
   static #_instance: any;
-  #config!: vscode.WorkspaceConfiguration;
+  #config!: ConfigType;
 
   constructor(context?: vscode.ExtensionContext) {
     if (!Configuration.#_instance) {
@@ -39,14 +40,16 @@ export class Configuration {
 
   //Called once upon creation of first instance
   initialize(context: vscode.ExtensionContext) {
-    this.#config = vscode.workspace.getConfiguration("accessibilityChecker");
+    const config = vscode.workspace.getConfiguration("accessibilityChecker");
+    this.#config = ConfigSchema.parse(config);
     if (!this.#config) {
       throw new Error("Error retrieving config");
     }
     context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((event) => {
         if (event.affectsConfiguration("accessibilityChecker")) {
-          this.#config = vscode.workspace.getConfiguration("accessibilityChecker");
+          const config = vscode.workspace.getConfiguration("accessibilityChecker");
+          this.#config = ConfigSchema.parse(config);
         }
       })
     );
@@ -59,3 +62,81 @@ export class Configuration {
     return this.#config;
   }
 }
+
+export const ConfigSchema = z.object({
+  operable: z.object({
+    enoughTime: z.object({
+      "Marquee element used": z.boolean(),
+      "Meta refresh with a time-out is used": z.boolean(),
+    }),
+    keyboardAccessible: z.object({
+      "onmousedown event missing onkeydown event": z.boolean(),
+      "onmouseover event handler missing onfocus event handler": z.boolean(),
+      "script not keyboard accessible - onmouse missing onblur": z.boolean(),
+      "script not keyboard accessible - onmouseout missing onblur": z.boolean(),
+    }),
+    navigable: z.object({
+      "Anchor contains no text.": z.boolean(),
+      "Document missing title element": z.boolean(),
+      "Header nesting - header following h1 is incorrect.": z.boolean(),
+      "Header nesting - header following h2 is incorrect.": z.boolean(),
+      "Header nesting - header following h3 is incorrect.": z.boolean(),
+      "Header nesting - header following h4 is incorrect.": z.boolean(),
+      "Include an href attribute to make text a hyperlink": z.boolean(),
+      "There should only be one <h1> per page": z.boolean(),
+      "title element is empty": z.boolean(),
+    }),
+  }),
+  understandable: z.object({
+    inputAssistance: z.object({
+      "input element has more than one associated label": z.boolean(),
+      "label text is empty": z.boolean(),
+    }),
+    readable: z.object({
+      "document has invalid language code": z.boolean(),
+      "document language not identified": z.boolean(),
+    }),
+  }),
+  robust: z.object({
+    compatible: z.object({
+      "id attribute is not unique": z.boolean(),
+    }),
+  }),
+  perceivable: z.object({
+    adaptable: z.object({
+      "button has no text in label.": z.boolean(),
+      "Buttons should have button type": z.boolean(),
+      "Include a caption for each table.": z.boolean(),
+      "input element, type of 'checkbox', has no text in label.": z.boolean(),
+      "input element, type of 'file', has no text in label.": z.boolean(),
+      "input element, type of 'file', missing an associated label.": z.boolean(),
+      "input element, type of 'password', has no text in label.": z.boolean(),
+      "input element, type of 'password', missing an associated label.": z.boolean(),
+      "input element, type of 'radio', has no text in label.": z.boolean(),
+      "input element, type of 'radio', missing an associated label.": z.boolean(),
+      "input element, type of 'text', missing an associated label.": z.boolean(),
+      "input element, type of 'text', has no text in label.": z.boolean(),
+      "Label text is empty for select statement.": z.boolean(),
+      "select element missing an associated label.": z.boolean(),
+      "Select elements should only have one associated label": z.boolean(),
+      "textarea element missing an associated label.": z.boolean(),
+      "Textarea elements should only have one associated label": z.boolean(),
+    }),
+    distinguishable: z.object({
+      "b (bold) element used": z.boolean(),
+      "bold element used": z.boolean(),
+      "font used.": z.boolean(),
+      "i (italic) element used": z.boolean(),
+      "italic element used": z.boolean(),
+      "Video and audio tags should have control attribute for pausing and volume": z.boolean(),
+    }),
+    textAlternatives: z.object({
+      "Image used as anchor is missing valid Alt text.": z.boolean(),
+      "img element missing alt attribute": z.boolean(),
+      "input element has alt attribute": z.boolean(),
+    }),
+  }),
+  get: z.function(),
+});
+
+export type ConfigType = z.infer<typeof ConfigSchema>;

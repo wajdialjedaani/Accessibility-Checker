@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as cheerio from "cheerio";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
-import { isElement, Configuration } from "./util";
+import { isElement, Configuration, ConfigSchema } from "./util";
 import {
   CheckHTMLTags,
   CheckLangRecognize,
