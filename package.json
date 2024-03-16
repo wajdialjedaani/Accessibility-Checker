@@ -23,6 +23,310 @@
         "command": "accessibility-checker.generateReport",
         "title": "Generate Report"
       }
+    ],
+    "configuration": [
+      {
+        "title": "Perceivable",
+        "properties": {
+          "accessibilityChecker.perceivable.textAlternatives": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "Image used as anchor is missing valid Alt text.": {
+                "type": "boolean"
+              },
+              "img element missing alt attribute": {
+                "type": "boolean"
+              },
+              "input element has alt attribute": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "Image used as anchor is missing valid Alt text.": true,
+              "img element missing alt attribute": true,
+              "input element has alt attribute": true
+            }
+          },
+          "accessibilityChecker.perceivable.adaptable": {
+            "type": "object",
+            "order": 2,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "input element, type of 'text', has no text in label.": {
+                "type": "boolean"
+              },
+              "input element, type of 'text', missing an associated label.": {
+                "type": "boolean"
+              },
+              "input element, type of 'password', missing an associated label.": {
+                "type": "boolean"
+              },
+              "input element, type of 'radio', missing an associated label": {
+                "type": "boolean"
+              },
+              "input element, type of 'radio', has no text in label": {
+                "type": "boolean"
+              },
+              "textarea element missing an associated label.": {
+                "type": "boolean"
+              },
+              "Label text is empty for select statement.": {
+                "type": "boolean"
+              },
+              "input element, type of 'file', has no text in label": {
+                "type": "boolean"
+              },
+              "input element, type of 'file', missing an associated label.": {
+                "type": "boolean"
+              },
+              "input element, type of 'password', has no text in label.": {
+                "type": "boolean"
+              },
+              "select element missing an associated label": {
+                "type": "boolean"
+              },
+              "input element, type of 'checkbox', has no text in label.": {
+                "type": "boolean"
+              },
+              "input element, type of 'checkbox', missing an associated label.": {
+                "type": "boolean"
+              },
+              "button has no text in label": {
+                "type": "boolean"
+              },
+              "Include a caption for each table.": {
+                "type": "boolean"
+              },
+              "Buttons should have button type": {
+                "type": "boolean"
+              },
+              "Select elements should only have one associated label": {
+                "type": "boolean"
+              },
+              "Textarea elements should only have one associated label": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "input element, type of 'text', has no text in label.": true,
+              "input element, type of 'text', missing an associated label.": true,
+              "input element, type of 'password', missing an associated label.": true,
+              "input element, type of 'radio', missing an associated label.": true,
+              "input element, type of 'radio', has no text in label.": true,
+              "textarea element missing an associated label.": true,
+              "Label text is empty for select statement.": true,
+              "input element, type of 'file', has no text in label.": true,
+              "input element, type of 'file', missing an associated label.": true,
+              "input element, type of 'password', has no text in label.": true,
+              "select element missing an associated label.": true,
+              "input element, type of 'checkbox', has no text in label.": true,
+              "input element, type of 'checkbox', missing an associated label.": true,
+              "button has no text in label.": true,
+              "Include a caption for each table.": true,
+              "Buttons should have button type": true,
+              "Select elements should only have one associated label": true,
+              "Textarea elements should only have one associated label": true
+            }
+          },
+          "accessibilityChecker.perceivable.distinguishable": {
+            "type": "object",
+            "order": 3,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "font used": {
+                "type": "boolean"
+              },
+              "i (italic) element used": {
+                "type": "boolean"
+              },
+              "b (bold) element used": {
+                "type": "boolean"
+              },
+              "bold element used": {
+                "type": "boolean"
+              },
+              "italic element used": {
+                "type": "boolean"
+              },
+              "Video and audio tags should have control attribute for pausing and volume": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "font used.": true,
+              "i (italic) element used": true,
+              "b (bold) element used": true,
+              "bold element used": true,
+              "italic element used": true,
+              "Video and audio tags should have control attribute for pausing and volume": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Operable",
+        "properties": {
+          "accessibilityChecker.operable.keyboardAccessible": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "onmouseover event handler missing onfocus event handler": {
+                "type": "boolean"
+              },
+              "script not keyboard accessible - onmouseout missing onblur": {
+                "type": "boolean"
+              },
+              "onmousedown event missing onkeydown event": {
+                "type": "boolean"
+              },
+              "script not keyboard accessible - onmouse missing onblur": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "onmouseover event handler missing onfocus event handler": true,
+              "script not keyboard accessible - onmouseout missing onblur": true,
+              "onmousedown event missing onkeydown event": true,
+              "script not keyboard accessible - onmouse missing onblur": true
+            }
+          },
+          "accessibilityChecker.operable.enoughTime": {
+            "type": "object",
+            "order": 2,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "Meta refresh with a time-out is used": {
+                "type": "boolean"
+              },
+              "Marquee element used": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "Meta refresh with a time-out is used": true,
+              "Marquee element used": true
+            }
+          },
+          "accessibilityChecker.operable.navigable": {
+            "type": "object",
+            "order": 3,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "title element is empty": {
+                "type": "boolean"
+              },
+              "Document missing title element": {
+                "type": "boolean"
+              },
+              "Anchor contains no text.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h1 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h2 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h3 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h4 is incorrect.": {
+                "type": "boolean"
+              },
+              "Header nesting - header following h5 is incorrect.": {
+                "type": "boolean"
+              },
+              "Include an href attribute to make text a hyperlink": {
+                "type": "boolean"
+              },
+              "There should only be one <h1> per page": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "title element is empty": true,
+              "Document missing title element": true,
+              "Anchor contains no text.": true,
+              "Header nesting - header following h1 is incorrect.": true,
+              "Header nesting - header following h2 is incorrect.": true,
+              "Header nesting - header following h3 is incorrect.": true,
+              "Header nesting - header following h4 is incorrect.": true,
+              "Header nesting - header following h5 is incorrect.": true,
+              "Include an href attribute to make text a hyperlink": true,
+              "There should only be one <h1> per page": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Understandable",
+        "properties": {
+          "accessibilityChecker.understandable.readable": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "document language not identified": {
+                "type": "boolean"
+              },
+              "document has invalid language code": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "document language not identified": true,
+              "document has invalid language code": true
+            }
+          },
+          "accessibilityChecker.understandable.inputAssistance": {
+            "type": "object",
+            "order": 2,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "label text is empty": {
+                "type": "boolean"
+              },
+              "input element has more than one associated label": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "label text is empty": true,
+              "input element has more than one associated label": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Robust",
+        "properties": {
+          "accessibilityChecker.robust.compatible": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "id attribute is not unique": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "id attribute is not unique": true
+            }
+          }
+        }
+      }
     ]
   },
   "scripts": {
@@ -52,6 +356,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "iso-language-codes": "^2.0.0"
+    "iso-language-codes": "^2.0.0",
+    "zod": "^3.22.4"
   }
 }

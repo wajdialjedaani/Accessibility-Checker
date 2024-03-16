@@ -1,12 +1,16 @@
-import { Cheerio, CheerioAPI, Element, AnyNode } from "cheerio";
-import * as cheerio from "cheerio";
+import { CheerioAPI, Element } from "cheerio";
 import { Diagnostic, DiagnosticSeverity, Position, Range } from "vscode";
-import { isElement } from "./util";
-import { isText } from "domhandler";
-import {by639_1} from "iso-language-codes";
+import { Configuration } from "./util";
+import { by639_1 } from "iso-language-codes";
 
 export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "img") return [];
+  if (
+    element.name !== "img" ||
+    !Configuration.GetInstance().get()["perceivable"]["textAlternatives"][
+      "Image used as anchor is missing valid Alt text."
+    ]
+  )
+    return [];
   //Check for an alt attribute on each img
   if (!element.attribs.alt) {
     const range = GetStartTagPosition(element);
@@ -25,7 +29,11 @@ export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "html") return [];
+  if (
+    element.name !== "html" ||
+    !Configuration.GetInstance().get()["understandable"]["readable"]["document language not identified"]
+  )
+    return [];
   //Check for lang attribute when using html tag
   if (!element.attribs.lang) {
     const range = GetStartTagPosition(element);
@@ -41,16 +49,19 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
     ];
   }
 
-return [];
+  return [];
 }
 
 export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "html") return [];
+  if (
+    element.name !== "html" ||
+    !Configuration.GetInstance().get()["understandable"]["readable"]["document has invalid language code"]
+  )
+    return [];
   //Check for lang attribute when using html tag
-  if(!element.attribs.lang) return [];
+  if (!element.attribs.lang) return [];
 
-  if(!(Object.keys(by639_1).includes(element.attribs.lang.toString()))){
-
+  if (!Object.keys(by639_1).includes(element.attribs.lang.toString())) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
     return [
@@ -63,12 +74,16 @@ export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[
       },
     ];
   }
-return [];
+  return [];
 }
 
 export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
-  if (element.name !== "a") return [];
+  if (
+    element.name !== "a" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["Include an href attribute to make text a hyperlink"]
+  )
+    return [];
   if (!element.attribs.href) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -87,14 +102,17 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
-  if (element.name !== "a") return [];
-  
+  if (element.name !== "a" || !Configuration.GetInstance().get()["operable"]["navigable"]["Anchor contains no text."])
+    return [];
+
   let foundText = false;
-  $(element).contents().each((i,e) => {
-    if(e.type === 'text'){
-      foundText = true;
-    }
-  });
+  $(element)
+    .contents()
+    .each((i, e) => {
+      if (e.type === "text") {
+        foundText = true;
+      }
+    });
   if (!foundText) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
@@ -113,7 +131,11 @@ export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
 
 export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for title tag when using head tag
-  if (element.name !== "head") return [];
+  if (
+    element.name !== "head" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["Document missing title element"]
+  )
+    return [];
   let containsTitle = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -139,17 +161,20 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'title') return [];
+  if (element.name !== "title" || !Configuration.GetInstance().get()["operable"]["navigable"]["title element is empty"])
+    return [];
 
   let foundText = false;
-  $(element).contents().each((i,e) => {
-    if(e.type === 'text'){
-      foundText = true;
-    }
-  });
-  if(!foundText){
+  $(element)
+    .contents()
+    .each((i, e) => {
+      if (e.type === "text") {
+        foundText = true;
+      }
+    });
+  if (!foundText) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -157,15 +182,19 @@ export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
   return [];
 }
 
 export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for captions for table
-  if (element.name !== "table") return [];
+  if (
+    element.name !== "table" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Include a caption for each table."]
+  )
+    return [];
   let containsCaption = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -190,7 +219,11 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 export function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "h1") return [];
+  if (
+    element.name !== "h1" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["There should only be one <h1> per page"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   if ($("h1").length > 1) {
@@ -227,7 +260,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
     severity: DiagnosticSeverity.Error,
     source: "Accessibility Checker",
   };
-  if (element.name === "h1") {
+  if (
+    element.name === "h1" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h1 is incorrect."]
+  ) {
     $("h2").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -254,7 +290,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h2") {
+  if (
+    element.name === "h2" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h2 is incorrect."]
+  ) {
     $("h3").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -276,7 +315,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h3") {
+  if (
+    element.name === "h3" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h3 is incorrect."]
+  ) {
     $("h4").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -293,7 +335,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h4") {
+  if (
+    element.name === "h4" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h4 is incorrect."]
+  ) {
     $("h5").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -305,7 +350,10 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
       }
     });
   }
-  if (element.name === "h5") {
+  if (
+    element.name === "h5" &&
+    Configuration.GetInstance().get()["operable"]["navigable"]["Header nesting - header following h5 is incorrect."]
+  ) {
     $("h6").each((i, el) => {
       if (IsTagOutOfOrder(el, range)) {
         errors.push(genericError);
@@ -315,11 +363,18 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
   return errors;
 }
 
+//TODO: Controls only necessary if autoplay is enabled
 export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== "video" && element.name !== "audio") return [];
-  if(element.attribs.controls === undefined){
+  if (
+    (element.name !== "video" && element.name !== "audio") ||
+    !Configuration.GetInstance().get()["perceivable"]["distinguishable"][
+      "Video and audio tags should have control attribute for pausing and volume"
+    ]
+  )
+    return [];
+  if (element.attribs.controls === undefined) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -333,11 +388,17 @@ export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnos
   return [];
 }
 
+//TODO: Point of guideline is not for buttons to have type="button", but for buttons to always have a
+//type of some kind set
 export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'button') return [];
-  if(element.attribs.type !== 'button'){
+  if (
+    element.name !== "button" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Buttons should have button type"]
+  )
+    return [];
+  if (element.attribs.type !== "button") {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -345,43 +406,69 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
   return [];
 }
 
+//TODO: Add settings for multiple labels. Currently only have settings for missing labels
 export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'input') return [];
-  if(element.attribs.type === 'text' || 
-    element.attribs.type === 'password' || 
-    element.attribs.type === 'radio' ||
-    element.attribs.type === 'checkbox' ||
-    element.attribs.type === 'file'){
-    
+  if (element.name !== "input") return [];
+
+  if (
+    element.attribs.type === "text" ||
+    element.attribs.type === "password" ||
+    element.attribs.type === "radio" ||
+    element.attribs.type === "checkbox" ||
+    element.attribs.type === "file"
+  ) {
     let elementID = element.attribs.id;
     let foundLabel = 0;
-    $('label').each((i, e) => {
-      if(e.attribs.for === elementID){
+    $("label").each((i, e) => {
+      if (e.attribs.for === elementID) {
         foundLabel++;
       }
     });
-    if(!foundLabel){
+    if (!foundLabel) {
       const range = GetStartTagPosition(element);
-      if(!range) return [];
+      if (
+        !range ||
+        (element.attribs.type === "text" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'text', missing an associated label."
+          ]) ||
+        (element.attribs.type === "password" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'password', missing an associated label."
+          ]) ||
+        (element.attribs.type === "radio" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'radio', missing an associated label."
+          ]) ||
+        (element.attribs.type === "checkbox" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'checkbox', missing an associated label."
+          ]) ||
+        (element.attribs.type === "file" &&
+          !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+            "input element, type of 'file', missing an associated label."
+          ])
+      )
+        return [];
       return [
         {
           code: "",
-          message: "Always use the <label> tag to define labels for <input type=\"text\">, <input type=\"checkbox\">, <input type=\"radio\">, <input type=\"file\">, and <input type=\"password\">.",
+          message:
+            'Always use the <label> tag to define labels for <input type="text">, <input type="checkbox">, <input type="radio">, <input type="file">, and <input type="password">.',
           range: range,
           severity: DiagnosticSeverity.Error,
           source: "Accessibility Checker",
-        }
-      ]
-    }
-    else if(foundLabel > 1){
+        },
+      ];
+    } else if (foundLabel > 1) {
       const range = GetStartTagPosition(element);
-      if(!range) return [];
+      if (!range) return [];
       return [
         {
           code: "",
@@ -389,33 +476,39 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
           range: range,
           severity: DiagnosticSeverity.Error,
           source: "Accessibility Checker",
-        }
-      ]
+        },
+      ];
     }
   }
   return [];
 }
 
 export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'input') return [];
-  if(element.attribs.type === 'text' || 
-    element.attribs.type === 'password' || 
-    element.attribs.type === 'radio' ||
-    element.attribs.type === 'checkbox' ||
-    element.attribs.type === 'file'){
-    
+  if (
+    element.name !== "input" ||
+    !Configuration.GetInstance().get()["understandable"]["inputAssistance"][
+      "input element has more than one associated label"
+    ]
+  )
+    return [];
+  if (
+    element.attribs.type === "text" ||
+    element.attribs.type === "password" ||
+    element.attribs.type === "radio" ||
+    element.attribs.type === "checkbox" ||
+    element.attribs.type === "file"
+  ) {
     let elementID = element.attribs.id;
     let foundLabel = 0;
-    $('label').each((i, e) => {
-      if(e.attribs.for === elementID){
+    $("label").each((i, e) => {
+      if (e.attribs.for === elementID) {
         foundLabel++;
       }
     });
-    if(!foundLabel) return [];
-
-    else if(foundLabel > 1){
+    if (!foundLabel) return [];
+    else if (foundLabel > 1) {
       const range = GetStartTagPosition(element);
-      if(!range) return [];
+      if (!range) return [];
       return [
         {
           code: "",
@@ -423,45 +516,56 @@ export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagn
           range: range,
           severity: DiagnosticSeverity.Error,
           source: "Accessibility Checker",
-        }
-      ]
+        },
+      ];
     }
   }
   return [];
 }
 
 export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== "input") return [];
-  if(!element.attribs.type) return [];
-  if(element.attribs.type === 'image') return [];
+  if (
+    element.name !== "input" ||
+    !element.attribs.type ||
+    element.attribs.type === "image" ||
+    !Configuration.GetInstance().get()["perceivable"]["textAlternatives"]["input element has alt attribute"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
-  if(element.attribs.alt){
-    if(!range) return [];
+  if (element.attribs.alt) {
+    if (!range) return [];
     return [
       {
         code: "",
-        message: "Input elements should not an alt attribute unless it is of time 'image'.",
+        message: "Input elements should not have an alt attribute unless it is of type 'image'.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
 
   return [];
 }
 
+//TODO: Remove extra configuration properties for 'no text' in each of the input types
 export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'label') return [];
+  if (
+    element.name !== "label" ||
+    !Configuration.GetInstance().get()["understandable"]["inputAssistance"]["label text is empty"]
+  )
+    return [];
   let foundText = false;
-  $(element).contents().each((i,e) => {
-    if(e.type === 'text'){
-      foundText = true;
-    }
-  });
-  if(!foundText){
+  $(element)
+    .contents()
+    .each((i, e) => {
+      if (e.type === "text") {
+        foundText = true;
+      }
+    });
+  if (!foundText) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -469,27 +573,31 @@ export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
   return [];
 }
 
 export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
-  if(!element.attribs) return [];
-  if(!element.attribs.id) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.id ||
+    !Configuration.GetInstance().get()["robust"]["compatible"]["id attribute is not unique"]
+  )
+    return [];
 
   let ID = element.attribs.id;
   let foundID = 0;
-  $('[id]').each((i, e) => {
-    if(e.attribs.id === ID){
+  $("[id]").each((i, e) => {
+    if (e.attribs.id === ID) {
       foundID++;
     }
   });
 
-  if(foundID > 1){
+  if (foundID > 1) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -497,19 +605,25 @@ export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
-  } 
+      },
+    ];
+  }
   return [];
 }
 
 export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[] {
-  if(!element.attribs) return [];
-  if(!element.attribs.onmouseleave) return [];
-  
-  if(!element.attribs.onblur) {
+  if (
+    !element.attribs ||
+    !element.attribs.onmouseleave ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"][
+      "script not keyboard accessible - onmouse missing onblur"
+    ]
+  )
+    return [];
+
+  if (!element.attribs.onblur) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -517,20 +631,26 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
-  
+
   return [];
 }
 
 export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
-  if(!element.attribs) return [];
-  if(!element.attribs.onmouseout) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.onmouseout ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"][
+      "script not keyboard accessible - onmouse missing onblur"
+    ]
+  )
+    return [];
 
-  if(!element.attribs.onblur) {
+  if (!element.attribs.onblur) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -538,19 +658,26 @@ export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
-  
+
   return [];
 }
-export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
-  if(!element.attribs) return [];
-  if(!element.attribs.onmouseover) return [];
 
-  if(!element.attribs.onfocus) {
+export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
+  if (
+    !element.attribs ||
+    !element.attribs.onmouseover ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"][
+      "onmouseover event handler missing onfocus event handler"
+    ]
+  )
+    return [];
+
+  if (!element.attribs.onfocus) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -558,19 +685,23 @@ export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] 
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
   return [];
 }
 
 export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] {
-  if(!element.attribs) return [];
-  if(!element.attribs.onmousedown) return [];
+  if (
+    !element.attribs ||
+    !element.attribs.onmousedown ||
+    !Configuration.GetInstance().get()["operable"]["keyboardAccessible"]["onmousedown event missing onkeydown event"]
+  )
+    return [];
 
-  if(!element.attribs.onkeydown) {
+  if (!element.attribs.onkeydown) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -578,62 +709,72 @@ export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] 
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
-  
+
   return [];
 }
 
 export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'select') return [];
+  if (
+    element.name !== "select" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["select element missing an associated label."]
+  )
+    return [];
 
   let elementID = element.attribs.id;
-    let foundLabel = 0;
-    $('label').each((i, e) => {
-      if(e.attribs.for === elementID){
-        foundLabel++;
-      }
-    });
-    if(!foundLabel){
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "",
-          message: "Select elements should have an associated label.",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
+  let foundLabel = 0;
+  $("label").each((i, e) => {
+    if (e.attribs.for === elementID) {
+      foundLabel++;
     }
+  });
+  if (!foundLabel) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "",
+        message: "Select elements should have an associated label.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
   return [];
 }
 
 export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'select') return [];
+  if (
+    element.name !== "select" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+      "Select elements should only have one associated label"
+    ]
+  )
+    return [];
 
   let elementID = element.attribs.id;
-    let foundLabel = 0;
-    $('label').each((i, e) => {
-      if(e.attribs.for === elementID){
-        foundLabel++;
-      }
-    });
-    if(foundLabel > 1){
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "",
-          message: "Select elements should only have one associated label.",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
+  let foundLabel = 0;
+  $("label").each((i, e) => {
+    if (e.attribs.for === elementID) {
+      foundLabel++;
     }
+  });
+  if (foundLabel > 1) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "",
+        message: "Select elements should only have one associated label.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
   return [];
 }
 
@@ -695,18 +836,22 @@ export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
 */
 
 export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'textarea') return [];
+  if (
+    element.name !== "textarea" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["textarea element missing an associated label."]
+  )
+    return [];
 
   let elementID = element.attribs.id;
   let foundLabel = 0;
-  $('label').each((i, e) => {
-    if(e.attribs.for === elementID){
+  $("label").each((i, e) => {
+    if (e.attribs.for === elementID) {
       foundLabel++;
     }
   });
-  if(!foundLabel){
+  if (!foundLabel) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -714,43 +859,53 @@ export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[]
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
   return [];
 }
 
 export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'textarea') return [];
+  if (
+    element.name !== "textarea" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"][
+      "Textarea elements should only have one associated label"
+    ]
+  )
+    return [];
 
   let elementID = element.attribs.id;
   let foundLabel = 0;
-  $('label').each((i, e) => {
-    if(e.attribs.for === elementID){
+  $("label").each((i, e) => {
+    if (e.attribs.for === elementID) {
       foundLabel++;
     }
   });
-  if(foundLabel > 1){
+  if (foundLabel > 1) {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
-        message: "Elements should only have one associated label.",
+        message: "Textarea elements should only have one associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
 
   return [];
 }
 
 export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'marquee') return [];
+  if (
+    element.name !== "marquee" ||
+    !Configuration.GetInstance().get()["operable"]["enoughTime"]["Marquee element used"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -758,19 +913,22 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
-  
-  
+    },
+  ];
+
   return [];
 }
 
 export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'meta') return [];
-  if(!element.attribs['http-equiv']) return [];
-  if(element.attribs['http-equiv'] == 'refresh'){
+  if (
+    element.name !== "meta" ||
+    !Configuration.GetInstance().get()["operable"]["enoughTime"]["Meta refresh with a time-out is used"]
+  )
+    return [];
+  if (!element.attribs["http-equiv"]) return [];
+  if (element.attribs["http-equiv"] == "refresh") {
     const range = GetStartTagPosition(element);
-    if(!range) return [];
+    if (!range) return [];
     return [
       {
         code: "",
@@ -778,17 +936,17 @@ export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
-      }
-    ]
+      },
+    ];
   }
 
   return [];
 }
 
 export function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'acronym') return [];
+  if (element.name !== "acronym") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -796,16 +954,16 @@ export function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'applet') return [];
+  if (element.name !== "applet") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -813,16 +971,16 @@ export function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'basefront') return [];
+  if (element.name !== "basefront") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -830,16 +988,16 @@ export function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[]
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'big') return [];
+  if (element.name !== "big") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -847,16 +1005,16 @@ export function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'blink') return [];
+  if (element.name !== "blink") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -864,16 +1022,16 @@ export function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'center') return [];
+  if (element.name !== "center") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -881,16 +1039,16 @@ export function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'dir') return [];
+  if (element.name !== "dir") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -898,16 +1056,16 @@ export function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'embed') return [];
+  if (element.name !== "embed") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -915,16 +1073,16 @@ export function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'font') return [];
+  if (element.name !== "font") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -932,16 +1090,16 @@ export function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'frame') return [];
+  if (element.name !== "frame") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -949,16 +1107,16 @@ export function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'frameset') return [];
+  if (element.name !== "frameset") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -966,16 +1124,16 @@ export function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] 
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'isindex') return [];
+  if (element.name !== "isindex") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -983,16 +1141,16 @@ export function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'noframes') return [];
+  if (element.name !== "noframes") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1000,16 +1158,16 @@ export function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] 
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'menu') return [];
+  if (element.name !== "menu") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1017,16 +1175,16 @@ export function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'plaintext') return [];
+  if (element.name !== "plaintext") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1034,16 +1192,16 @@ export function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[]
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 's') return [];
+  if (element.name !== "s") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1051,16 +1209,16 @@ export function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'strike') return [];
+  if (element.name !== "strike") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1068,16 +1226,16 @@ export function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'tt') return [];
+  if (element.name !== "tt") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1085,16 +1243,16 @@ export function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'u') return [];
+  if (element.name !== "u") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1102,16 +1260,16 @@ export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'i') return [];
+  if (element.name !== "i") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1119,16 +1277,16 @@ export function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Warning,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
 
 export function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
-  if(element.name !== 'b') return [];
+  if (element.name !== "b") return [];
   const range = GetStartTagPosition(element);
-  if(!range) return [];
+  if (!range) return [];
   return [
     {
       code: "",
@@ -1136,8 +1294,8 @@ export function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
       range: range,
       severity: DiagnosticSeverity.Warning,
       source: "Accessibility Checker",
-    }
-  ]
+    },
+  ];
 
   return [];
 }
