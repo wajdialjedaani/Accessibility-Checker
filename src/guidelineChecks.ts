@@ -458,8 +458,7 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
         return [];
       return [
         {
-<<<<<<< HEAD
-          code: 1,
+          code: "1.3.1",
           message:
             'Always use the <label> tag to define labels for <input type="text">, <input type="checkbox">, <input type="radio">, <input type="file">, and <input type="password">.',
           range: range,
@@ -467,34 +466,10 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
           source: "Accessibility Checker",
         },
       ];
-    } else if (foundLabel > 1) {
-      const range = GetStartTagPosition(element);
-      if (!range) return [];
-      return [
-        {
-          code: 3,
-          message: "Input elements should only have one associated label.",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        },
-      ];
     }
   }
-=======
-          code: "1.3.1",
-          message: "Always use the <label> tag to define labels for <input type=\"text\">, <input type=\"checkbox\">, <input type=\"radio\">, <input type=\"file\">, and <input type=\"password\">.",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
-    }
-  }    
->>>>>>> 0a97f1c (Started working on bar chart)
   return [];
 }
-
 
 export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
   if (
@@ -549,13 +524,8 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-<<<<<<< HEAD
-        code: 1,
-        message: "Input elements should not have an alt attribute unless it is of type 'image'.",
-=======
         code: "1.1.1",
         message: "Input elements should not an alt attribute unless it is of type 'image'.",
->>>>>>> 0a97f1c (Started working on bar chart)
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -742,31 +712,10 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
     return [];
 
   let elementID = element.attribs.id;
-<<<<<<< HEAD
   let foundLabel = 0;
   $("label").each((i, e) => {
     if (e.attribs.for === elementID) {
       foundLabel++;
-=======
-    let foundLabel = 0;
-    $('label').each((i, e) => {
-      if(e.attribs.for === elementID){
-        foundLabel++;
-      }
-    });
-    if(!foundLabel){
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "1.3.1",
-          message: "Select elements should have an associated label.",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
->>>>>>> 0a97f1c (Started working on bar chart)
     }
   });
   if (!foundLabel) {
@@ -774,7 +723,7 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: 1,
+        code: "1.3.1",
         message: "Select elements should have an associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -795,31 +744,10 @@ export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnosti
     return [];
 
   let elementID = element.attribs.id;
-<<<<<<< HEAD
   let foundLabel = 0;
   $("label").each((i, e) => {
     if (e.attribs.for === elementID) {
       foundLabel++;
-=======
-    let foundLabel = 0;
-    $('label').each((i, e) => {
-      if(e.attribs.for === elementID){
-        foundLabel++;
-      }
-    });
-    if(foundLabel > 1){
-      const range = GetStartTagPosition(element);
-      if(!range) return [];
-      return [
-        {
-          code: "3.3.2",
-          message: "Select elements should only have one associated label.",
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        }
-      ]
->>>>>>> 0a97f1c (Started working on bar chart)
     }
   });
   if (foundLabel > 1) {
@@ -827,7 +755,7 @@ export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnosti
     if (!range) return [];
     return [
       {
-        code: 3,
+        code: "3.3.2",
         message: "Select elements should only have one associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -946,13 +874,8 @@ export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnos
     if (!range) return [];
     return [
       {
-<<<<<<< HEAD
-        code: 3,
-        message: "Textarea elements should only have one associated label.",
-=======
         code: "3.3.2",
-        message: "Elements should only have one associated label.",
->>>>>>> 0a97f1c (Started working on bar chart)
+        message: "Textarea elements should only have one associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
