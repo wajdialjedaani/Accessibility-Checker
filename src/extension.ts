@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import * as cheerio from "cheerio";
+import * as fs from "fs";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
-import { isElement, Configuration, ConfigSchema } from "./util";
+import { isElement, Configuration, ConfigSchema, walk } from "./util";
 import {
   CheckHTMLTags,
   CheckLangRecognize,
@@ -61,7 +62,10 @@ export function activate(context: vscode.ExtensionContext) {
   //This collection will persist throughout life of extension
   const diagnostics = languages.createDiagnosticCollection("Test");
   const document = window.activeTextEditor?.document;
-  const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1000);
+  const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    1000
+  );
 
   //Run check once on startup and then listen for document changes for future checks
   if (document) {
@@ -106,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {}
 
 //Recurses through document, calling appropriate functions for each tag type. Adds diagnostics to a list and returns it.
-function ParseDocument(document: TextDocument) {
+function ParseDocument(document: string) {
   const guidelines = [
     CheckHTMLTags,
     CheckLangRecognize,
@@ -158,8 +162,7 @@ function ParseDocument(document: TextDocument) {
     CheckForItalic,
     CheckForBold,
   ];
-  const text = document.getText();
-  const $ = cheerio.load(text, { sourceCodeLocationInfo: true });
+  const $ = cheerio.load(document, { sourceCodeLocationInfo: true });
   let diagnostics: Diagnostic[] = []; //Overall list of diagnostics. Appended to each time an error is found
   traverse($.root());
 
@@ -187,40 +190,79 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
     vscode.window.showErrorMessage("Document is not HTML");
     return;
   }
-  const newDiagnostics = ParseDocument(document);
+  const newDiagnostics = ParseDocument(document.getText());
   diagnostics.set(document.uri, newDiagnostics);
 }
 
 function GenerateReport(): void {
+  if (!vscode.workspace.workspaceFolders) return;
+
   const document = window.activeTextEditor?.document;
-  let newDiagnostics: Diagnostic[];
-  let tallies: number[] = [0, 0, 0, 0];
+  type FileDiagnostics = {
+    path: string;
+    diagnostics: Diagnostic[];
+  };
+
+  const newDiagnostics: FileDiagnostics[] = [];
   let guidelines: string[] = [];
+  let tallies: number[] = [0, 0, 0, 0];
   let amount: string[] = [];
   let messages: string[] = [];
 
-  if(document){
-    newDiagnostics = ParseDocument(document);
-    newDiagnostics.sort((one, two) => {
-      if(one && two && one.code !== undefined && two.code !== undefined){
-        return one.code < two.code ? -1 : 1;
+  //if (document) {
+  //  newDiagnostics.push(...ParseDocument(document.getText()));
+  //  newDiagnostics.sort((one, two) => {
+  //    if (one && two && one.code !== undefined && two.code !== undefined) {
+  //      return one.code < two.code ? -1 : 1;
+  //    } else {
+  //      throw new Error("one or two are undefined or their code is undefined");
+  //    }
+  //  });
+  //}
+
+  //User can hypothetically have multiple workspaces in one window
+  for (const folder of vscode.workspace.workspaceFolders) {
+    for (const file of walk(folder.uri.fsPath)) {
+      //Push obj pairing a filepath with its list of diagnostics for use when we separate the data per file (like the PIT extension)
+      newDiagnostics.push({
+        path: file,
+        diagnostics: [...ParseDocument(fs.readFileSync(file).toString())],
+      });
+    }
+  }
+
+  for (const file of newDiagnostics) {
+    const {
+      guidelines: tempGuidelines,
+      tallies: tempTallies,
+      amntStrg: tempAmount,
+      messages: tempMessages,
+    } = getTallies(file.diagnostics);
+
+    console.log(tempGuidelines);
+    console.log(tempTallies);
+    console.log(tempAmount);
+    console.log(tempMessages);
+
+    for (const guideline of tempGuidelines) {
+      if (guidelines.includes(guideline)) {
+        amount[guidelines.indexOf(guideline)] = (
+          Number(amount[guidelines.indexOf(guideline)]) + Number(tempAmount[tempGuidelines.indexOf(guideline)])
+        ).toString();
       } else {
-        throw new Error('one or two are undefined or their code is undefined');
+        guidelines.push(guideline);
+        amount.push(tempAmount[tempGuidelines.indexOf(guideline)]);
       }
-    })
-
+    }
+    tallies = tallies.map((val, i) => val + tempTallies[i]);
+    messages.push(...tempMessages);
   }
-  else{
-    newDiagnostics = [];
-  }
-  
-  let result = getTallies(newDiagnostics);
-  guidelines = result.guidelines;
-  tallies = result.tallies;
-  amount = result.amntStrg;
-  messages = result.messages;
+  messages = [...new Set(messages)].slice(0, guidelines.length);
 
-
+  console.log(guidelines);
+  console.log(amount);
+  console.log(tallies);
+  console.log(messages);
   window.showInformationMessage("Generating Report...");
   const htmlContent = `
     <!DOCTYPE html>
@@ -418,21 +460,17 @@ function GenerateReport(): void {
   `;
 
   // Create a webview panel
-  const panel = vscode.window.createWebviewPanel(
-    'dataVisualization',
-    'Data Visualization',
-    vscode.ViewColumn.One,
-    {enableScripts:true}
-  );
+  const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
+    enableScripts: true,
+  });
 
   // Set the HTML content
   panel.webview.html = htmlContent;
-
 }
 
-function getTallies(diagnostics: Diagnostic[]){
+function getTallies(diagnostics: Diagnostic[]) {
   let tallies: number[] = [0, 0, 0, 0];
-  let guideAmounts: [[string, number]] = [["", 0]]
+  let guideAmounts: [[string, number]] = [["", 0]];
   let guidelines: string[] = [];
   let amount: number[] = [];
   let amntStrg: string[] = [];
@@ -440,32 +478,29 @@ function getTallies(diagnostics: Diagnostic[]){
   let storage: string[] = [];
 
   diagnostics.forEach((func) => {
-    if(func.code){
-      if(func.code.toString().at(0) === "1"){
+    if (func.code) {
+      if (func.code.toString().at(0) === "1") {
         tallies[0] += 1;
-      } else if(func.code.toString().at(0) === "2"){
+      } else if (func.code.toString().at(0) === "2") {
         tallies[1] += 1;
-      } else if(func.code.toString().at(0) === "3"){
+      } else if (func.code.toString().at(0) === "3") {
         tallies[2] += 1;
-      } else if(func.code.toString().at(0) === "4"){
+      } else if (func.code.toString().at(0) === "4") {
         tallies[3] += 1;
       }
-      
 
-      if(guidelines.includes(func.code.toString())){
+      if (guidelines.includes(func.code.toString())) {
         amount[guidelines.indexOf(func.code.toString())] += 1;
-        
-        
-      } else{
-        guidelines.push(func.code.toString())
+      } else {
+        guidelines.push(func.code.toString());
         messages.push(func.message);
         amount.push(1);
       }
     }
   });
-  
+
   amount.forEach((func) => {
     amntStrg.push(func.toString());
   });
-  return {guidelines, tallies, amntStrg, messages};
+  return { guidelines, tallies, amntStrg, messages };
 }

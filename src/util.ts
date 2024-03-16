@@ -1,6 +1,10 @@
+import * as fs from "fs";
+import * as path from "path";
 import { AnyNode, Element } from "cheerio";
 import * as vscode from "vscode";
 import z from "zod";
+import { readdirSync } from "fs";
+import { join } from "path";
 
 export function isElement(node: AnyNode): node is Element {
   return node.nodeType === NodeType.ELEMENT_NODE;
@@ -139,3 +143,23 @@ export const ConfigSchema = z.object({
 });
 
 export type ConfigType = z.infer<typeof ConfigSchema>;
+
+export function Writeable(filepath: string, options: { append: boolean } = { append: false }) {
+  const rootdir = path.dirname(__filename).replace(`${path.sep}dist`, "");
+  filepath = `${rootdir}${path.sep}${filepath}`;
+  if (!options.append && fs.existsSync(filepath)) fs.unlinkSync(filepath);
+  const stream = fs.createWriteStream(filepath, { flags: "a" });
+  return function pipe(data: string) {
+    return new Promise((res, rej) => {
+      stream.write(data, (error) => {
+        error ? rej("error writing") : res("Success");
+      });
+    });
+  };
+}
+
+export function walk(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true })
+    .flatMap((file) => (file.isDirectory() ? walk(join(dir, file.name)) : join(dir, file.name)))
+    .filter((file) => path.extname(file) === ".html");
+}
