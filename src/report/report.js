@@ -22,6 +22,7 @@ function GenerateTabs({ results, ...rest }) {
   const container = document.querySelector(".tab");
   //Generate one tab element for each file that we have statistics for, then append them.
   for (const result of results) {
+    const title = result.title
     const button = document.createElement("button");
     button.addEventListener("click", (event) => {
       Chart.getChart("myChart")?.destroy();
@@ -30,7 +31,7 @@ function GenerateTabs({ results, ...rest }) {
       GenerateTables(result.statistics);
     });
     button.classList.add("tablinks");
-    button.innerText = results.indexOf(result) + 1;
+    button.innerText = title;
     container.appendChild(button);
   }
 

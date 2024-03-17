@@ -4,6 +4,7 @@ import * as fs from "fs";
 import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
 import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
 import { isElement, Configuration, ConfigSchema, walk } from "./util";
+import * as path from "path";
 import {
   CheckHTMLTags,
   CheckLangRecognize,
@@ -200,10 +201,12 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
 function GenerateReport(context: vscode.ExtensionContext): void {
   if (!vscode.workspace.workspaceFolders) return;
   type FileDiagnostics = {
+    title: string;
     path: string;
     diagnostics: Diagnostic[];
   };
   type FileStats = {
+    title: string,
     path: string;
     statistics: Results;
   };
@@ -219,17 +222,19 @@ function GenerateReport(context: vscode.ExtensionContext): void {
   for (const folder of vscode.workspace.workspaceFolders) {
     for (const file of walk(folder.uri.fsPath)) {
       //Push obj pairing a filepath with its list of diagnostics for use when we separate the data per file (like the PIT extension)
+      const fileName = path.basename(file);
       newDiagnostics.push({
+        title: fileName,
         path: file,
         diagnostics: [...ParseDocument(fs.readFileSync(file).toString())],
       });
     }
   }
-
   //Get the data for each file. Current dirty solution is to just merge the results as we go, but this should be improved.
   for (const file of newDiagnostics) {
     const tempResults = getTallies(file.diagnostics);
     results.push({
+      title: file.title,
       path: file.path,
       statistics: {
         guidelines: tempResults.guidelines,
@@ -289,6 +294,8 @@ function getTallies(diagnostics: Diagnostic[]) {
   let messages: string[] = [];
   let storage: string[] = [];
 
+  sortDiagnostics(diagnostics);
+
   diagnostics.forEach((func) => {
     if (func.code) {
       if (func.code.toString().at(0) === "1") {
@@ -323,3 +330,14 @@ type Results = {
   amount: string[];
   messages: string[];
 };
+
+function sortDiagnostics(diagnostics: Diagnostic[]){
+  diagnostics.sort((one,two) => {
+    if(one && two && one.code !== undefined && two.code != undefined){
+      return one.code < two.code ? -1 : 1;
+    }
+    else{
+      throw new Error("one or two is undefined or their code is undefined.");
+    }
+  })
+}
