@@ -7,6 +7,8 @@ window.addEventListener("message", (event) => {
 });
 
 function main(props) {
+  //This should be called once. All other webview updating (as of now) is done through event listeners on the tabs
+  //Generate tabs once, and pre-generate the summary to display initially
   GenerateTabs(props);
   GenerateTables({
     guidelines: props.guidelines,
@@ -18,6 +20,7 @@ function main(props) {
 
 function GenerateTabs({ results, ...rest }) {
   const container = document.querySelector(".tab");
+  //Generate one tab element for each file that we have statistics for, then append them.
   for (const result of results) {
     const button = document.createElement("button");
     button.addEventListener("click", (event) => {
@@ -28,11 +31,13 @@ function GenerateTabs({ results, ...rest }) {
     });
     button.classList.add("tablinks");
     button.innerText = results.indexOf(result) + 1;
-
     container.appendChild(button);
   }
+
+  //Generate one button separate from the others for the overall report. Add it in the first spot
   const button = document.createElement("button");
   button.addEventListener("click", (event) => {
+    //Clean up existing stuff if it exists. Then generate again with the data for this file.
     Chart.getChart("myChart")?.destroy();
     Chart.getChart("myChart2")?.destroy();
     document.querySelector("#data-table tbody").innerHTML = "";
