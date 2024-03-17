@@ -1,0 +1,39 @@
+.title-container {
+  width: 1000px;
+  text-align: center;
+}
+
+.chart-container {
+  border: 1px solid;
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 1000px;
+  text-align: center;
+}
+
+.chart-container canvas {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.table-container {
+  border: 1px solid;
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 1000px;
+  text-align: center;
+  color: white;
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table-container th,
+.table-container td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}

@@ -55,6 +55,7 @@ import {
   CheckForItalic,
   CheckForBold,
 } from "./guidelineChecks";
+import GenerateReportContent from "./generateView";
 
 export function activate(context: vscode.ExtensionContext) {
   let config = new Configuration(context);
@@ -88,7 +89,9 @@ export function activate(context: vscode.ExtensionContext) {
   checkerStatusBar.text = "$(file) Generate Report";
   context.subscriptions.push(checkerStatusBar);
   checkerStatusBar.show();
-  let dispo = vscode.commands.registerCommand("accessibility-checker.generateReport", GenerateReport);
+  let dispo = vscode.commands.registerCommand("accessibility-checker.generateReport", () => {
+    GenerateReport(context);
+  });
   context.subscriptions.push(dispo);
 
   context.subscriptions.push(
@@ -194,10 +197,8 @@ function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticColl
   diagnostics.set(document.uri, newDiagnostics);
 }
 
-function GenerateReport(): void {
+function GenerateReport(context: vscode.ExtensionContext): void {
   if (!vscode.workspace.workspaceFolders) return;
-
-  const document = window.activeTextEditor?.document;
   type FileDiagnostics = {
     path: string;
     diagnostics: Diagnostic[];
@@ -208,17 +209,6 @@ function GenerateReport(): void {
   let tallies: number[] = [0, 0, 0, 0];
   let amount: string[] = [];
   let messages: string[] = [];
-
-  //if (document) {
-  //  newDiagnostics.push(...ParseDocument(document.getText()));
-  //  newDiagnostics.sort((one, two) => {
-  //    if (one && two && one.code !== undefined && two.code !== undefined) {
-  //      return one.code < two.code ? -1 : 1;
-  //    } else {
-  //      throw new Error("one or two are undefined or their code is undefined");
-  //    }
-  //  });
-  //}
 
   //User can hypothetically have multiple workspaces in one window
   for (const folder of vscode.workspace.workspaceFolders) {
@@ -231,6 +221,7 @@ function GenerateReport(): void {
     }
   }
 
+  //Get the data for each file. Current dirty solution is to just merge the results as we go, but this should be improved.
   for (const file of newDiagnostics) {
     const {
       guidelines: tempGuidelines,
@@ -239,11 +230,7 @@ function GenerateReport(): void {
       messages: tempMessages,
     } = getTallies(file.diagnostics);
 
-    console.log(tempGuidelines);
-    console.log(tempTallies);
-    console.log(tempAmount);
-    console.log(tempMessages);
-
+    //This is the merging of data. Ignore this when judging the code
     for (const guideline of tempGuidelines) {
       if (guidelines.includes(guideline)) {
         amount[guidelines.indexOf(guideline)] = (
@@ -257,215 +244,31 @@ function GenerateReport(): void {
     tallies = tallies.map((val, i) => val + tempTallies[i]);
     messages.push(...tempMessages);
   }
+  //I casted it to a set to remove duplicates, but then the length doesn't match guidelines... fix this later
   messages = [...new Set(messages)].slice(0, guidelines.length);
 
-  console.log(guidelines);
-  console.log(amount);
-  console.log(tallies);
-  console.log(messages);
   window.showInformationMessage("Generating Report...");
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accessibility Checker Report</title>
-    <style>
-      .title-container {
-        width: 1000px;
-        text-align: center;
-      }
-
-
-      .chart-container {
-        border: 1px solid;
-        margin-bottom: 20px;
-        padding: 10px;
-        width: 1000px;
-        text-align: center;
-      }
-
-      .chart-container canvas {
-        display: inline-block;
-        margin: 0 auto;
-      }
-
-      .table-container {
-        border: 1px solid;
-        margin-bottom: 20px;
-        padding: 10px;
-        width: 1000px;
-        text-align: center;
-        color: white;
-      }
-
-      .table-container table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-      }
-
-      .table-container th, .table-container td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: left;
-      }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <body>
-    <div class="title-container">
-      <h1>Accessibility Checker Report</h1>
-    </div>
-    <div class="chart-container">
-      <canvas id="myChart" style="width:100%;max-width:800px"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="myChart2" style="width:100%;max-width:800px"></canvas>
-    </div>
-    
-    <script>
-    const xValues = ["Perceivable", "Operable", "Understandable", "Robust"];
-    const yValues = ["${tallies[0]}", "${tallies[1]}", "${tallies[2]}", "${tallies[3]}"];
-    const barColors = [
-      "#b91d47",
-      "#00aba9",
-      "#2b5797",
-      "#e8c3b9",
-      "#1e7145",
-      "#00bf7d",
-      "#8babf1",
-      "#e6308a",
-      "#89ce00"
-    ];
-    Chart.defaults.color = 'white';
-
-    new Chart("myChart", {
-      type: "pie",
-      data: {
-        labels: xValues,
-        fontColor: "white",
-        datasets: [{
-          backgroundColor: barColors,
-          data: yValues,
-          fontColor: 'white'
-        }]
-      },
-      options: {
-        title: {
-          display: true,
-          text: "Guideline Category",
-          fontColor: 'white'
-        },
-        legend: {
-          labels: {
-            fontColor: 'white'
-          }
-        }
-      }
-    });
-
-    const aValues = ${JSON.stringify(guidelines)};
-    const bValues = ${JSON.stringify(amount)};
-
-    new Chart("myChart2", {
-      type: "horizontalBar",
-      data: {
-        labels: aValues,
-        datasets: [{
-          axis: 'y',
-          backgroundColor: barColors,
-          data: bValues,
-          fontColor: '#ffffff',
-          borderColor: 'white'
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        legend: {display: false},
-        title: {
-          display: true,
-          text: "Guideline Frequency",
-          fontColor: "#ffffff"
-        },
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-                fontColor: 'white'
-              }
-            }
-          ],
-          xAxes: [
-            {
-              ticks: {
-                fontColor: 'white',
-              }
-            }
-          ]
-        }
-      }
-    });
-
-    </script>  
-
-    <div class="table-container">
-      <h2>Guideline Codes</h2>
-      <table id="data-table">
-      <thead>
-          <tr>
-              <th>Code</th>
-              <th>Message</th>
-          </tr>
-      </thead>
-      <tbody>
-          <!-- Table rows will be added dynamically by JavaScript -->
-      </tbody>
-      </table>
-    </div>
-
-    <script>
-    // Example arrays for codes and messages
-    var codeArray = ${JSON.stringify(guidelines)};
-    var messageArray = ${JSON.stringify(messages)};
-
-    // Function to fill the table with data from the arrays
-    function fillTable(codeArray, messageArray) {
-        var tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
-        
-        // Ensure both arrays are of equal length
-        if (codeArray.length !== messageArray.length) {
-            console.error("Arrays must be of equal length.");
-            return;
-        }
-
-        // Iterate over the arrays and create rows in the table
-        for (var i = 0; i < codeArray.length; i++) {
-            var row = tableBody.insertRow();
-            var codeCell = row.insertCell(0);
-            var messageCell = row.insertCell(1);
-            
-            codeCell.textContent = codeArray[i];
-            messageCell.textContent = messageArray[i];
-        }
-    }
-
-    // Call the function to fill the table with the provided arrays
-    fillTable(codeArray, messageArray);
-    </script>
-    </body>
-    </html>
-  
-  `;
-
   // Create a webview panel
   const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
     enableScripts: true,
   });
 
-  // Set the HTML content
+  //VSCode restricts access to files. Get the file paths and convert those to webview URIs instead to access them inside of the HTML.
+  const stylesPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.css");
+  const scriptsPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.js");
+  const viewPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.html");
+
+  //This function will read the html file at viewPath. That will have <script> and <link> tags that will read from
+  //scriptsPath and stylesPath respectively.
+  const htmlContent = GenerateReportContent({
+    stylesPath: panel.webview.asWebviewUri(stylesPath),
+    scriptsPath: panel.webview.asWebviewUri(scriptsPath),
+    viewPath: viewPath.fsPath,
+  });
+
+  // Set the HTML content then send the data, triggering our scripts to run
   panel.webview.html = htmlContent;
+  panel.webview.postMessage({ guidelines, tallies, amount, messages });
 }
 
 function getTallies(diagnostics: Diagnostic[]) {
