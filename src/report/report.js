@@ -6,7 +6,49 @@ window.addEventListener("message", (event) => {
   main(event.data);
 });
 
-function main({ guidelines, tallies, messages, amount, ...rest }) {
+function main(props) {
+  GenerateTabs(props);
+  GenerateTables({
+    guidelines: props.guidelines,
+    tallies: props.tallies,
+    amount: props.amount,
+    messages: props.messages,
+  });
+}
+
+function GenerateTabs({ results, ...rest }) {
+  const container = document.querySelector(".tab");
+  for (const result of results) {
+    const button = document.createElement("button");
+    button.addEventListener("click", (event) => {
+      Chart.getChart("myChart")?.destroy();
+      Chart.getChart("myChart2")?.destroy();
+      document.querySelector("#data-table tbody").innerHTML = "";
+      GenerateTables(result.statistics);
+    });
+    button.classList.add("tablinks");
+    button.innerText = results.indexOf(result) + 1;
+
+    container.appendChild(button);
+  }
+  const button = document.createElement("button");
+  button.addEventListener("click", (event) => {
+    Chart.getChart("myChart")?.destroy();
+    Chart.getChart("myChart2")?.destroy();
+    document.querySelector("#data-table tbody").innerHTML = "";
+    GenerateTables({
+      guidelines: rest.guidelines,
+      tallies: rest.tallies,
+      amount: rest.amount,
+      messages: rest.messages,
+    });
+  });
+  button.classList.add("tablinks");
+  button.innerText = "Overall";
+  container.prepend(button);
+}
+
+function GenerateTables({ guidelines, tallies, amount, messages }) {
   const xValues = ["Perceivable", "Operable", "Understandable", "Robust"];
   const yValues = [tallies[0], tallies[1], tallies[2], tallies[3]];
   const barColors = ["#b91d47", "#00aba9", "#2b5797", "#e8c3b9", "#1e7145", "#00bf7d", "#8babf1", "#e6308a", "#89ce00"];
@@ -43,7 +85,7 @@ function main({ guidelines, tallies, messages, amount, ...rest }) {
   const bValues = amount;
 
   new Chart("myChart2", {
-    type: "horizontalBar",
+    type: "bar",
     data: {
       labels: aValues,
       datasets: [
@@ -65,21 +107,17 @@ function main({ guidelines, tallies, messages, amount, ...rest }) {
         fontColor: "#ffffff",
       },
       scales: {
-        yAxes: [
-          {
-            ticks: {
-              beginAtZero: true,
-              fontColor: "white",
-            },
+        y: {
+          ticks: {
+            beginAtZero: true,
+            fontColor: "white",
           },
-        ],
-        xAxes: [
-          {
-            ticks: {
-              fontColor: "white",
-            },
+        },
+        x: {
+          ticks: {
+            fontColor: "white",
           },
-        ],
+        },
       },
     },
   });

@@ -203,12 +203,17 @@ function GenerateReport(context: vscode.ExtensionContext): void {
     path: string;
     diagnostics: Diagnostic[];
   };
+  type FileStats = {
+    path: string;
+    statistics: Results;
+  };
 
   const newDiagnostics: FileDiagnostics[] = [];
   let guidelines: string[] = [];
   let tallies: number[] = [0, 0, 0, 0];
   let amount: string[] = [];
   let messages: string[] = [];
+  const results: FileStats[] = [];
 
   //User can hypothetically have multiple workspaces in one window
   for (const folder of vscode.workspace.workspaceFolders) {
@@ -223,26 +228,30 @@ function GenerateReport(context: vscode.ExtensionContext): void {
 
   //Get the data for each file. Current dirty solution is to just merge the results as we go, but this should be improved.
   for (const file of newDiagnostics) {
-    const {
-      guidelines: tempGuidelines,
-      tallies: tempTallies,
-      amntStrg: tempAmount,
-      messages: tempMessages,
-    } = getTallies(file.diagnostics);
-
+    const tempResults = getTallies(file.diagnostics);
+    results.push({
+      path: file.path,
+      statistics: {
+        guidelines: tempResults.guidelines,
+        tallies: tempResults.tallies,
+        amount: tempResults.amntStrg,
+        messages: tempResults.messages,
+      },
+    });
     //This is the merging of data. Ignore this when judging the code
-    for (const guideline of tempGuidelines) {
+    for (const guideline of tempResults.guidelines) {
       if (guidelines.includes(guideline)) {
         amount[guidelines.indexOf(guideline)] = (
-          Number(amount[guidelines.indexOf(guideline)]) + Number(tempAmount[tempGuidelines.indexOf(guideline)])
+          Number(amount[guidelines.indexOf(guideline)]) +
+          Number(tempResults.amntStrg[tempResults.guidelines.indexOf(guideline)])
         ).toString();
       } else {
         guidelines.push(guideline);
-        amount.push(tempAmount[tempGuidelines.indexOf(guideline)]);
+        amount.push(tempResults.amntStrg[tempResults.guidelines.indexOf(guideline)]);
       }
     }
-    tallies = tallies.map((val, i) => val + tempTallies[i]);
-    messages.push(...tempMessages);
+    tallies = tallies.map((val, i) => val + tempResults.tallies[i]);
+    messages.push(...tempResults.messages);
   }
   //I casted it to a set to remove duplicates, but then the length doesn't match guidelines... fix this later
   messages = [...new Set(messages)].slice(0, guidelines.length);
@@ -268,7 +277,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
 
   // Set the HTML content then send the data, triggering our scripts to run
   panel.webview.html = htmlContent;
-  panel.webview.postMessage({ guidelines, tallies, amount, messages });
+  panel.webview.postMessage({ guidelines, tallies, amount, messages, results });
 }
 
 function getTallies(diagnostics: Diagnostic[]) {
@@ -307,3 +316,10 @@ function getTallies(diagnostics: Diagnostic[]) {
   });
   return { guidelines, tallies, amntStrg, messages };
 }
+
+type Results = {
+  guidelines: string[];
+  tallies: number[];
+  amount: string[];
+  messages: string[];
+};
