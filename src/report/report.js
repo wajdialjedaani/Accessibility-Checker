@@ -9,6 +9,8 @@ window.addEventListener("message", (event) => {
 function main(props) {
   //This should be called once. All other webview updating (as of now) is done through event listeners on the tabs
   //Generate tabs once, and pre-generate the summary to display initially
+  InitListeners();
+
   GenerateTabs(props);
   GenerateTables({
     guidelines: props.guidelines,
@@ -18,11 +20,25 @@ function main(props) {
   });
 }
 
+function InitListeners() {
+  document.querySelector(".tab").addEventListener("wheel", function (e) {
+    if (
+      (e.deltaY < 0 && this.scrollLeft === 0) ||
+      (e.deltaY > 0 && this.scrollLeft + this.clientWidth > this.scrollWidth - 1)
+    ) {
+      return;
+    }
+    console.log(e.deltaY);
+    e.preventDefault();
+    this.scrollLeft += e.deltaY;
+  });
+}
+
 function GenerateTabs({ results, ...rest }) {
   const container = document.querySelector(".tab");
   //Generate one tab element for each file that we have statistics for, then append them.
   for (const result of results) {
-    const title = result.title
+    const title = result.title;
     const button = document.createElement("button");
     button.addEventListener("click", (event) => {
       Chart.getChart("myChart")?.destroy();
@@ -31,7 +47,10 @@ function GenerateTabs({ results, ...rest }) {
       GenerateTables(result.statistics);
     });
     button.classList.add("tablinks");
-    button.innerText = title;
+    const buttonText = document.createElement("p");
+    buttonText.classList.add("text");
+    buttonText.innerText = title;
+    button.appendChild(buttonText);
     container.appendChild(button);
   }
 
@@ -50,7 +69,10 @@ function GenerateTabs({ results, ...rest }) {
     });
   });
   button.classList.add("tablinks");
-  button.innerText = "Overall";
+  const buttonText = document.createElement("p");
+  buttonText.classList.add("text");
+  buttonText.innerText = "Overall";
+  button.appendChild(buttonText);
   container.prepend(button);
 }
 

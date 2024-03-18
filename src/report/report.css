@@ -39,9 +39,24 @@
 }
 
 .tab {
+  display: flex;
   overflow: hidden;
   border: 1px solid #ccc;
-  background-color: #f1f1f1;
+  background-color: var(--vscode-icon-foreground);
+  overflow-x: scroll;
+  overflow-y: hidden;
+  width: 100%;
+  height: 5%;
+}
+
+.vscode-dark .tab {
+  border: 1px solid #e2e2e2;
+  background-color: black;
+}
+
+.vscode-light .tab {
+  border: 1px solid #000000;
+  background-color: grey;
 }
 
 .tab button {
@@ -73,4 +88,12 @@
   width: 100%;
   display: flex;
   flex-direction: row;
+}
+
+.vscode-light .text {
+  color: black;
+}
+
+.vscode-dark .text {
+  color: white;
 }
