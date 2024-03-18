@@ -206,7 +206,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
     diagnostics: Diagnostic[];
   };
   type FileStats = {
-    title: string,
+    title: string;
     path: string;
     statistics: Results;
   };
@@ -265,6 +265,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
   // Create a webview panel
   const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
     enableScripts: true,
+    retainContextWhenHidden: true,
   });
 
   //VSCode restricts access to files. Get the file paths and convert those to webview URIs instead to access them inside of the HTML.
@@ -331,13 +332,12 @@ type Results = {
   messages: string[];
 };
 
-function sortDiagnostics(diagnostics: Diagnostic[]){
-  diagnostics.sort((one,two) => {
-    if(one && two && one.code !== undefined && two.code != undefined){
+function sortDiagnostics(diagnostics: Diagnostic[]) {
+  diagnostics.sort((one, two) => {
+    if (one && two && one.code !== undefined && two.code != undefined) {
       return one.code < two.code ? -1 : 1;
-    }
-    else{
+    } else {
       throw new Error("one or two is undefined or their code is undefined.");
     }
-  })
+  });
 }
