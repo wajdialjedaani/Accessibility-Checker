@@ -1,186 +1,84 @@
 import * as vscode from "vscode";
 import * as cheerio from "cheerio";
 import * as fs from "fs";
-import { Cheerio, Element, AnyNode, CheerioAPI } from "cheerio";
-import { window, languages, TextDocument, DiagnosticCollection, workspace, Diagnostic } from "vscode";
-import { isElement, Configuration, ConfigSchema, walk } from "./util";
 import * as path from "path";
-import {
-  CheckHTMLTags,
-  CheckLangRecognize,
-  CheckImageTags,
-  CheckATags,
-  CheckAnchorText,
-  CheckTitleTags,
-  CheckTitleText,
-  CheckTableTags,
-  CheckOneH1Tag,
-  CheckHeadingOrder,
-  CheckVideoAndAudioTags,
-  CheckButtons,
-  CheckInput,
-  CheckMultipleInputLabels,
-  CheckInputAlt,
-  CheckLabel,
-  CheckID,
-  CheckOnMouseOver,
-  CheckOnMouseDown,
-  CheckOnMouseLeave,
-  CheckOnMouseOut,
-  CheckSelectTag,
-  CheckSelectTagLabels,
-  //CheckFormTags,
-  CheckTextAreaTags,
-  CheckTextAreaTagLabels,
-  CheckMarqueeTags,
-  CheckForMetaTimeout,
-  CheckForAcronym,
-  CheckForApplet,
-  CheckForBasefront,
-  CheckForBig,
-  CheckForBlink,
-  CheckForCenter,
-  CheckForDir,
-  CheckForEmbed,
-  CheckForFont,
-  CheckForFrame,
-  CheckForFrameset,
-  CheckForIsIndex,
-  CheckForMenu,
-  CheckForNoFrames,
-  CheckForPlaintext,
-  CheckForS,
-  CheckForStrike,
-  CheckForTt,
-  CheckForU,
-  CheckForItalic,
-  CheckForBold,
-} from "./guidelineChecks";
+import { window, languages, TextDocument, DiagnosticCollection, Diagnostic } from "vscode";
+import { isElement, Configuration, walk } from "./util";
+import { GuidelineList } from "./guidelineChecks";
 import GenerateReportContent from "./generateView";
+import { FileDiagnostics, FileStats, Results } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
-  let config = new Configuration(context);
+  new Configuration(context); //Init the config object for the rest of the lifetime of the extension
 
   //This collection will persist throughout life of extension
   const diagnostics = languages.createDiagnosticCollection("Test");
   const document = window.activeTextEditor?.document;
-  const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    1000
-  );
 
   //Run check once on startup and then listen for document changes for future checks
   if (document) {
     GenerateDiagnostics(document, diagnostics);
   }
 
-  context.subscriptions.push(
-    window.onDidChangeActiveTextEditor((editor) => {
-      if (editor) {
-        GenerateDiagnostics(editor.document, diagnostics);
-      }
-    })
-  );
-  context.subscriptions.push(
-    workspace.onDidChangeTextDocument((editor) => {
+  const ParseOnConfigUpdateDispose = vscode.workspace.onDidChangeConfiguration((event) => {
+    const document = window.activeTextEditor?.document;
+    if (event.affectsConfiguration("accessibilityChecker") && document) {
+      GenerateDiagnostics(document, diagnostics);
+    }
+  });
+
+  const ParseOnFocusDispose = window.onDidChangeActiveTextEditor((editor) => {
+    if (editor) {
       GenerateDiagnostics(editor.document, diagnostics);
-    })
+    }
+  });
+
+  const ParseOnEditDispose = vscode.workspace.onDidChangeTextDocument((editor) => {
+    GenerateDiagnostics(editor.document, diagnostics);
+  });
+
+  const ParseCommandDispose = vscode.commands.registerCommand("accessibility-checker.generateReport", () => {
+    GenerateReport(context);
+  });
+
+  const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    1000
   );
   checkerStatusBar.command = "accessibility-checker.generateReport";
   checkerStatusBar.text = "$(file) Generate Report";
-  context.subscriptions.push(checkerStatusBar);
   checkerStatusBar.show();
-  let dispo = vscode.commands.registerCommand("accessibility-checker.generateReport", () => {
-    GenerateReport(context);
-  });
-  context.subscriptions.push(dispo);
 
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeConfiguration((event) => {
-      const document = window.activeTextEditor?.document;
-      if (event.affectsConfiguration("accessibilityChecker") && document) {
-        GenerateDiagnostics(document, diagnostics);
-      }
-    })
+  const CleanupOnDocCloseDispose = vscode.workspace.onDidCloseTextDocument((document) =>
+    diagnostics.delete(document.uri)
   );
 
-  context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((document) => diagnostics.delete(document.uri)));
-
-  //Most likely going to remove this later
-  let disposable = vscode.commands.registerCommand("accessibility-checker.ParseDocument", ParseDocument);
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    ParseOnFocusDispose,
+    ParseOnEditDispose,
+    ParseOnConfigUpdateDispose,
+    ParseCommandDispose,
+    checkerStatusBar,
+    CleanupOnDocCloseDispose
+  );
 }
 
 export function deactivate() {}
 
 //Recurses through document, calling appropriate functions for each tag type. Adds diagnostics to a list and returns it.
-function ParseDocument(document: string) {
-  const guidelines = [
-    CheckHTMLTags,
-    CheckLangRecognize,
-    CheckImageTags,
-    CheckATags,
-    CheckAnchorText,
-    CheckTitleTags,
-    CheckTitleText,
-    CheckTableTags,
-    CheckOneH1Tag,
-    CheckHeadingOrder,
-    CheckVideoAndAudioTags,
-    CheckButtons,
-    CheckInput,
-    CheckMultipleInputLabels,
-    CheckInputAlt,
-    CheckLabel,
-    CheckID,
-    CheckOnMouseOver,
-    CheckOnMouseDown,
-    CheckOnMouseLeave,
-    CheckOnMouseOut,
-    CheckSelectTag,
-    CheckSelectTagLabels,
-    //CheckFormTags,
-    CheckTextAreaTags,
-    CheckTextAreaTagLabels,
-    CheckMarqueeTags,
-    CheckForMetaTimeout,
-    CheckForAcronym,
-    CheckForApplet,
-    CheckForBasefront,
-    CheckForBig,
-    CheckForBlink,
-    CheckForCenter,
-    CheckForDir,
-    CheckForEmbed,
-    CheckForFont,
-    CheckForFrame,
-    CheckForFrameset,
-    CheckForIsIndex,
-    CheckForMenu,
-    CheckForNoFrames,
-    CheckForPlaintext,
-    CheckForS,
-    CheckForStrike,
-    CheckForTt,
-    CheckForU,
-    CheckForItalic,
-    CheckForBold,
-  ];
+function ParseDocument(document: string): Diagnostic[] {
+  const guidelines = GuidelineList;
   const $ = cheerio.load(document, { sourceCodeLocationInfo: true });
-  let diagnostics: Diagnostic[] = []; //Overall list of diagnostics. Appended to each time an error is found
+  const diagnostics: Diagnostic[] = []; //Overall list of diagnostics. Appended to each time an error is found
   traverse($.root());
 
-  function traverse(node: Cheerio<AnyNode>) {
+  function traverse(node: cheerio.Cheerio<cheerio.AnyNode>) {
     node.contents().each(function (i, node) {
       if (!isElement(node)) return;
-      //List of diagnostics pertaining to this node. We combine them all then add to the overall list
-      let tempDiagnostics: Diagnostic[] = [];
-
+      //For each element (skip comments, text nodes, etc.), run the full suite of checks for errors and add them to the list. Recurse.
       guidelines.forEach((func) => {
-        tempDiagnostics = tempDiagnostics.concat(func($, node));
+        diagnostics.push(...func($, node));
       });
-
-      diagnostics = diagnostics.concat(tempDiagnostics);
       traverse($(node));
     });
   }
@@ -189,27 +87,16 @@ function ParseDocument(document: string) {
 
 //Called by VSCode on every document change/edit. We modify the provided collection with a new set of diagnostics.
 //Could potentially become resource intensive, consider checking what changes occur and only checking tags in that area?
-function GenerateDiagnostics(document: TextDocument, diagnostics: DiagnosticCollection): void {
+function GenerateDiagnostics(document: TextDocument, workspaceDiagnostics: DiagnosticCollection): void {
   if (!languages.match({ language: "html" }, document)) {
-    vscode.window.showErrorMessage("Document is not HTML");
     return;
   }
   const newDiagnostics = ParseDocument(document.getText());
-  diagnostics.set(document.uri, newDiagnostics);
+  workspaceDiagnostics.set(document.uri, newDiagnostics);
 }
 
 function GenerateReport(context: vscode.ExtensionContext): void {
   if (!vscode.workspace.workspaceFolders) return;
-  type FileDiagnostics = {
-    title: string;
-    path: string;
-    diagnostics: Diagnostic[];
-  };
-  type FileStats = {
-    title: string;
-    path: string;
-    statistics: Results;
-  };
 
   const newDiagnostics: FileDiagnostics[] = [];
   let guidelines: string[] = [];
@@ -239,7 +126,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
       statistics: {
         guidelines: tempResults.guidelines,
         tallies: tempResults.tallies,
-        amount: tempResults.amntStrg,
+        amount: tempResults.amount,
         messages: tempResults.messages,
       },
     });
@@ -248,11 +135,11 @@ function GenerateReport(context: vscode.ExtensionContext): void {
       if (guidelines.includes(guideline)) {
         amount[guidelines.indexOf(guideline)] = (
           Number(amount[guidelines.indexOf(guideline)]) +
-          Number(tempResults.amntStrg[tempResults.guidelines.indexOf(guideline)])
+          Number(tempResults.amount[tempResults.guidelines.indexOf(guideline)])
         ).toString();
       } else {
         guidelines.push(guideline);
-        amount.push(tempResults.amntStrg[tempResults.guidelines.indexOf(guideline)]);
+        amount.push(tempResults.amount[tempResults.guidelines.indexOf(guideline)]);
       }
     }
     tallies = tallies.map((val, i) => val + tempResults.tallies[i]);
@@ -286,7 +173,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
   panel.webview.postMessage({ guidelines, tallies, amount, messages, results });
 }
 
-function getTallies(diagnostics: Diagnostic[]) {
+function getTallies(diagnostics: Diagnostic[]): Results {
   let tallies: number[] = [0, 0, 0, 0];
   let guideAmounts: [[string, number]] = [["", 0]];
   let guidelines: string[] = [];
@@ -322,15 +209,8 @@ function getTallies(diagnostics: Diagnostic[]) {
   amount.forEach((func) => {
     amntStrg.push(func.toString());
   });
-  return { guidelines, tallies, amntStrg, messages };
+  return { guidelines, tallies, amount: amntStrg, messages };
 }
-
-type Results = {
-  guidelines: string[];
-  tallies: number[];
-  amount: string[];
-  messages: string[];
-};
 
 function sortDiagnostics(diagnostics: Diagnostic[]) {
   diagnostics.sort((one, two) => {
