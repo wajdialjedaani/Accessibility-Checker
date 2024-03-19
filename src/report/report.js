@@ -1,3 +1,18 @@
+import {
+  Chart,
+  Colors,
+  PieController,
+  BarController,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Legend,
+  Tooltip,
+} from "../chart/chart.js";
+
+let ThemeWatcher;
+
 //This is the "entry point" for our scripting. Doing it like this allows us to receive any necessary data
 //from our extension before running code within the scope of the webview. Follow the way it's done below:
 //names will remain the same as they are within extension.ts. They are properties of the data object.
@@ -21,17 +36,18 @@ function main(props) {
 }
 
 function InitListeners() {
-  document.querySelector(".tab").addEventListener("wheel", function (e) {
-    if (
-      (e.deltaY < 0 && this.scrollLeft === 0) ||
-      (e.deltaY > 0 && this.scrollLeft + this.clientWidth > this.scrollWidth - 1)
-    ) {
-      return;
-    }
-    console.log(e.deltaY);
-    e.preventDefault();
-    this.scrollLeft += e.deltaY;
-  });
+  document.querySelector(".tab").addEventListener("wheel", HorizontalScroll);
+  Chart.register(
+    Colors,
+    PieController,
+    BarController,
+    ArcElement,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Legend,
+    Tooltip
+  );
 }
 
 function GenerateTabs({ results, ...rest }) {
@@ -82,7 +98,7 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
   const barColors = ["#b91d47", "#00aba9", "#2b5797", "#e8c3b9", "#1e7145", "#00bf7d", "#8babf1", "#e6308a", "#89ce00"];
   Chart.defaults.color = "white";
 
-  new Chart("myChart", {
+  const pieChart = new Chart("myChart", {
     type: "pie",
     data: {
       labels: xValues,
@@ -112,7 +128,7 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
   const aValues = guidelines;
   const bValues = amount;
 
-  new Chart("myChart2", {
+  const barChart = new Chart("myChart2", {
     type: "bar",
     data: {
       labels: aValues,
@@ -138,12 +154,12 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
         y: {
           ticks: {
             beginAtZero: true,
-            fontColor: "white",
+            color: "white",
           },
         },
         x: {
           ticks: {
-            fontColor: "white",
+            color: "white",
           },
         },
       },
@@ -171,7 +187,9 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
       var row = tableBody.insertRow();
       var codeCell = row.insertCell(0);
       var messageCell = row.insertCell(1);
-
+      //const codeText = document.createElement("p");
+      //const messageText = document.createElement("p");
+      //codeText.innerText
       codeCell.textContent = codeArray[i];
       messageCell.textContent = messageArray[i];
     }
@@ -179,4 +197,95 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
 
   // Call the function to fill the table with the provided arrays
   fillTable(codeArray, messageArray);
+
+  if (document.querySelector("body").classList.contains("vscode-light")) {
+    ToggleOnLightMode([pieChart, barChart]);
+  } else {
+    ToggleOnDarkMode([pieChart, barChart]);
+  }
+
+  ThemeWatcher = new ClassWatcher(
+    document.querySelector("body"),
+    "vscode-light",
+    () => {
+      ToggleOnLightMode([pieChart, barChart]);
+    },
+    () => {
+      ToggleOnDarkMode([pieChart, barChart]);
+    }
+  );
+}
+
+function HorizontalScroll(event) {
+  if (
+    (event.deltaY < 0 && this.scrollLeft === 0) ||
+    (event.deltaY > 0 && this.scrollLeft + this.clientWidth > this.scrollWidth - 1)
+  ) {
+    return;
+  }
+  console.log(event.deltaY);
+  event.preventDefault();
+  this.scrollLeft += event.deltaY;
+}
+
+class ClassWatcher {
+  constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
+    this.targetNode = targetNode;
+    this.classToWatch = classToWatch;
+    this.classAddedCallback = classAddedCallback;
+    this.classRemovedCallback = classRemovedCallback;
+    this.observer = null;
+    this.lastClassState = targetNode.classList.contains(this.classToWatch);
+
+    this.init();
+  }
+
+  init() {
+    this.observer = new MutationObserver(this.mutationCallback);
+    this.observe();
+  }
+
+  observe() {
+    this.observer.observe(this.targetNode, { attributes: true });
+  }
+
+  disconnect() {
+    this.observer.disconnect();
+  }
+
+  mutationCallback = (mutationsList) => {
+    for (let mutation of mutationsList) {
+      if (mutation.type === "attributes" && mutation.attributeName === "class") {
+        let currentClassState = mutation.target.classList.contains(this.classToWatch);
+        if (this.lastClassState !== currentClassState) {
+          this.lastClassState = currentClassState;
+          if (currentClassState) {
+            this.classAddedCallback();
+          } else {
+            this.classRemovedCallback();
+          }
+        }
+      }
+    }
+  };
+}
+
+function ToggleOnLightMode(charts) {
+  for (const chart of charts) {
+    console.log(chart);
+    chart.options.plugins.legend.labels.color = "#000000";
+    if (chart.options.scales?.y?.ticks?.color) chart.options.scales.y.ticks.color = "#000000";
+    if (chart.options.scales?.x?.ticks?.color) chart.options.scales.x.ticks.color = "#000000";
+    chart.options;
+    chart.update();
+  }
+}
+
+function ToggleOnDarkMode(charts) {
+  for (const chart of charts) {
+    chart.options.plugins.legend.labels.color = "#ffffff";
+    if (chart.options.scales?.y?.ticks?.color) chart.options.scales.y.ticks.color = "#ffffff";
+    if (chart.options.scales?.x?.ticks?.color) chart.options.scales.x.ticks.color = "#ffffff";
+    chart.update();
+  }
 }
