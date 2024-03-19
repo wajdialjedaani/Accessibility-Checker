@@ -129,6 +129,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
         amount: tempResults.amount,
         messages: tempResults.messages,
       },
+      diagnostics: file.diagnostics,
     });
     //This is the merging of data. Ignore this when judging the code
     for (const guideline of tempResults.guidelines) {

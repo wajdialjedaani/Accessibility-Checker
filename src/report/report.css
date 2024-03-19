@@ -56,6 +56,23 @@ th.message {
   width: 95%;
 }
 
+.list-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.list-row {
+  border: 1px solid white;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.list-item {
+  display: inline;
+  border: 1px solid white;
+  box-sizing: border-box;
+}
 
 .tab {
   display: flex;

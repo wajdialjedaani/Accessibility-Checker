@@ -60,7 +60,9 @@ function GenerateTabs({ results, ...rest }) {
       Chart.getChart("myChart")?.destroy();
       Chart.getChart("myChart2")?.destroy();
       document.querySelector("#data-table tbody").innerHTML = "";
+      document.querySelector(".list-container").innerHTML = "";
       GenerateTables(result.statistics);
+      GenerateList(result);
     });
     button.classList.add("tablinks");
     const buttonText = document.createElement("p");
@@ -214,6 +216,29 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
       ToggleOnDarkMode([pieChart, barChart]);
     }
   );
+}
+
+function GenerateList(fileData) {
+  const container = document.querySelector(".list-container");
+  for (const diagnostic of fileData.diagnostics) {
+    const row = document.createElement("div");
+    //row.classList.add("list-row");
+    const items = [];
+    const link = document.createElement("div");
+    link.classList.add("list-item");
+    const fileName = document.createElement("div");
+    fileName.classList.add("list-item");
+    fileName.innerHTML = diagnostic.message;
+    link.innerHTML = `${diagnostic.range[0].line}:${diagnostic.range[0].character}`;
+
+    link.addEventListener("click", () => {
+      LinkToError();
+    });
+
+    row.appendChild(fileName);
+    row.appendChild(link);
+    container.appendChild(row);
+  }
 }
 
 function HorizontalScroll(event) {
