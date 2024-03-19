@@ -175,7 +175,6 @@ function GenerateReport(context: vscode.ExtensionContext): void {
 
 function getTallies(diagnostics: Diagnostic[]): Results {
   let tallies: number[] = [0, 0, 0, 0];
-  let guideAmounts: [[string, number]] = [["", 0]];
   let guidelines: string[] = [];
   let amount: number[] = [];
   let amntStrg: string[] = [];

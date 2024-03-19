@@ -27,7 +27,7 @@ export const GuidelineList = [
   CheckOnMouseOut,
   CheckSelectTag,
   CheckSelectTagLabels,
-  //CheckFormTags,
+  CheckFormTags,
   CheckTextAreaTags,
   CheckTextAreaTagLabels,
   CheckMarqueeTags,
@@ -818,7 +818,6 @@ function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-/*
 function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for title tag when using head tag
   if (element.name !== "form") return [];
@@ -837,22 +836,11 @@ function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
     }
     else if(child.name === 'legend') containsLegend++;
   }
-  if (containsFieldset === 0 && containsLegend == 0) {
+  if(containsFieldset == 1 && containsLegend == 0){
     return [
       {
-        code: "",
-        message: "Forms should have a fieldset and a legend",
-        range: range,
-        severity: DiagnosticSeverity.Error,
-        source: "Accessibility Checker",
-      },
-    ];
-  }
-  else if(containsFieldset == 1 && containsLegend == 0){
-    return [
-      {
-        code: "",
-        message: "Forms should have a legend",
+        code: "1.3.1",
+        message: "Forms with fieldset should have a legend",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -862,8 +850,8 @@ function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
   else if(containsFieldset == 0 && containsLegend == 1){
     return [
       {
-        code: "",
-        message: "Forms should have a fieldset",
+        code: "1.3.1",
+        message: "The legend tag should only be used with a fieldset element",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -873,7 +861,6 @@ function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
 
   return [];
 }
-*/
 
 function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (

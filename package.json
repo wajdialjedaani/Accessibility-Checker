@@ -20,6 +20,22 @@
         "title": "Generate Report"
       }
     ],
+    "walkthroughs": [
+      {
+        "id": "report",
+        "title": "Generat Report",
+        "description": "A walkthrough to generate a report for Accessibility Checker",
+        "steps": [
+          {
+            "id": "Generate Report",
+            "title": "Generate an Accessibility Checker Report",
+            "description": "This will run the Generate Report command \n[Generate Report](command:accessibility-checker.generateReport)",
+            "media": { "image": "media/generate_report.gif", "altText": "Empty image" },
+            "completionEvents": ["onCommand.accessibility-checker.generateReport"]
+          }
+        ]
+      }
+    ],
     "configuration": [
       {
         "title": "Perceivable",

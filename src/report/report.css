@@ -31,7 +31,7 @@
   border: 1px solid;
   margin-bottom: 20px;
   padding: 10px;
-  width: 45%;
+  width: 100%;
   text-align: center;
 }
 
@@ -47,6 +47,15 @@
   padding: 8px;
   text-align: left;
 }
+
+th.code {
+  width: 5%;
+}
+
+th.message {
+  width: 95%;
+}
+
 
 .tab {
   display: flex;
