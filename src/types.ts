@@ -10,6 +10,7 @@ export type FileStats = {
   title: string;
   path: string;
   statistics: Results;
+  diagnostics: Diagnostic[];
 };
 
 export type Results = {
