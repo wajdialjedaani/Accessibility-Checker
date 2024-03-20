@@ -1,31 +1,105 @@
-import {
-  Chart,
-  Colors,
-  PieController,
-  BarController,
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Legend,
-  Tooltip,
-} from "../chart/chart.js";
-
 let ThemeWatcher;
 
+class ClassWatcher {
+  constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
+    this.targetNode = targetNode;
+    this.classToWatch = classToWatch;
+    this.classAddedCallback = classAddedCallback;
+    this.classRemovedCallback = classRemovedCallback;
+    this.observer = null;
+    this.lastClassState = targetNode.classList.contains(this.classToWatch);
+
+    this.init();
+  }
+
+  init() {
+    this.observer = new MutationObserver(this.mutationCallback);
+    this.observe();
+  }
+
+  observe() {
+    this.observer.observe(this.targetNode, { attributes: true });
+  }
+
+  disconnect() {
+    this.observer.disconnect();
+  }
+
+  mutationCallback = (mutationsList) => {
+    for (let mutation of mutationsList) {
+      if (mutation.type === "attributes" && mutation.attributeName === "class") {
+        let currentClassState = mutation.target.classList.contains(this.classToWatch);
+        if (this.lastClassState !== currentClassState) {
+          this.lastClassState = currentClassState;
+          if (currentClassState) {
+            this.classAddedCallback();
+          } else {
+            this.classRemovedCallback();
+          }
+        }
+      }
+    }
+  };
+}
+
+if (typeof Chart === "undefined") {
+  var {
+    Chart,
+    Colors,
+    PieController,
+    BarController,
+    ArcElement,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Legend,
+    Tooltip,
+  } = {};
+}
 //This is the "entry point" for our scripting. Doing it like this allows us to receive any necessary data
 //from our extension before running code within the scope of the webview. Follow the way it's done below:
 //names will remain the same as they are within extension.ts. They are properties of the data object.
 //I currently destructure all the important ones into their own vars.
-window.addEventListener("message", (event) => {
-  main(event.data);
-});
+if (typeof acquireVsCodeApi === "function") {
+  //We are located in a VSCode Webview
+  window.addEventListener("message", async (event) => {
+    const chartjs = await import("../chart/chart.js");
+    ({
+      Chart,
+      Colors,
+      PieController,
+      BarController,
+      ArcElement,
+      BarElement,
+      CategoryScale,
+      LinearScale,
+      Legend,
+      Tooltip,
+    } = chartjs);
+    Chart.register(
+      Colors,
+      PieController,
+      BarController,
+      ArcElement,
+      BarElement,
+      CategoryScale,
+      LinearScale,
+      Legend,
+      Tooltip
+    );
+    main(event.data);
+  });
+} else {
+  //We are located in a web browser
+  document.querySelector("body").classList.add("vscode-dark");
+  document.querySelector("body").style.backgroundColor = "black";
+  main(data);
+}
 
 function main(props) {
   //This should be called once. All other webview updating (as of now) is done through event listeners on the tabs
   //Generate tabs once, and pre-generate the summary to display initially
   InitListeners();
-
   GenerateTabs(props);
   GenerateTables({
     guidelines: props.guidelines,
@@ -37,17 +111,6 @@ function main(props) {
 
 function InitListeners() {
   document.querySelector(".tab").addEventListener("wheel", HorizontalScroll);
-  Chart.register(
-    Colors,
-    PieController,
-    BarController,
-    ArcElement,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Legend,
-    Tooltip
-  );
 }
 
 function CheckEmpty(guidelines) {
@@ -273,48 +336,6 @@ function HorizontalScroll(event) {
   console.log(event.deltaY);
   event.preventDefault();
   this.scrollLeft += event.deltaY;
-}
-
-class ClassWatcher {
-  constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
-    this.targetNode = targetNode;
-    this.classToWatch = classToWatch;
-    this.classAddedCallback = classAddedCallback;
-    this.classRemovedCallback = classRemovedCallback;
-    this.observer = null;
-    this.lastClassState = targetNode.classList.contains(this.classToWatch);
-
-    this.init();
-  }
-
-  init() {
-    this.observer = new MutationObserver(this.mutationCallback);
-    this.observe();
-  }
-
-  observe() {
-    this.observer.observe(this.targetNode, { attributes: true });
-  }
-
-  disconnect() {
-    this.observer.disconnect();
-  }
-
-  mutationCallback = (mutationsList) => {
-    for (let mutation of mutationsList) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        let currentClassState = mutation.target.classList.contains(this.classToWatch);
-        if (this.lastClassState !== currentClassState) {
-          this.lastClassState = currentClassState;
-          if (currentClassState) {
-            this.classAddedCallback();
-          } else {
-            this.classRemovedCallback();
-          }
-        }
-      }
-    }
-  };
 }
 
 function ToggleOnLightMode(charts) {

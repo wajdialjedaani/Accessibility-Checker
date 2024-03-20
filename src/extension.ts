@@ -38,7 +38,11 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   const ParseCommandDispose = vscode.commands.registerCommand("accessibility-checker.generateReport", () => {
-    GenerateReport(context);
+    CreateWebview(context);
+  });
+
+  const CreateFileCommandDispose = vscode.commands.registerCommand("accessibility-checker.generateReportFile", () => {
+    GenerateReportFile(context);
   });
 
   const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
@@ -59,7 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
     ParseOnConfigUpdateDispose,
     ParseCommandDispose,
     checkerStatusBar,
-    CleanupOnDocCloseDispose
+    CleanupOnDocCloseDispose,
+    CreateFileCommandDispose
   );
 }
 
@@ -95,7 +100,7 @@ function GenerateDiagnostics(document: TextDocument, workspaceDiagnostics: Diagn
   workspaceDiagnostics.set(document.uri, newDiagnostics);
 }
 
-function GenerateReport(context: vscode.ExtensionContext): void {
+function GenerateReportData() {
   if (!vscode.workspace.workspaceFolders) return;
 
   const newDiagnostics: FileDiagnostics[] = [];
@@ -149,29 +154,7 @@ function GenerateReport(context: vscode.ExtensionContext): void {
   //I casted it to a set to remove duplicates, but then the length doesn't match guidelines... fix this later
   messages = [...new Set(messages)].slice(0, guidelines.length);
 
-  window.showInformationMessage("Generating Report...");
-  // Create a webview panel
-  const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
-    enableScripts: true,
-    retainContextWhenHidden: true,
-  });
-
-  //VSCode restricts access to files. Get the file paths and convert those to webview URIs instead to access them inside of the HTML.
-  const stylesPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.css");
-  const scriptsPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.js");
-  const viewPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.html");
-
-  //This function will read the html file at viewPath. That will have <script> and <link> tags that will read from
-  //scriptsPath and stylesPath respectively.
-  const htmlContent = GenerateReportContent({
-    stylesPath: panel.webview.asWebviewUri(stylesPath),
-    scriptsPath: panel.webview.asWebviewUri(scriptsPath),
-    viewPath: viewPath.fsPath,
-  });
-
-  // Set the HTML content then send the data, triggering our scripts to run
-  panel.webview.html = htmlContent;
-  panel.webview.postMessage({ guidelines, tallies, amount, messages, results });
+  return { guidelines, tallies, amount, messages, results };
 }
 
 function getTallies(diagnostics: Diagnostic[]): Results {
@@ -220,4 +203,66 @@ function sortDiagnostics(diagnostics: Diagnostic[]) {
       throw new Error("one or two is undefined or their code is undefined.");
     }
   });
+}
+
+function GenerateReportFile(context: vscode.ExtensionContext) {
+  if (!vscode.workspace.workspaceFolders) return;
+
+  const { guidelines, tallies, amount, messages, results } = GenerateReportData() || {
+    guidelines: [],
+    tallies: [],
+    amount: [],
+    messages: [],
+    results: [],
+  };
+
+  const htmlContent = GenerateReportContent({
+    type: "file",
+    stylesPaths: [vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.css")],
+    scriptsPaths: [
+      vscode.Uri.joinPath(context.extensionUri, "src", "chart", "chart.umd.js"),
+      vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.js"),
+    ],
+    viewPath: vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.html").fsPath,
+    data: JSON.stringify({ guidelines, tallies, amount, messages, results }),
+  });
+
+  const path = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, "ACReport.html").fsPath;
+
+  fs.writeFileSync(path, htmlContent, { flag: "w", encoding: "utf8" });
+}
+
+function CreateWebview(context: vscode.ExtensionContext) {
+  window.showInformationMessage("Generating Report...");
+  const { guidelines, tallies, amount, messages, results } = GenerateReportData() || {
+    guidelines: [],
+    tallies: [],
+    amount: [],
+    messages: [],
+    results: [],
+  };
+
+  // Create a webview panel
+  const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
+    enableScripts: true,
+    retainContextWhenHidden: true,
+  });
+
+  //VSCode restricts access to files. Get the file paths and convert those to webview URIs instead to access them inside of the HTML.
+  const stylesPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.css");
+  const scriptsPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.js");
+  const viewPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.html");
+
+  //This function will read the html file at viewPath. That will have <script> and <link> tags that will read from
+  //scriptsPath and stylesPath respectively.
+  const htmlContent = GenerateReportContent({
+    type: "webview",
+    stylesPath: panel.webview.asWebviewUri(stylesPath),
+    scriptsPath: panel.webview.asWebviewUri(scriptsPath),
+    viewPath: viewPath.fsPath,
+  });
+
+  // Set the HTML content then send the data, triggering our scripts to run
+  panel.webview.html = htmlContent;
+  panel.webview.postMessage({ guidelines, tallies, amount, messages, results });
 }
