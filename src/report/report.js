@@ -50,8 +50,23 @@ function InitListeners() {
   );
 }
 
+function CheckEmpty(guidelines) {
+  container = document.getElementById('container');
+  emptyContainer = document.getElementById('empty-container');
+
+  if((guidelines.length === 0)){
+    emptyContainer.style.display = 'block';
+    container.style.display = 'none';
+  } else {
+    emptyContainer.style.display = 'none';
+    container.style.display = 'block';
+  }
+}
+
 function GenerateTabs({ results, ...rest }) {
   const container = document.querySelector(".tab");
+  const mainContainer = document.getElementById('container');
+  const emptyContainer = document.getElementById('empty-container');
   //Generate one tab element for each file that we have statistics for, then append them.
   for (const result of results) {
     const title = result.title;
@@ -61,8 +76,15 @@ function GenerateTabs({ results, ...rest }) {
       Chart.getChart("myChart2")?.destroy();
       document.querySelector("#data-table tbody").innerHTML = "";
       document.querySelector(".list-container").innerHTML = "";
-      GenerateTables(result.statistics);
-      GenerateList(result);
+      if(result.statistics.guidelines.length === 0){
+        mainContainer.style.display = 'none';
+        emptyContainer.style.display = 'block'
+      } else {
+        mainContainer.style.display = 'block';
+        emptyContainer.style.display = 'none';
+        GenerateTables(result.statistics);
+        GenerateList(result);
+      }
     });
     button.classList.add("tablinks");
     const buttonText = document.createElement("p");
