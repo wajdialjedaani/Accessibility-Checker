@@ -107,6 +107,10 @@ th.message {
   padding-top: 50px;
 }
 
+.web-dark .empty-container {
+  color: white;
+}
+
 .vscode-dark .tab,
 .web-dark .tab {
   border: 1px solid #e2e2e2;

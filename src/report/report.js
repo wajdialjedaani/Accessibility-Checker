@@ -42,6 +42,8 @@ class ClassWatcher {
   };
 }
 
+//If in webview, we need to import and define dependencies, but we don't want to
+//overwrite them in a browser environment, so we check first.
 if (typeof Chart === "undefined") {
   var {
     Chart,
@@ -56,6 +58,7 @@ if (typeof Chart === "undefined") {
     Tooltip,
   } = {};
 }
+
 //This is the "entry point" for our scripting. Doing it like this allows us to receive any necessary data
 //from our extension before running code within the scope of the webview. Follow the way it's done below:
 //names will remain the same as they are within extension.ts. They are properties of the data object.

@@ -41,9 +41,12 @@ export function activate(context: vscode.ExtensionContext) {
     CreateWebview(context);
   });
 
-  const CreateFileCommandDispose = vscode.commands.registerCommand("accessibility-checker.generateReportFile", () => {
-    GenerateReportFile(context);
-  });
+  const CreateFileCommandDispose = vscode.commands.registerCommand(
+    "accessibility-checker.generateReportFile",
+    async () => {
+      await GenerateReportFile(context);
+    }
+  );
 
   const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
@@ -205,7 +208,7 @@ function sortDiagnostics(diagnostics: Diagnostic[]) {
   });
 }
 
-function GenerateReportFile(context: vscode.ExtensionContext) {
+async function GenerateReportFile(context: vscode.ExtensionContext) {
   if (!vscode.workspace.workspaceFolders) return;
 
   const { guidelines, tallies, amount, messages, results } = GenerateReportData() || {
@@ -229,7 +232,13 @@ function GenerateReportFile(context: vscode.ExtensionContext) {
 
   const path = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, "ACReport.html").fsPath;
 
-  fs.writeFileSync(path, htmlContent, { flag: "w", encoding: "utf8" });
+  const desiredPathInfo = await window.showSaveDialog({
+    defaultUri: vscode.workspace.workspaceFolders[0].uri,
+    filters: { "HTML Document": ["html"] },
+  });
+  if (desiredPathInfo) {
+    fs.writeFileSync(desiredPathInfo.fsPath, htmlContent, { flag: "w", encoding: "utf8" });
+  }
 }
 
 function CreateWebview(context: vscode.ExtensionContext) {
