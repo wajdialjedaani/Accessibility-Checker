@@ -90,7 +90,8 @@ if (typeof acquireVsCodeApi === "function") {
       Legend,
       Tooltip
     );
-    main(event.data);
+    const vscode = acquireVsCodeApi();
+    main({ ...event.data, vscode });
   });
 } else {
   //We are located in a web browser
@@ -138,10 +139,7 @@ function GenerateTabs({ results, ...rest }) {
     const title = result.title;
     const button = document.createElement("button");
     button.addEventListener("click", (event) => {
-      Chart.getChart("myChart")?.destroy();
-      Chart.getChart("myChart2")?.destroy();
-      document.querySelector("#data-table tbody").innerHTML = "";
-      document.querySelector(".list-container").innerHTML = "";
+      EraseContents();
       if (result.statistics.guidelines.length === 0) {
         mainContainer.style.display = "none";
         emptyContainer.style.display = "block";
@@ -149,7 +147,7 @@ function GenerateTabs({ results, ...rest }) {
         mainContainer.style.display = "block";
         emptyContainer.style.display = "none";
         GenerateTables(result.statistics);
-        GenerateList(result);
+        GenerateList({ result, vscode: rest.vscode });
       }
     });
     button.classList.add("tablinks");
@@ -164,9 +162,7 @@ function GenerateTabs({ results, ...rest }) {
   const button = document.createElement("button");
   button.addEventListener("click", (event) => {
     //Clean up existing stuff if it exists. Then generate again with the data for this file.
-    Chart.getChart("myChart")?.destroy();
-    Chart.getChart("myChart2")?.destroy();
-    document.querySelector("#data-table tbody").innerHTML = "";
+    EraseContents();
     GenerateTables({
       guidelines: rest.guidelines,
       tallies: rest.tallies,
@@ -306,25 +302,28 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
   );
 }
 
-function GenerateList(fileData) {
+function GenerateList({ result: fileData, vscode }) {
   const container = document.querySelector(".list-container");
   for (const diagnostic of fileData.diagnostics) {
     const row = document.createElement("div");
-    //row.classList.add("list-row");
+    row.classList.add("list-row");
     const items = [];
     const link = document.createElement("div");
     link.classList.add("list-item");
+    link.classList.add("list-link");
     const fileName = document.createElement("div");
     fileName.classList.add("list-item");
-    fileName.innerHTML = diagnostic.message;
+    fileName.classList.add("list-message");
+    fileName.innerHTML = escape(diagnostic.message);
     link.innerHTML = `${diagnostic.range[0].line}:${diagnostic.range[0].character}`;
 
     link.addEventListener("click", () => {
-      LinkToError();
+      if (vscode) LinkToError({ path: fileData.path, diagnostic, vscode });
     });
 
-    row.appendChild(fileName);
     row.appendChild(link);
+    row.appendChild(fileName);
+
     container.appendChild(row);
   }
 }
@@ -336,14 +335,12 @@ function HorizontalScroll(event) {
   ) {
     return;
   }
-  console.log(event.deltaY);
   event.preventDefault();
   this.scrollLeft += event.deltaY;
 }
 
 function ToggleOnLightMode(charts) {
   for (const chart of charts) {
-    console.log(chart);
     chart.options.plugins.legend.labels.color = "#000000";
     if (chart.options.scales?.y?.ticks?.color) chart.options.scales.y.ticks.color = "#000000";
     if (chart.options.scales?.x?.ticks?.color) chart.options.scales.x.ticks.color = "#000000";
@@ -359,4 +356,28 @@ function ToggleOnDarkMode(charts) {
     if (chart.options.scales?.x?.ticks?.color) chart.options.scales.x.ticks.color = "#ffffff";
     chart.update();
   }
+}
+
+function EraseContents() {
+  Chart.getChart("myChart")?.destroy();
+  Chart.getChart("myChart2")?.destroy();
+  document.querySelector("#data-table tbody").innerHTML = "";
+  document.querySelector(".list-container").innerHTML = "";
+}
+
+function escape(htmlStr) {
+  return htmlStr
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function LinkToError({ diagnostic, vscode, path }) {
+  vscode.postMessage({
+    command: "linkTo",
+    range: diagnostic.range,
+    path: path,
+  });
 }

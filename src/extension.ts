@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import * as fs from "fs";
 import * as path from "path";
 import { window, languages, TextDocument, DiagnosticCollection, Diagnostic } from "vscode";
-import { isElement, Configuration, walk } from "./util";
+import { isElement, Configuration, walk, WebviewMessageSchema } from "./util";
 import { GuidelineList } from "./guidelineChecks";
 import GenerateReportContent from "./generateView";
 import { FileDiagnostics, FileStats, Results } from "./types";
@@ -252,10 +252,15 @@ function CreateWebview(context: vscode.ExtensionContext) {
   };
 
   // Create a webview panel
-  const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
-    enableScripts: true,
-    retainContextWhenHidden: true,
-  });
+  const panel = vscode.window.createWebviewPanel(
+    "dataVisualization",
+    "Data Visualization",
+    { preserveFocus: true, viewColumn: -1 },
+    {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+    }
+  );
 
   //VSCode restricts access to files. Get the file paths and convert those to webview URIs instead to access them inside of the HTML.
   const stylesPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.css");
@@ -274,4 +279,62 @@ function CreateWebview(context: vscode.ExtensionContext) {
   // Set the HTML content then send the data, triggering our scripts to run
   panel.webview.html = htmlContent;
   panel.webview.postMessage({ guidelines, tallies, amount, messages, results });
+  panel.webview.onDidReceiveMessage(async (rawMessage) => {
+    const message = WebviewMessageSchema.parse(rawMessage);
+    switch (message.command) {
+      case "linkTo":
+        const fileURI = vscode.Uri.file(message.path);
+
+        for (const tabGroup of window.tabGroups.all) {
+          for (const tab of tabGroup.tabs) {
+            if (tab.input instanceof vscode.TabInputText && tab.input.uri.toString() === fileURI.toString()) {
+              //File already opened. Move across groups until you find the correct editor then open it.
+              switch (tab.group.viewColumn) {
+                case 1:
+                  await vscode.commands.executeCommand("workbench.action.focusSecondEditorGroup");
+                  await vscode.commands.executeCommand("workbench.action.focusPreviousGroup");
+                  break;
+                case 2:
+                  await vscode.commands.executeCommand("workbench.action.focusSecondEditorGroup");
+                  break;
+                case 3:
+                  await vscode.commands.executeCommand("workbench.action.focusThirdEditorGroup");
+                  break;
+                case 4:
+                  await vscode.commands.executeCommand("workbench.action.focusFourthEditorGroup");
+                  break;
+                case 5:
+                  await vscode.commands.executeCommand("workbench.action.focusFifthEditorGroup");
+                  break;
+                case 6:
+                  await vscode.commands.executeCommand("workbench.action.focusSixthEditorGroup");
+                  break;
+                case 7:
+                  await vscode.commands.executeCommand("workbench.action.focusSeventhEditorGroup");
+                  break;
+                case 8:
+                  await vscode.commands.executeCommand("workbench.action.focusEighthEditorGroup");
+                  break;
+                default:
+                  await vscode.commands.executeCommand("workbench.action.focusEighthEditorGroup");
+                  while (tab.group !== window.tabGroups.activeTabGroup) {
+                    await vscode.commands.executeCommand("workbench.action.focusNextGroup");
+                  }
+              }
+              return;
+            }
+          }
+        }
+
+        window.showTextDocument(fileURI, {
+          selection: new vscode.Range(
+            new vscode.Position(message.range[0].line, message.range[0].character),
+            new vscode.Position(message.range[1].line, message.range[1].character)
+          ),
+          preview: false,
+        });
+    }
+  });
 }
+
+async function GoToTabGroup(group: vscode.TabGroup) {}

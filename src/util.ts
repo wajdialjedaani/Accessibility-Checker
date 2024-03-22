@@ -163,3 +163,17 @@ export function walk(dir: string): string[] {
     .flatMap((file) => (file.isDirectory() ? walk(join(dir, file.name)) : join(dir, file.name)))
     .filter((file) => path.extname(file) === ".html");
 }
+
+export const WebviewMessageSchema = z.object({
+  command: z.string(),
+  range: z
+    .object({
+      line: z.number(),
+      character: z.number(),
+    })
+    .array()
+    .length(2),
+  path: z.string(),
+});
+
+export type WebviewMessageType = z.infer<typeof WebviewMessageSchema>;
