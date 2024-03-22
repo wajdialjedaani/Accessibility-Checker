@@ -27,7 +27,7 @@
     "walkthroughs": [
       {
         "id": "report",
-        "title": "Generate Report",
+        "title": "Generat Report",
         "description": "A walkthrough to generate a report for Accessibility Checker",
         "steps": [
           {

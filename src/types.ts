@@ -18,5 +18,5 @@ export type Results = {
   tallies: number[];
   amount: string[];
   messages: string[];
-  codeMap: Map<string, string>;
+  codeMap: Record<string, string>;
 };
