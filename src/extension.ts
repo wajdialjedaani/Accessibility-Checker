@@ -109,7 +109,7 @@ function GenerateReportData() {
   let amount: string[] = [];
   let messages: string[] = [];
   const results: FileStats[] = [];
-  let codeMap: Record<string, string> = {};
+  let codeMap = new Map<string, string>();
 
 
   //User can hypothetically have multiple workspaces in one window
@@ -140,7 +140,8 @@ function GenerateReportData() {
       diagnostics: file.diagnostics,
     });
     //This is the merging of data. Ignore this when judging the code
-    codeMap = {...codeMap, ...tempResults.codeMap};
+    
+    codeMap = new Map([...codeMap, ...tempResults.codeMap]);
     for (const guideline of tempResults.guidelines) {
       if (guidelines.includes(guideline)) {
         amount[guidelines.indexOf(guideline)] = (
@@ -154,11 +155,10 @@ function GenerateReportData() {
     }
     tallies = tallies.map((val, i) => val + tempResults.tallies[i]);
     messages.push(...tempResults.messages);
-
   }
   //I casted it to a set to remove duplicates, but then the length doesn't match guidelines... fix this later
   messages = [...new Set(messages)].slice(0, guidelines.length);
-
+  
   return { guidelines, tallies, amount, messages, codeMap, results };
 }
 
@@ -168,7 +168,7 @@ function getTallies(diagnostics: Diagnostic[]): Results {
   let amount: number[] = [];
   let amntStrg: string[] = [];
   let messages: string[] = [];
-  let codeMap: Record<string, string> = {};
+  let codeMap = new Map<string, string>();
 
   sortDiagnostics(diagnostics);
 
@@ -195,8 +195,8 @@ function getTallies(diagnostics: Diagnostic[]): Results {
       let message: string = func.message;
       let code: string = func.code.toString();
 
-      if(!codeMap.hasOwnProperty(func.message)){
-        codeMap[message] = code;
+      if(!codeMap.has(func.message)){
+        codeMap.set(message, code);
       }
     }
   });
@@ -204,6 +204,7 @@ function getTallies(diagnostics: Diagnostic[]): Results {
   amount.forEach((func) => {
     amntStrg.push(func.toString());
   });
+  console.log("Code map: ", codeMap);
   return { guidelines, tallies, amount: amntStrg, messages, codeMap };
 }
 
@@ -251,7 +252,7 @@ function CreateWebview(context: vscode.ExtensionContext) {
     tallies: [],
     amount: [],
     messages: [],
-    codeMap: {},
+    codeMap: new Map(),
     results: [],
   };
 

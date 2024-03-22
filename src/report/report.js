@@ -266,14 +266,14 @@ function GenerateTables({ guidelines, tallies, amount, messages, codeMap }) {
     var tableBody = document.getElementById("data-table").getElementsByTagName("tbody")[0];
 
     // Iterate over the arrays and create rows in the table
-    for (let key in codeMap) {
+    for (let key in codeMap.keys()) {
       var row = tableBody.insertRow();
       var codeCell = row.insertCell(0);
       var messageCell = row.insertCell(1);
       //const codeText = document.createElement("p");
       //const messageText = document.createElement("p");
       //codeText.innerText
-      codeCell.textContent = codeMap[key];
+      codeCell.textContent = codeMap.values(key);
       messageCell.textContent = key;
     }
   }
