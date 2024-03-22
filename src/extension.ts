@@ -153,6 +153,7 @@ function GenerateReportData() {
       }
     }
     tallies = tallies.map((val, i) => val + tempResults.tallies[i]);
+    codeMap = sortCodes(codeMap);
     messages.push(...tempResults.messages);
 
   }
@@ -204,6 +205,7 @@ function getTallies(diagnostics: Diagnostic[]): Results {
   amount.forEach((func) => {
     amntStrg.push(func.toString());
   });
+
   return { guidelines, tallies, amount: amntStrg, messages, codeMap };
 }
 
@@ -215,6 +217,22 @@ function sortDiagnostics(diagnostics: Diagnostic[]) {
       throw new Error("one or two is undefined or their code is undefined.");
     }
   });
+}
+
+function sortCodes(codeMap: Record<string, string>){
+  const codeValues = Object.entries(codeMap);
+  const sortedCodes: Record<string, string> = {}
+  codeValues.sort((a,b) => {
+    if(a && b){
+      return a[1] < b[1] ? -1 : 1;
+    } else{
+      throw new Error('a or b is undefined');
+    }
+  })
+  for(const [key, value] of codeValues) {
+    sortedCodes[key] = value;
+  }
+  return sortedCodes;
 }
 
 function GenerateReportFile(context: vscode.ExtensionContext) {
