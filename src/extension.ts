@@ -332,6 +332,7 @@ function CreateWebview(context: vscode.ExtensionContext) {
             new vscode.Position(message.range[1].line, message.range[1].character)
           ),
           preview: false,
+          viewColumn: 1,
         });
     }
   });
