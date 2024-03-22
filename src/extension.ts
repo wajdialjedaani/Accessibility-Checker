@@ -285,11 +285,12 @@ function CreateWebview(context: vscode.ExtensionContext) {
       case "linkTo":
         const fileURI = vscode.Uri.file(message.path);
 
+        //Find tabgroup of file
         for (const tabGroup of window.tabGroups.all) {
           for (const tab of tabGroup.tabs) {
             if (tab.input instanceof vscode.TabInputText && tab.input.uri.toString() === fileURI.toString()) {
+              //File is already opened: open the correct viewColumn and it will be focused automatically
               const viewColumn = tab.group.viewColumn;
-              console.log(viewColumn);
               await window.showTextDocument(fileURI, {
                 selection: new vscode.Range(
                   new vscode.Position(message.range[0].line, message.range[0].character),
@@ -299,44 +300,11 @@ function CreateWebview(context: vscode.ExtensionContext) {
                 viewColumn: viewColumn,
               });
               return;
-              //      //File already opened. Move across groups until you find the correct editor then open it.
-              //      switch (tab.group.viewColumn) {
-              //        case 1:
-              //          await vscode.commands.executeCommand("workbench.action.focusSecondEditorGroup");
-              //          await vscode.commands.executeCommand("workbench.action.focusPreviousGroup");
-              //          break;
-              //        case 2:
-              //          await vscode.commands.executeCommand("workbench.action.focusSecondEditorGroup");
-              //          break;
-              //        case 3:
-              //          await vscode.commands.executeCommand("workbench.action.focusThirdEditorGroup");
-              //          break;
-              //        case 4:
-              //          await vscode.commands.executeCommand("workbench.action.focusFourthEditorGroup");
-              //          break;
-              //        case 5:
-              //          await vscode.commands.executeCommand("workbench.action.focusFifthEditorGroup");
-              //          break;
-              //        case 6:
-              //          await vscode.commands.executeCommand("workbench.action.focusSixthEditorGroup");
-              //          break;
-              //        case 7:
-              //          await vscode.commands.executeCommand("workbench.action.focusSeventhEditorGroup");
-              //          break;
-              //        case 8:
-              //          await vscode.commands.executeCommand("workbench.action.focusEighthEditorGroup");
-              //          break;
-              //        default:
-              //          await vscode.commands.executeCommand("workbench.action.focusEighthEditorGroup");
-              //          while (tab.group !== window.tabGroups.activeTabGroup) {
-              //            await vscode.commands.executeCommand("workbench.action.focusNextGroup");
-              //          }
-              //      }
-              //      return;
             }
           }
         }
 
+        //If reached, file was not already opened. Open in first viewcolumn always.
         window.showTextDocument(fileURI, {
           selection: new vscode.Range(
             new vscode.Position(message.range[0].line, message.range[0].character),
