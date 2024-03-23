@@ -3,6 +3,7 @@ import { Diagnostic } from "vscode";
 export type FileDiagnostics = {
   title: string;
   path: string;
+  relativePath: string;
   diagnostics: Diagnostic[];
 };
 

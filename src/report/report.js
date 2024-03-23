@@ -136,10 +136,11 @@ function GenerateTabs({ results, ...rest }) {
   const emptyContainer = document.getElementById("empty-container");
   //Generate one tab element for each file that we have statistics for, then append them.
   for (const result of results) {
-    const title = result.title;
+    const title = result.relativePath;
     const button = document.createElement("button");
-    button.addEventListener("click", (event) => {
+    button.addEventListener("click", function (event) {
       EraseContents();
+      this.classList.add("active");
       if (result.statistics.guidelines.length === 0) {
         mainContainer.style.display = "none";
         emptyContainer.style.display = "block";
@@ -160,9 +161,10 @@ function GenerateTabs({ results, ...rest }) {
 
   //Generate one button separate from the others for the overall report. Add it in the first spot
   const button = document.createElement("button");
-  button.addEventListener("click", (event) => {
+  button.addEventListener("click", function (event) {
     //Clean up existing stuff if it exists. Then generate again with the data for this file.
     EraseContents();
+    this.classList.add("active");
     GenerateTables({
       guidelines: rest.guidelines,
       tallies: rest.tallies,
@@ -308,7 +310,7 @@ function GenerateList({ result: fileData, vscode }) {
     const row = document.createElement("div");
     row.classList.add("list-row");
     const items = [];
-    const link = document.createElement("div");
+    const link = document.createElement("a");
     link.classList.add("list-item");
     link.classList.add("list-link");
     const fileName = document.createElement("div");
@@ -363,6 +365,7 @@ function EraseContents() {
   Chart.getChart("myChart2")?.destroy();
   document.querySelector("#data-table tbody").innerHTML = "";
   document.querySelector(".list-container").innerHTML = "";
+  document.querySelectorAll(".tablinks").forEach((element) => element.classList.remove("active"));
 }
 
 function escape(htmlStr) {

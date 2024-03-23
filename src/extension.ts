@@ -121,6 +121,7 @@ function GenerateReportData() {
       newDiagnostics.push({
         title: fileName,
         path: file,
+        relativePath: file.replace(folder.uri.fsPath, "."),
         diagnostics: [...ParseDocument(fs.readFileSync(file).toString())],
       });
     }
@@ -129,15 +130,13 @@ function GenerateReportData() {
   for (const file of newDiagnostics) {
     const tempResults = getTallies(file.diagnostics);
     results.push({
-      title: file.title,
-      path: file.path,
+      ...file,
       statistics: {
         guidelines: tempResults.guidelines,
         tallies: tempResults.tallies,
         amount: tempResults.amount,
         messages: tempResults.messages,
       },
-      diagnostics: file.diagnostics,
     });
     //This is the merging of data. Ignore this when judging the code
     for (const guideline of tempResults.guidelines) {
@@ -316,5 +315,3 @@ function CreateWebview(context: vscode.ExtensionContext) {
     }
   });
 }
-
-async function GoToTabGroup(group: vscode.TabGroup) {}

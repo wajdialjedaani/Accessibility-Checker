@@ -94,8 +94,19 @@ th.message {
   padding: 5px 0px 5px 5px;
 }
 
+.web-dark .list-item,
+.vscode-dark .list-message {
+  color: white;
+}
+
+.web-light .list-item,
+.vscode-light .list-message {
+  color: black;
+}
+
 .list-link {
-  flex: 0 0 7%;
+  flex: 0 0 5rem;
+  cursor: pointer;
 }
 
 .list-message {
@@ -113,6 +124,16 @@ th.message {
   height: 10vh;
   padding-bottom: 0px;
   box-sizing: border-box;
+}
+
+.vscode-dark .tab button.active,
+.web-dark .tab button.active {
+  background-color: gray;
+}
+
+.vscode-light .tab button.active,
+.web-light .tab button.active {
+  background-color: #797979;
 }
 
 .empty-container {
@@ -153,10 +174,6 @@ th.message {
 
 .tab button:hover {
   background-color: #ddd;
-}
-
-.tab button.active {
-  background-color: #ccc;
 }
 
 #container {
