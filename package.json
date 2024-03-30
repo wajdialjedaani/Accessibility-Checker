@@ -121,7 +121,7 @@
               "Include a caption for each table.": {
                 "type": "boolean"
               },
-              "Buttons should have button type": {
+              "Empty Button": {
                 "type": "boolean"
               },
               "Select elements should only have one associated label": {
@@ -148,7 +148,7 @@
               "input element, type of 'checkbox', missing an associated label.": true,
               "button has no text in label.": true,
               "Include a caption for each table.": true,
-              "Buttons should have button type": true,
+              "Empty Button": true,
               "Select elements should only have one associated label": true,
               "Textarea elements should only have one associated label": true
             }

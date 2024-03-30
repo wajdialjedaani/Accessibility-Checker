@@ -107,7 +107,7 @@ export const ConfigSchema = z.object({
   perceivable: z.object({
     adaptable: z.object({
       "button has no text in label.": z.boolean(),
-      "Buttons should have button type": z.boolean(),
+      "Empty Button": z.boolean(),
       "Include a caption for each table.": z.boolean(),
       "input element, type of 'checkbox', has no text in label.": z.boolean(),
       "input element, type of 'checkbox', missing an associated label.": z.boolean(),
