@@ -3,7 +3,59 @@ import { Diagnostic, DiagnosticSeverity, Position, Range } from "vscode";
 import { Configuration } from "./util";
 import { by639_1 } from "iso-language-codes";
 
-export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
+export const GuidelineList = [
+  CheckHTMLTags,
+  CheckLangRecognize,
+  CheckImageTags,
+  CheckATags,
+  CheckAnchorText,
+  CheckTitleTags,
+  CheckTitleText,
+  CheckTableTags,
+  CheckOneH1Tag,
+  CheckHeadingOrder,
+  CheckVideoAndAudioTags,
+  CheckButtons,
+  CheckInput,
+  CheckMultipleInputLabels,
+  CheckInputAlt,
+  CheckLabel,
+  CheckID,
+  CheckOnMouseOver,
+  CheckOnMouseDown,
+  CheckOnMouseLeave,
+  CheckOnMouseOut,
+  CheckSelectTag,
+  CheckSelectTagLabels,
+  CheckFormTags,
+  CheckTextAreaTags,
+  CheckTextAreaTagLabels,
+  CheckMarqueeTags,
+  CheckForMetaTimeout,
+  CheckForAcronym,
+  CheckForApplet,
+  CheckForBasefront,
+  CheckForBig,
+  CheckForBlink,
+  CheckForCenter,
+  CheckForDir,
+  CheckForEmbed,
+  CheckForFont,
+  CheckForFrame,
+  CheckForFrameset,
+  CheckForIsIndex,
+  CheckForMenu,
+  CheckForNoFrames,
+  CheckForPlaintext,
+  CheckForS,
+  CheckForStrike,
+  CheckForTt,
+  CheckForU,
+  CheckForItalic,
+  CheckForBold,
+];
+
+function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "img" ||
     !Configuration.GetInstance().get()["perceivable"]["textAlternatives"][
@@ -17,7 +69,7 @@ export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "1.1.1",
         message: "Include an alt attribute on every image",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -28,7 +80,7 @@ export function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "html" ||
     !Configuration.GetInstance().get()["understandable"]["readable"]["document language not identified"]
@@ -40,7 +92,7 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "3.1.1",
         message: "Include a lang attribute to provide the page's language.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -52,7 +104,7 @@ export function CheckHTMLTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "html" ||
     !Configuration.GetInstance().get()["understandable"]["readable"]["document has invalid language code"]
@@ -66,7 +118,7 @@ export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "3.1.1",
         message: "Language is not recognized by HTML.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -77,7 +129,7 @@ export function CheckLangRecognize($: CheerioAPI, element: Element): Diagnostic[
   return [];
 }
 
-export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
   if (
     element.name !== "a" ||
@@ -89,7 +141,7 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "1.3.1",
         message: "Include an href attribute to make text a hyperlink.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -100,7 +152,7 @@ export function CheckATags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for href attribute when using "a" tag
   if (element.name !== "a" || !Configuration.GetInstance().get()["operable"]["navigable"]["Anchor contains no text."])
     return [];
@@ -118,7 +170,7 @@ export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.4.4",
         message: "Anchor tags should have associated text.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -129,7 +181,7 @@ export function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for title tag when using head tag
   if (
     element.name !== "head" ||
@@ -148,7 +200,7 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (containsTitle === 0) {
     return [
       {
-        code: "",
+        code: "2.4.2",
         message: "Include a title for each page.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -160,7 +212,7 @@ export function CheckTitleTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "title" || !Configuration.GetInstance().get()["operable"]["navigable"]["title element is empty"])
     return [];
 
@@ -177,7 +229,7 @@ export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.4.2",
         message: "Titles should have associated text.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -188,7 +240,7 @@ export function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for captions for table
   if (
     element.name !== "table" ||
@@ -207,7 +259,7 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (containsCaption === 0) {
     return [
       {
-        code: "",
+        code: "2.4.6",
         message: "Include a caption for each table.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -218,7 +270,7 @@ export function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "h1" ||
     !Configuration.GetInstance().get()["operable"]["navigable"]["There should only be one <h1> per page"]
@@ -229,7 +281,7 @@ export function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
   if ($("h1").length > 1) {
     return [
       {
-        code: "",
+        code: "2.4.6",
         message: "There should only be one <h1> per page. Consider using <h2>-<h4> instead.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -240,7 +292,7 @@ export function CheckOneH1Tag($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "h1" &&
     element.name !== "h2" &&
@@ -254,7 +306,7 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
   const errors: Diagnostic[] = [];
   if (!range) return [];
   const genericError = {
-    code: "",
+    code: "2.4.6",
     message: "Headings are out of order - place more important headings before less important ones.",
     range: range,
     severity: DiagnosticSeverity.Error,
@@ -364,7 +416,7 @@ export function CheckHeadingOrder($: CheerioAPI, element: Element): Diagnostic[]
 }
 
 //TODO: Controls only necessary if autoplay is enabled
-export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     (element.name !== "video" && element.name !== "audio") ||
     !Configuration.GetInstance().get()["perceivable"]["distinguishable"][
@@ -377,7 +429,7 @@ export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnos
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.1.1",
         message: "Video and audio tags should have control attribute for pausing and volume",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -390,7 +442,7 @@ export function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnos
 
 //TODO: Point of guideline is not for buttons to have type="button", but for buttons to always have a
 //type of some kind set
-export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "button" ||
     !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Buttons should have button type"]
@@ -401,7 +453,7 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "1.3.1",
         message: "Buttons should have button type",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -413,7 +465,7 @@ export function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 //TODO: Add settings for multiple labels. Currently only have settings for missing labels
-export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "input") return [];
 
   if (
@@ -458,21 +510,9 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
         return [];
       return [
         {
-          code: "",
+          code: "1.3.1",
           message:
             'Always use the <label> tag to define labels for <input type="text">, <input type="checkbox">, <input type="radio">, <input type="file">, and <input type="password">.',
-          range: range,
-          severity: DiagnosticSeverity.Error,
-          source: "Accessibility Checker",
-        },
-      ];
-    } else if (foundLabel > 1) {
-      const range = GetStartTagPosition(element);
-      if (!range) return [];
-      return [
-        {
-          code: "",
-          message: "Input elements should only have one associated label.",
           range: range,
           severity: DiagnosticSeverity.Error,
           source: "Accessibility Checker",
@@ -483,7 +523,7 @@ export function CheckInput($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "input" ||
     !Configuration.GetInstance().get()["understandable"]["inputAssistance"][
@@ -511,7 +551,7 @@ export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagn
       if (!range) return [];
       return [
         {
-          code: "",
+          code: "3.2.2",
           message: "Input elements should only have one associated label.",
           range: range,
           severity: DiagnosticSeverity.Error,
@@ -523,7 +563,7 @@ export function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagn
   return [];
 }
 
-export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "input" ||
     !element.attribs.type ||
@@ -536,8 +576,8 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
-        message: "Input elements should not have an alt attribute unless it is of type 'image'.",
+        code: "1.1.1",
+        message: "Input elements should not an alt attribute unless it is of type 'image'.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -549,7 +589,7 @@ export function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 //TODO: Remove extra configuration properties for 'no text' in each of the input types
-export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "label" ||
     !Configuration.GetInstance().get()["understandable"]["inputAssistance"]["label text is empty"]
@@ -568,7 +608,7 @@ export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "1.3.1",
         message: "Labels should have associated text.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -579,7 +619,7 @@ export function CheckLabel($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     !element.attribs ||
     !element.attribs.id ||
@@ -600,7 +640,7 @@ export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "4.1.1",
         message: "IDs must be unique",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -611,7 +651,7 @@ export function CheckID($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     !element.attribs ||
     !element.attribs.onmouseleave ||
@@ -626,7 +666,7 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.1.1",
         message: "onmouseleave is missing onblur attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -638,7 +678,7 @@ export function CheckOnMouseLeave($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     !element.attribs ||
     !element.attribs.onmouseout ||
@@ -653,7 +693,7 @@ export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.1.1",
         message: "onmouseout is missing onblur attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -665,7 +705,7 @@ export function CheckOnMouseOut($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     !element.attribs ||
     !element.attribs.onmouseover ||
@@ -680,7 +720,7 @@ export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] 
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.1.1",
         message: "onmouseover is missing onfocus attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -691,7 +731,7 @@ export function CheckOnMouseOver($: CheerioAPI, element: Element): Diagnostic[] 
   return [];
 }
 
-export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     !element.attribs ||
     !element.attribs.onmousedown ||
@@ -704,7 +744,7 @@ export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] 
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.1.1",
         message: "onmousedown is missing onkeydown attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -716,7 +756,7 @@ export function CheckOnMouseDown($: CheerioAPI, element: Element): Diagnostic[] 
   return [];
 }
 
-export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "select" ||
     !Configuration.GetInstance().get()["perceivable"]["adaptable"]["select element missing an associated label."]
@@ -735,7 +775,7 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "1.3.1",
         message: "Select elements should have an associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -746,7 +786,7 @@ export function CheckSelectTag($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "select" ||
     !Configuration.GetInstance().get()["perceivable"]["adaptable"][
@@ -767,7 +807,7 @@ export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnosti
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "3.3.2",
         message: "Select elements should only have one associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -778,8 +818,7 @@ export function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnosti
   return [];
 }
 
-/*
-export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for title tag when using head tag
   if (element.name !== "form") return [];
   let containsFieldset = 0;
@@ -797,22 +836,11 @@ export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
     }
     else if(child.name === 'legend') containsLegend++;
   }
-  if (containsFieldset === 0 && containsLegend == 0) {
+  if(containsFieldset == 1 && containsLegend == 0){
     return [
       {
-        code: "",
-        message: "Forms should have a fieldset and a legend",
-        range: range,
-        severity: DiagnosticSeverity.Error,
-        source: "Accessibility Checker",
-      },
-    ];
-  }
-  else if(containsFieldset == 1 && containsLegend == 0){
-    return [
-      {
-        code: "",
-        message: "Forms should have a legend",
+        code: "1.3.1",
+        message: "Forms with fieldset should have a legend",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -822,8 +850,8 @@ export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
   else if(containsFieldset == 0 && containsLegend == 1){
     return [
       {
-        code: "",
-        message: "Forms should have a fieldset",
+        code: "1.3.1",
+        message: "The legend tag should only be used with a fieldset element",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -833,9 +861,8 @@ export function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
 
   return [];
 }
-*/
 
-export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "textarea" ||
     !Configuration.GetInstance().get()["perceivable"]["adaptable"]["textarea element missing an associated label."]
@@ -854,7 +881,7 @@ export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[]
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "1.3.1",
         message: "Textarea tags should have an associated label",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -865,7 +892,7 @@ export function CheckTextAreaTags($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "textarea" ||
     !Configuration.GetInstance().get()["perceivable"]["adaptable"][
@@ -886,7 +913,7 @@ export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnos
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "3.3.2",
         message: "Textarea elements should only have one associated label.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -898,7 +925,7 @@ export function CheckTextAreaTagLabels($: CheerioAPI, element: Element): Diagnos
   return [];
 }
 
-export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "marquee" ||
     !Configuration.GetInstance().get()["operable"]["enoughTime"]["Marquee element used"]
@@ -908,7 +935,7 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
   if (!range) return [];
   return [
     {
-      code: "",
+      code: "2.2.2",
       message: "The <marquee> tag is depreciated, use CSS animation or transform properties instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -919,7 +946,7 @@ export function CheckMarqueeTags($: CheerioAPI, element: Element): Diagnostic[] 
   return [];
 }
 
-export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "meta" ||
     !Configuration.GetInstance().get()["operable"]["enoughTime"]["Meta refresh with a time-out is used"]
@@ -931,7 +958,7 @@ export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic
     if (!range) return [];
     return [
       {
-        code: "",
+        code: "2.2.1",
         message: "Using a meta refresh with a timeout is not considered in line with best accessibility practices.",
         range: range,
         severity: DiagnosticSeverity.Error,
@@ -943,7 +970,7 @@ export function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic
   return [];
 }
 
-export function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "acronym") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -960,7 +987,7 @@ export function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "applet") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -977,7 +1004,7 @@ export function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "basefront") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -994,7 +1021,7 @@ export function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-export function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "big") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1011,13 +1038,13 @@ export function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "blink") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
     {
-      code: "",
+      code: "2.2.2",
       message: "<blink> tag is depreciated, consider using CSS Animation instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1028,7 +1055,7 @@ export function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "center") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1045,7 +1072,7 @@ export function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "dir") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1062,7 +1089,7 @@ export function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "embed") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1079,13 +1106,13 @@ export function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "font") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
     {
-      code: "",
+      code: "1.4.4",
       message: "<font> tag is depreciated, use CSS styles instead.",
       range: range,
       severity: DiagnosticSeverity.Error,
@@ -1096,7 +1123,7 @@ export function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "frame") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1113,7 +1140,7 @@ export function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "frameset") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1130,7 +1157,7 @@ export function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] 
   return [];
 }
 
-export function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "isindex") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1147,7 +1174,7 @@ export function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "noframes") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1164,7 +1191,7 @@ export function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] 
   return [];
 }
 
-export function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "menu") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1181,7 +1208,7 @@ export function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "plaintext") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1198,7 +1225,7 @@ export function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-export function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "s") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1215,7 +1242,7 @@ export function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "strike") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1232,7 +1259,7 @@ export function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "tt") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1249,7 +1276,7 @@ export function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "u") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1266,7 +1293,7 @@ export function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "i") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
@@ -1283,7 +1310,7 @@ export function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-export function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
+function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
   if (element.name !== "b") return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];

@@ -16,12 +16,33 @@
   "contributes": {
     "commands": [
       {
-        "command": "accessibility-checker.ParseDocument",
-        "title": "Parse Document"
-      },
-      {
         "command": "accessibility-checker.generateReport",
         "title": "Generate Report"
+      },
+      {
+        "command": "accessibility-checker.generateReportFile",
+        "title": "Generate Report File"
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "report",
+        "title": "Generat Report",
+        "description": "A walkthrough to generate a report for Accessibility Checker",
+        "steps": [
+          {
+            "id": "Generate Report",
+            "title": "Generate an Accessibility Checker Report",
+            "description": "This will run the Generate Report command \n[Generate Report](command:accessibility-checker.generateReport)",
+            "media": {
+              "image": "media/generate_report.gif",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "onCommand.accessibility-checker.generateReport"
+            ]
+          }
+        ]
       }
     ],
     "configuration": [
@@ -349,6 +370,7 @@
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.56.0",
+    "script-loader": "^0.7.2",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
