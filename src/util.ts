@@ -107,7 +107,7 @@ export const ConfigSchema = z.object({
   perceivable: z.object({
     adaptable: z.object({
       "button has no text in label.": z.boolean(),
-      "Buttons should have button type": z.boolean(),
+      "Empty Button": z.boolean(),
       "Include a caption for each table.": z.boolean(),
       "input element, type of 'checkbox', has no text in label.": z.boolean(),
       "input element, type of 'checkbox', missing an associated label.": z.boolean(),
@@ -163,3 +163,17 @@ export function walk(dir: string): string[] {
     .flatMap((file) => (file.isDirectory() ? walk(join(dir, file.name)) : join(dir, file.name)))
     .filter((file) => path.extname(file) === ".html");
 }
+
+export const WebviewMessageSchema = z.object({
+  command: z.string(),
+  range: z
+    .object({
+      line: z.number(),
+      character: z.number(),
+    })
+    .array()
+    .length(2),
+  path: z.string(),
+});
+
+export type WebviewMessageType = z.infer<typeof WebviewMessageSchema>;

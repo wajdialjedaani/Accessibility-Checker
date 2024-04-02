@@ -7,8 +7,10 @@ export const GuidelineList = [
   CheckHTMLTags,
   CheckLangRecognize,
   CheckImageTags,
+  CheckImageAnchorTags,
   CheckATags,
   CheckAnchorText,
+  CheckHeading,
   CheckTitleTags,
   CheckTitleText,
   CheckTableTags,
@@ -16,6 +18,7 @@ export const GuidelineList = [
   CheckHeadingOrder,
   CheckVideoAndAudioTags,
   CheckButtons,
+  CheckInputButtons,
   CheckInput,
   CheckMultipleInputLabels,
   CheckInputAlt,
@@ -59,7 +62,7 @@ function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "img" ||
     !Configuration.GetInstance().get()["perceivable"]["textAlternatives"][
-      "Image used as anchor is missing valid Alt text."
+      "img element missing alt attribute"
     ]
   )
     return [];
@@ -71,6 +74,44 @@ function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
       {
         code: "1.1.1",
         message: "Include an alt attribute on every image",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  return [];
+}
+
+function CheckImageAnchorTags($: CheerioAPI, element: Element): Diagnostic[] {
+  if (
+    element.name !== "a" ||
+    !Configuration.GetInstance().get()["perceivable"]["textAlternatives"][
+      "Image used as anchor is missing valid Alt text."
+    ]
+  )
+    return [];
+  let containsImage = 0;
+  let imgHasAlt = 0;
+  let imgChild = element;
+  //Checking if an image is used for the anchor
+  const children = $(element).children();
+  for (let child of children) {
+    if (child.name === "img") {
+      containsImage = 1;
+      if(child.attribs.alt){
+        imgHasAlt = 1;
+      }
+      imgChild = child;
+    }
+  }
+  if (containsImage && imgHasAlt === 0) {
+    const range = GetStartTagPosition(imgChild);
+    if (!range) return [];
+    return [
+      {
+        code: "1.1.1",
+        message: "Image used as anchor should have Alt text.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -163,6 +204,10 @@ function CheckAnchorText($: CheerioAPI, element: Element): Diagnostic[] {
     .each((i, e) => {
       if (e.type === "text") {
         foundText = true;
+      } else if(e.type === "tag"){
+        if(e.name === "img"){
+          foundText = true;
+        }
       }
     });
   if (!foundText) {
@@ -238,6 +283,39 @@ function CheckTitleText($: CheerioAPI, element: Element): Diagnostic[] {
     ];
   }
   return [];
+}
+
+function CheckHeading($: CheerioAPI, element: Element): Diagnostic[] {
+  if (
+    element.name !== "h1" && element.name !== "h2" && element.name !== "h3" && element.name !== "h4" && element.name !== "h5" && element.name !== "h6"
+  )
+    return [];
+    let foundText = false;
+    $(element)
+      .contents()
+      .each((i, e) => {
+        if (e.type === "text") {
+          foundText = true;
+        } else if(e.type === "tag"){
+          if(e.name === "img"){
+            foundText = true;
+          }
+        }
+      });
+    if (!foundText) {
+      const range = GetStartTagPosition(element);
+      if (!range) return [];
+      return [
+        {
+          code: "2.4.6",
+          message: "Heading tags should have associated text or image.",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        },
+      ];
+    }
+    return [];
 }
 
 function CheckTableTags($: CheerioAPI, element: Element): Diagnostic[] {
@@ -440,21 +518,50 @@ function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
   return [];
 }
 
-//TODO: Point of guideline is not for buttons to have type="button", but for buttons to always have a
-//type of some kind set
 function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "button" ||
-    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Buttons should have button type"]
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Empty Button"]
   )
     return [];
-  if (element.attribs.type !== "button") {
+  let foundText = false;
+  $(element)
+    .contents()
+    .each((i, e) => {
+      if (e.type === "text") {
+        foundText = true;
+      }
+    });
+  if (!foundText) {
     const range = GetStartTagPosition(element);
     if (!range) return [];
     return [
       {
-        code: "1.3.1",
-        message: "Buttons should have button type",
+        code: "2.4.4",
+        message: "Place text content within the <button> element.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  return [];
+}
+
+function CheckInputButtons($: CheerioAPI, element: Element): Diagnostic[] {
+  if (
+    element.name !== "input" ||
+    !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Empty Button"]
+  )
+    return [];
+  
+  if ((element.attribs.type == "submit" || element.attribs.type == "button" || element.attribs.type == "reset") && !element.attribs.value) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "2.4.4",
+        message: "Give input element a value attribute.",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -563,6 +670,7 @@ function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
+//TODO: Figure out what guideline this should be for
 function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "input" ||
@@ -819,10 +927,11 @@ function CheckSelectTagLabels($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
-  //Check for title tag when using head tag
+  //Check for fieldset within form
   if (element.name !== "form") return [];
   let containsFieldset = 0;
   let containsLegend = 0;
+  let radioCount = 0;
   const range = GetStartTagPosition(element);
   if (!range) return [];
   const children = $(element).children();
@@ -833,10 +942,28 @@ function CheckFormTags($: CheerioAPI, element: Element): Diagnostic[] {
       for(let newChild of fieldChildren) {
         if(newChild.name === 'legend') containsLegend++;
       }
+    } else if(child.name === 'legend') containsLegend++;
+    else if(child.name === 'p'){
+      const pChildren = $(child).children();
+      for(let pChild of pChildren){
+        if(pChild.name === "input" && pChild.attribs.type === "radio"){
+          radioCount += 1;
+        }
+      }
     }
-    else if(child.name === 'legend') containsLegend++;
   }
-  if(containsFieldset == 1 && containsLegend == 0){
+  if(containsFieldset === 0 && radioCount > 1){
+    return [
+      {
+        code: "1.3.1",
+        message: "Forms with multiple radio buttons shoud use fieldset and legend to group them.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+  else if(containsFieldset === 1 && containsLegend === 0){
     return [
       {
         code: "1.3.1",

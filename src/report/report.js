@@ -42,6 +42,8 @@ class ClassWatcher {
   };
 }
 
+//If in webview, we need to import and define dependencies, but we don't want to
+//overwrite them in a browser environment, so we check first.
 if (typeof Chart === "undefined") {
   var {
     Chart,
@@ -56,6 +58,7 @@ if (typeof Chart === "undefined") {
     Tooltip,
   } = {};
 }
+
 //This is the "entry point" for our scripting. Doing it like this allows us to receive any necessary data
 //from our extension before running code within the scope of the webview. Follow the way it's done below:
 //names will remain the same as they are within extension.ts. They are properties of the data object.
@@ -87,11 +90,12 @@ if (typeof acquireVsCodeApi === "function") {
       Legend,
       Tooltip
     );
-    main(event.data);
+    const vscode = acquireVsCodeApi();
+    main({ ...event.data, vscode });
   });
 } else {
   //We are located in a web browser
-  document.querySelector("body").classList.add("vscode-dark");
+  document.querySelector("body").classList.add("web-dark");
   document.querySelector("body").style.backgroundColor = "black";
   main(data);
 }
@@ -99,17 +103,17 @@ if (typeof acquireVsCodeApi === "function") {
 function main(props) {
   //This should be called once. All other webview updating (as of now) is done through event listeners on the tabs
   //Generate tabs once, and pre-generate the summary to display initially
-  const mainContainer = document.getElementById('container');
-  const emptyContainer = document.getElementById('empty-container');
+  const mainContainer = document.getElementById("container");
+  const emptyContainer = document.getElementById("empty-container");
   const tabs = document.querySelector(".tab");
   InitListeners();
-  if(props.guidelines.length === 0){
-    mainContainer.style.display = 'none';
-    tabs.style.display = 'none';
-    emptyContainer.style.display = 'block';
-  } else{
-    mainContainer.style.display = 'block';
-    emptyContainer.style.display = 'none';
+  if (props.guidelines.length === 0) {
+    mainContainer.style.display = "none";
+    tabs.style.display = "none";
+    emptyContainer.style.display = "block";
+  } else {
+    mainContainer.style.display = "block";
+    emptyContainer.style.display = "none";
     GenerateTabs(props);
     GenerateTables({
       guidelines: props.guidelines,
@@ -125,27 +129,38 @@ function InitListeners() {
   document.querySelector(".tab").addEventListener("wheel", HorizontalScroll);
 }
 
+function CheckEmpty(guidelines) {
+  container = document.getElementById("container");
+  emptyContainer = document.getElementById("empty-container");
+
+  if (guidelines.length === 0) {
+    emptyContainer.style.display = "block";
+    container.style.display = "none";
+  } else {
+    emptyContainer.style.display = "none";
+    container.style.display = "block";
+  }
+}
+
 function GenerateTabs({ results, ...rest }) {
   const container = document.querySelector(".tab");
-  const mainContainer = document.getElementById('container');
-  const emptyContainer = document.getElementById('empty-container');
+  const mainContainer = document.getElementById("container");
+  const emptyContainer = document.getElementById("empty-container");
   //Generate one tab element for each file that we have statistics for, then append them.
   for (const result of results) {
-    const title = result.title;
+    const title = result.relativePath;
     const button = document.createElement("button");
-    button.addEventListener("click", (event) => {
-      Chart.getChart("myChart")?.destroy();
-      Chart.getChart("myChart2")?.destroy();
-      document.querySelector("#data-table tbody").innerHTML = "";
-      document.querySelector(".list-container").innerHTML = "";
-      if(result.statistics.guidelines.length === 0){
-        mainContainer.style.display = 'none';
-        emptyContainer.style.display = 'block';
+    button.addEventListener("click", function (event) {
+      EraseContents();
+      this.classList.add("active");
+      if (result.statistics.guidelines.length === 0) {
+        mainContainer.style.display = "none";
+        emptyContainer.style.display = "block";
       } else {
-        mainContainer.style.display = 'block';
-        emptyContainer.style.display = 'none';
+        mainContainer.style.display = "block";
+        emptyContainer.style.display = "none";
         GenerateTables(result.statistics);
-        GenerateList(result);
+        GenerateList({ result, vscode: rest.vscode });
       }
     });
     button.classList.add("tablinks");
@@ -158,18 +173,16 @@ function GenerateTabs({ results, ...rest }) {
 
   //Generate one button separate from the others for the overall report. Add it in the first spot
   const button = document.createElement("button");
-  button.addEventListener("click", (event) => {
+  button.addEventListener("click", function (event) {
+    this.classList.add("active");
     //Clean up existing stuff if it exists. Then generate again with the data for this file.
-    if(rest.guidelines.length === 0){
-      mainContainer.style.display = 'none';
-      emptyContainer.style.display = 'block';
-    }
-    else{
-      mainContainer.style.display = 'block';
-      emptyContainer.style.display = 'none';
-      Chart.getChart("myChart")?.destroy();
-      Chart.getChart("myChart2")?.destroy();
-      document.querySelector("#data-table tbody").innerHTML = "";
+    if (rest.guidelines.length === 0) {
+      mainContainer.style.display = "none";
+      emptyContainer.style.display = "block";
+    } else {
+      mainContainer.style.display = "block";
+      emptyContainer.style.display = "none";
+      EraseContents();
       GenerateTables({
         guidelines: rest.guidelines,
         tallies: rest.tallies,
@@ -299,25 +312,28 @@ function GenerateTables({ guidelines, tallies, amount, messages, codeMap }) {
   );
 }
 
-function GenerateList(fileData) {
+function GenerateList({ result: fileData, vscode }) {
   const container = document.querySelector(".list-container");
   for (const diagnostic of fileData.diagnostics) {
     const row = document.createElement("div");
-    //row.classList.add("list-row");
+    row.classList.add("list-row");
     const items = [];
-    const link = document.createElement("div");
+    const link = document.createElement("a");
     link.classList.add("list-item");
+    link.classList.add("list-link");
     const fileName = document.createElement("div");
     fileName.classList.add("list-item");
-    fileName.innerHTML = diagnostic.message;
+    fileName.classList.add("list-message");
+    fileName.innerHTML = escape(diagnostic.message);
     link.innerHTML = `${diagnostic.range[0].line}:${diagnostic.range[0].character}`;
 
     link.addEventListener("click", () => {
-      LinkToError();
+      if (vscode) LinkToError({ path: fileData.path, diagnostic, vscode });
     });
 
-    row.appendChild(fileName);
     row.appendChild(link);
+    row.appendChild(fileName);
+
     container.appendChild(row);
   }
 }
@@ -329,14 +345,12 @@ function HorizontalScroll(event) {
   ) {
     return;
   }
-  console.log(event.deltaY);
   event.preventDefault();
   this.scrollLeft += event.deltaY;
 }
 
 function ToggleOnLightMode(charts) {
   for (const chart of charts) {
-    console.log(chart);
     chart.options.plugins.legend.labels.color = "#000000";
     if (chart.options.scales?.y?.ticks?.color) chart.options.scales.y.ticks.color = "#000000";
     if (chart.options.scales?.x?.ticks?.color) chart.options.scales.x.ticks.color = "#000000";
@@ -352,4 +366,29 @@ function ToggleOnDarkMode(charts) {
     if (chart.options.scales?.x?.ticks?.color) chart.options.scales.x.ticks.color = "#ffffff";
     chart.update();
   }
+}
+
+function EraseContents() {
+  Chart.getChart("myChart")?.destroy();
+  Chart.getChart("myChart2")?.destroy();
+  document.querySelector("#data-table tbody").innerHTML = "";
+  document.querySelector(".list-container").innerHTML = "";
+  document.querySelectorAll(".tablinks").forEach((element) => element.classList.remove("active"));
+}
+
+function escape(htmlStr) {
+  return htmlStr
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function LinkToError({ diagnostic, vscode, path }) {
+  vscode.postMessage({
+    command: "linkTo",
+    range: diagnostic.range,
+    path: path,
+  });
 }

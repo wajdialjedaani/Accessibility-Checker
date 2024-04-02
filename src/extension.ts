@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import * as fs from "fs";
 import * as path from "path";
 import { window, languages, TextDocument, DiagnosticCollection, Diagnostic } from "vscode";
-import { isElement, Configuration, walk } from "./util";
+import { isElement, Configuration, walk, WebviewMessageSchema } from "./util";
 import { GuidelineList } from "./guidelineChecks";
 import GenerateReportContent from "./generateView";
 import { FileDiagnostics, FileStats, Results } from "./types";
@@ -41,9 +41,12 @@ export function activate(context: vscode.ExtensionContext) {
     CreateWebview(context);
   });
 
-  const CreateFileCommandDispose = vscode.commands.registerCommand("accessibility-checker.generateReportFile", () => {
-    GenerateReportFile(context);
-  });
+  const CreateFileCommandDispose = vscode.commands.registerCommand(
+    "accessibility-checker.generateReportFile",
+    async () => {
+      await GenerateReportFile(context);
+    }
+  );
 
   const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
@@ -120,6 +123,7 @@ function GenerateReportData() {
       newDiagnostics.push({
         title: fileName,
         path: file,
+        relativePath: file.replace(folder.uri.fsPath, "."),
         diagnostics: [...ParseDocument(fs.readFileSync(file).toString())],
       });
     }
@@ -128,8 +132,7 @@ function GenerateReportData() {
   for (const file of newDiagnostics) {
     const tempResults = getTallies(file.diagnostics);
     results.push({
-      title: file.title,
-      path: file.path,
+      ...file,
       statistics: {
         guidelines: tempResults.guidelines,
         tallies: tempResults.tallies,
@@ -137,7 +140,6 @@ function GenerateReportData() {
         messages: tempResults.messages,
         codeMap: tempResults.codeMap,
       },
-      diagnostics: file.diagnostics,
     });
     //This is the merging of data. Ignore this when judging the code
     codeMap = {...codeMap, ...tempResults.codeMap};
@@ -235,7 +237,7 @@ function sortCodes(codeMap: Record<string, string>){
   return sortedCodes;
 }
 
-function GenerateReportFile(context: vscode.ExtensionContext) {
+async function GenerateReportFile(context: vscode.ExtensionContext) {
   if (!vscode.workspace.workspaceFolders) return;
 
   const { guidelines, tallies, amount, messages, codeMap, results } = GenerateReportData() || {
@@ -259,7 +261,13 @@ function GenerateReportFile(context: vscode.ExtensionContext) {
 
   const path = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, "ACReport.html").fsPath;
 
-  fs.writeFileSync(path, htmlContent, { flag: "w", encoding: "utf8" });
+  const desiredPathInfo = await window.showSaveDialog({
+    defaultUri: vscode.workspace.workspaceFolders[0].uri,
+    filters: { "HTML Document": ["html"] },
+  });
+  if (desiredPathInfo) {
+    fs.writeFileSync(desiredPathInfo.fsPath, htmlContent, { flag: "w", encoding: "utf8" });
+  }
 }
 
 function CreateWebview(context: vscode.ExtensionContext) {
@@ -274,10 +282,15 @@ function CreateWebview(context: vscode.ExtensionContext) {
   };
 
   // Create a webview panel
-  const panel = vscode.window.createWebviewPanel("dataVisualization", "Data Visualization", vscode.ViewColumn.One, {
-    enableScripts: true,
-    retainContextWhenHidden: true,
-  });
+  const panel = vscode.window.createWebviewPanel(
+    "dataVisualization",
+    "Data Visualization",
+    { preserveFocus: true, viewColumn: -1 },
+    {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+    }
+  );
 
   //VSCode restricts access to files. Get the file paths and convert those to webview URIs instead to access them inside of the HTML.
   const stylesPath = vscode.Uri.joinPath(context.extensionUri, "src", "report", "report.css");
@@ -296,4 +309,40 @@ function CreateWebview(context: vscode.ExtensionContext) {
   // Set the HTML content then send the data, triggering our scripts to run
   panel.webview.html = htmlContent;
   panel.webview.postMessage({ guidelines, tallies, amount, messages, codeMap, results });
+  panel.webview.onDidReceiveMessage(async (rawMessage) => {
+    const message = WebviewMessageSchema.parse(rawMessage);
+    switch (message.command) {
+      case "linkTo":
+        const fileURI = vscode.Uri.file(message.path);
+
+        //Find tabgroup of file
+        for (const tabGroup of window.tabGroups.all) {
+          for (const tab of tabGroup.tabs) {
+            if (tab.input instanceof vscode.TabInputText && tab.input.uri.toString() === fileURI.toString()) {
+              //File is already opened: open the correct viewColumn and it will be focused automatically
+              const viewColumn = tab.group.viewColumn;
+              await window.showTextDocument(fileURI, {
+                selection: new vscode.Range(
+                  new vscode.Position(message.range[0].line, message.range[0].character),
+                  new vscode.Position(message.range[1].line, message.range[1].character)
+                ),
+                preview: false,
+                viewColumn: viewColumn,
+              });
+              return;
+            }
+          }
+        }
+
+        //If reached, file was not already opened. Open in first viewcolumn always.
+        window.showTextDocument(fileURI, {
+          selection: new vscode.Range(
+            new vscode.Position(message.range[0].line, message.range[0].character),
+            new vscode.Position(message.range[1].line, message.range[1].character)
+          ),
+          preview: false,
+          viewColumn: 1,
+        });
+    }
+  });
 }

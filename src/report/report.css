@@ -2,6 +2,11 @@
   width: 100%;
   text-align: center;
 }
+
+.web-dark .title-container {
+  color: white;
+}
+
 .chart-container {
   border: 1px solid;
   min-height: 300px;
@@ -12,11 +17,13 @@
   box-sizing: border-box;
 }
 
+.web-dark .chart-container,
 .vscode-dark .chart-container {
   border-color: #ffffff;
 }
 
-.vscode-dark .table-container {
+.vscode-dark .table-container,
+.web-dark .table-container {
   border-color: #ffffff;
 }
 
@@ -40,6 +47,7 @@
   padding: 10px;
   width: 100%;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .table-container table {
@@ -66,19 +74,43 @@ th.message {
 .list-container {
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   width: 100%;
+  max-height: 50vh;
+  overflow-y: scroll;
 }
 
 .list-row {
-  border: 1px solid white;
+  border: 0px solid white;
   box-sizing: border-box;
   width: 100%;
+  display: flex;
 }
 
 .list-item {
   display: inline;
   border: 1px solid white;
   box-sizing: border-box;
+  padding: 5px 0px 5px 5px;
+}
+
+.web-dark .list-item,
+.vscode-dark .list-message {
+  color: white;
+}
+
+.web-light .list-item,
+.vscode-light .list-message {
+  color: black;
+}
+
+.list-link {
+  flex: 0 0 5rem;
+  cursor: pointer;
+}
+
+.list-message {
+  flex: 1 1 content;
 }
 
 .tab {
@@ -94,18 +126,34 @@ th.message {
   box-sizing: border-box;
 }
 
+.vscode-dark .tab button.active,
+.web-dark .tab button.active {
+  background-color: gray;
+}
+
+.vscode-light .tab button.active,
+.web-light .tab button.active {
+  background-color: #797979;
+}
+
 .empty-container {
   font-size: 30px;
   text-align: center;
   padding-top: 50px;
 }
 
-.vscode-dark .tab {
+.web-dark .empty-container {
+  color: white;
+}
+
+.vscode-dark .tab,
+.web-dark .tab {
   border: 1px solid #e2e2e2;
   background-color: black;
 }
 
-.vscode-light .tab {
+.vscode-light .tab,
+.web-light .tab {
   border: 1px solid #000000;
   background-color: rgb(193, 193, 193);
 }
@@ -128,10 +176,6 @@ th.message {
   background-color: #ddd;
 }
 
-.tab button.active {
-  background-color: #ccc;
-}
-
 #container {
   width: 100%;
   display: flex;
@@ -145,11 +189,13 @@ th.message {
   color: black;
 }
 
-.vscode-dark .text {
+.vscode-dark .text,
+.web-dark .text {
   color: white;
 }
 
-.vscode-dark .table-container h2 {
+.vscode-dark .table-container h2,
+.web-dark .table-container h2 {
   color: white;
 }
 
@@ -164,7 +210,9 @@ th.message {
 }
 
 .vscode-dark th,
-.vscode-dark td {
+.vscode-dark td,
+.web-dark th,
+.web-dark td {
   color: white;
   border-color: white;
 }
