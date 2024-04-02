@@ -266,12 +266,24 @@ th.message {
   margin-left: 1.5em;
 }
 
-.vscode-dark .tj_container li span.tj_description.tj_leaf.active {
+.vscode-dark .tj_container li span.tj_description.tj_leaf.active,
+.web-dark .tj_container li span.tj_description.tj_leaf.active {
   background-color: #828282;
 }
 
-.vscode-light .tj_container li span.tj_description.tj_leaf.active {
+.vscode-light .tj_container li span.tj_description.tj_leaf.active,
+.web-light .tj_container li span.tj_description.tj_leaf.active {
   background-color: #373737;
+}
+
+.vscode-dark .tj_container li span.tj_description,
+.web-dark .tj_container li span.tj_description {
+  color: #ccc;
+}
+
+.vscode-light .tj_container li span.tj_description,
+.web-light .tj_container li span.tj_description {
+  color: #000000;
 }
 
 .tj_container li[disabled=""] {
