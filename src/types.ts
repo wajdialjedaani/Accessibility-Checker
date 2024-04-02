@@ -19,4 +19,5 @@ export type Results = {
   tallies: number[];
   amount: string[];
   messages: string[];
+  codeMap: Record<string, string>;
 };

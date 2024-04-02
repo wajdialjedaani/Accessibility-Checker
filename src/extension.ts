@@ -112,6 +112,8 @@ function GenerateReportData() {
   let amount: string[] = [];
   let messages: string[] = [];
   const results: FileStats[] = [];
+  let codeMap: Record<string, string> = {};
+
 
   //User can hypothetically have multiple workspaces in one window
   for (const folder of vscode.workspace.workspaceFolders) {
@@ -136,9 +138,11 @@ function GenerateReportData() {
         tallies: tempResults.tallies,
         amount: tempResults.amount,
         messages: tempResults.messages,
+        codeMap: tempResults.codeMap,
       },
     });
     //This is the merging of data. Ignore this when judging the code
+    codeMap = {...codeMap, ...tempResults.codeMap};
     for (const guideline of tempResults.guidelines) {
       if (guidelines.includes(guideline)) {
         amount[guidelines.indexOf(guideline)] = (
@@ -151,12 +155,14 @@ function GenerateReportData() {
       }
     }
     tallies = tallies.map((val, i) => val + tempResults.tallies[i]);
+    codeMap = sortCodes(codeMap);
     messages.push(...tempResults.messages);
+
   }
   //I casted it to a set to remove duplicates, but then the length doesn't match guidelines... fix this later
   messages = [...new Set(messages)].slice(0, guidelines.length);
 
-  return { guidelines, tallies, amount, messages, results };
+  return { guidelines, tallies, amount, messages, codeMap, results };
 }
 
 function getTallies(diagnostics: Diagnostic[]): Results {
@@ -165,7 +171,7 @@ function getTallies(diagnostics: Diagnostic[]): Results {
   let amount: number[] = [];
   let amntStrg: string[] = [];
   let messages: string[] = [];
-  let storage: string[] = [];
+  let codeMap: Record<string, string> = {};
 
   sortDiagnostics(diagnostics);
 
@@ -188,13 +194,21 @@ function getTallies(diagnostics: Diagnostic[]): Results {
         messages.push(func.message);
         amount.push(1);
       }
+
+      let message: string = func.message;
+      let code: string = func.code.toString();
+
+      if(!codeMap.hasOwnProperty(func.message)){
+        codeMap[message] = code;
+      }
     }
   });
 
   amount.forEach((func) => {
     amntStrg.push(func.toString());
   });
-  return { guidelines, tallies, amount: amntStrg, messages };
+
+  return { guidelines, tallies, amount: amntStrg, messages, codeMap };
 }
 
 function sortDiagnostics(diagnostics: Diagnostic[]) {
@@ -207,10 +221,26 @@ function sortDiagnostics(diagnostics: Diagnostic[]) {
   });
 }
 
+function sortCodes(codeMap: Record<string, string>){
+  const codeValues = Object.entries(codeMap);
+  const sortedCodes: Record<string, string> = {}
+  codeValues.sort((a,b) => {
+    if(a && b){
+      return a[1] < b[1] ? -1 : 1;
+    } else{
+      throw new Error('a or b is undefined');
+    }
+  })
+  for(const [key, value] of codeValues) {
+    sortedCodes[key] = value;
+  }
+  return sortedCodes;
+}
+
 async function GenerateReportFile(context: vscode.ExtensionContext) {
   if (!vscode.workspace.workspaceFolders) return;
 
-  const { guidelines, tallies, amount, messages, results } = GenerateReportData() || {
+  const { guidelines, tallies, amount, messages, codeMap, results } = GenerateReportData() || {
     guidelines: [],
     tallies: [],
     amount: [],
@@ -242,11 +272,12 @@ async function GenerateReportFile(context: vscode.ExtensionContext) {
 
 function CreateWebview(context: vscode.ExtensionContext) {
   window.showInformationMessage("Generating Report...");
-  const { guidelines, tallies, amount, messages, results } = GenerateReportData() || {
+  const { guidelines, tallies, amount, messages, codeMap, results } = GenerateReportData() || {
     guidelines: [],
     tallies: [],
     amount: [],
     messages: [],
+    codeMap: {},
     results: [],
   };
 
@@ -277,7 +308,7 @@ function CreateWebview(context: vscode.ExtensionContext) {
 
   // Set the HTML content then send the data, triggering our scripts to run
   panel.webview.html = htmlContent;
-  panel.webview.postMessage({ guidelines, tallies, amount, messages, results });
+  panel.webview.postMessage({ guidelines, tallies, amount, messages, codeMap, results });
   panel.webview.onDidReceiveMessage(async (rawMessage) => {
     const message = WebviewMessageSchema.parse(rawMessage);
     switch (message.command) {

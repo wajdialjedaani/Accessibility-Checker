@@ -103,14 +103,26 @@ if (typeof acquireVsCodeApi === "function") {
 function main(props) {
   //This should be called once. All other webview updating (as of now) is done through event listeners on the tabs
   //Generate tabs once, and pre-generate the summary to display initially
+  const mainContainer = document.getElementById("container");
+  const emptyContainer = document.getElementById("empty-container");
+  const tabs = document.querySelector(".tab");
   InitListeners();
-  GenerateTabs(props);
-  GenerateTables({
-    guidelines: props.guidelines,
-    tallies: props.tallies,
-    amount: props.amount,
-    messages: props.messages,
-  });
+  if (props.guidelines.length === 0) {
+    mainContainer.style.display = "none";
+    tabs.style.display = "none";
+    emptyContainer.style.display = "block";
+  } else {
+    mainContainer.style.display = "block";
+    emptyContainer.style.display = "none";
+    GenerateTabs(props);
+    GenerateTables({
+      guidelines: props.guidelines,
+      tallies: props.tallies,
+      amount: props.amount,
+      messages: props.messages,
+      codeMap: props.codeMap,
+    });
+  }
 }
 
 function InitListeners() {
@@ -162,15 +174,23 @@ function GenerateTabs({ results, ...rest }) {
   //Generate one button separate from the others for the overall report. Add it in the first spot
   const button = document.createElement("button");
   button.addEventListener("click", function (event) {
-    //Clean up existing stuff if it exists. Then generate again with the data for this file.
-    EraseContents();
     this.classList.add("active");
-    GenerateTables({
-      guidelines: rest.guidelines,
-      tallies: rest.tallies,
-      amount: rest.amount,
-      messages: rest.messages,
-    });
+    //Clean up existing stuff if it exists. Then generate again with the data for this file.
+    if (rest.guidelines.length === 0) {
+      mainContainer.style.display = "none";
+      emptyContainer.style.display = "block";
+    } else {
+      mainContainer.style.display = "block";
+      emptyContainer.style.display = "none";
+      EraseContents();
+      GenerateTables({
+        guidelines: rest.guidelines,
+        tallies: rest.tallies,
+        amount: rest.amount,
+        messages: rest.messages,
+        codeMap: rest.codeMap,
+      });
+    }
   });
   button.classList.add("tablinks");
   const buttonText = document.createElement("p");
@@ -180,7 +200,7 @@ function GenerateTabs({ results, ...rest }) {
   container.prepend(button);
 }
 
-function GenerateTables({ guidelines, tallies, amount, messages }) {
+function GenerateTables({ guidelines, tallies, amount, messages, codeMap }) {
   const xValues = ["Perceivable", "Operable", "Understandable", "Robust"];
   const yValues = [tallies[0], tallies[1], tallies[2], tallies[3]];
   const barColors = ["#b91d47", "#00aba9", "#2b5797", "#e8c3b9", "#1e7145", "#00bf7d", "#8babf1", "#e6308a", "#89ce00"];
@@ -254,37 +274,25 @@ function GenerateTables({ guidelines, tallies, amount, messages }) {
     },
   });
 
-  // Example arrays for codes and messages
-  var codeArray = guidelines;
-  var messageArray = messages;
-
   // Function to fill the table with data from the arrays
-  function fillTable(codeArray, messageArray) {
+  function fillTable(codeMap) {
     var tableBody = document.getElementById("data-table").getElementsByTagName("tbody")[0];
 
-    // Ensure both arrays are of equal length
-    if (codeArray.length !== messageArray.length) {
-      console.log(codeArray.length);
-      console.log(messageArray.length);
-      console.error("Arrays must be of equal length.");
-      return;
-    }
-
     // Iterate over the arrays and create rows in the table
-    for (var i = 0; i < codeArray.length; i++) {
+    for (let key in codeMap) {
       var row = tableBody.insertRow();
       var codeCell = row.insertCell(0);
       var messageCell = row.insertCell(1);
       //const codeText = document.createElement("p");
       //const messageText = document.createElement("p");
       //codeText.innerText
-      codeCell.textContent = codeArray[i];
-      messageCell.textContent = messageArray[i];
+      codeCell.textContent = codeMap[key];
+      messageCell.textContent = key;
     }
   }
 
-  // Call the function to fill the table with the provided arrays
-  fillTable(codeArray, messageArray);
+  // Call the function to fill the table with the provided Code Map
+  fillTable(codeMap);
 
   if (document.querySelector("body").classList.contains("vscode-light")) {
     ToggleOnLightMode([pieChart, barChart]);
