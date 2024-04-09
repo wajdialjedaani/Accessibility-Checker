@@ -121,10 +121,13 @@
               "Include a caption for each table.": {
                 "type": "boolean"
               },
-              "Empty Button": {
+              "Form missing fieldset and legend to group multiple radio buttons": {
                 "type": "boolean"
               },
               "Select elements should only have one associated label": {
+                "type": "boolean"
+              },
+              "empty table header": {
                 "type": "boolean"
               },
               "Textarea elements should only have one associated label": {
@@ -148,8 +151,9 @@
               "input element, type of 'checkbox', missing an associated label.": true,
               "button has no text in label.": true,
               "Include a caption for each table.": true,
-              "Empty Button": true,
+              "Form missing fieldset and legend to group multiple radio buttons": true,
               "Select elements should only have one associated label": true,
+              "empty table header": true,
               "Textarea elements should only have one associated label": true
             }
           },
@@ -166,25 +170,13 @@
               },
               "b (bold) element used": {
                 "type": "boolean"
-              },
-              "bold element used": {
-                "type": "boolean"
-              },
-              "italic element used": {
-                "type": "boolean"
-              },
-              "Video and audio tags should have control attribute for pausing and volume": {
-                "type": "boolean"
               }
             },
             "additionalProperties": false,
             "default": {
               "font used.": true,
               "i (italic) element used": true,
-              "b (bold) element used": true,
-              "bold element used": true,
-              "italic element used": true,
-              "Video and audio tags should have control attribute for pausing and volume": true
+              "b (bold) element used": true
             }
           }
         }
@@ -208,6 +200,9 @@
               },
               "script not keyboard accessible - onmouse missing onblur": {
                 "type": "boolean"
+              },
+              "Video and audio tags should have control attribute for pausing and volume": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
@@ -215,7 +210,8 @@
               "onmouseover event handler missing onfocus event handler": true,
               "script not keyboard accessible - onmouseout missing onblur": true,
               "onmousedown event missing onkeydown event": true,
-              "script not keyboard accessible - onmouse missing onblur": true
+              "script not keyboard accessible - onmouse missing onblur": true,
+              "Video and audio tags should have control attribute for pausing and volume": true
             }
           },
           "accessibilityChecker.operable.enoughTime": {
@@ -250,6 +246,9 @@
               "Anchor contains no text.": {
                 "type": "boolean"
               },
+              "Empty button": {
+                "type": "boolean"
+              },
               "Header nesting - header following h1 is incorrect.": {
                 "type": "boolean"
               },
@@ -277,6 +276,7 @@
               "title element is empty": true,
               "Document missing title element": true,
               "Anchor contains no text.": true,
+              "Empty button": true,
               "Header nesting - header following h1 is incorrect.": true,
               "Header nesting - header following h2 is incorrect.": true,
               "Header nesting - header following h3 is incorrect.": true,
@@ -339,11 +339,38 @@
             "properties": {
               "id attribute is not unique": {
                 "type": "boolean"
+              },
+              "broken ARIA reference": {
+                "type": "boolean"
+              },
+              "broken ARIA menu": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
             "default": {
-              "id attribute is not unique": true
+              "id attribute is not unique": true,
+              "broken ARIA reference": true,
+              "broken ARIA menu": true
+            }
+          }
+        }
+      },
+      {
+        "title": "Deprecated",
+        "properties": {
+          "accessibilityChecker.deprecated": {
+            "type": "object",
+            "order": 1,
+            "description": "Enable and disable specific guidelines.",
+            "properties": {
+              "<acronym> tag is deprecated, use <abbr> tag instead.": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "default": {
+              "<acronym> tag is deprecated, use <abbr> tag instead.": true
             }
           }
         }

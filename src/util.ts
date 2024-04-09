@@ -75,6 +75,7 @@ export const ConfigSchema = z.object({
       "onmouseover event handler missing onfocus event handler": z.boolean(),
       "script not keyboard accessible - onmouse missing onblur": z.boolean(),
       "script not keyboard accessible - onmouseout missing onblur": z.boolean(),
+      "Video and audio tags should have control attribute for pausing and volume": z.boolean(),
     }),
     navigable: z.object({
       "Anchor contains no text.": z.boolean(),
@@ -102,12 +103,13 @@ export const ConfigSchema = z.object({
   robust: z.object({
     compatible: z.object({
       "id attribute is not unique": z.boolean(),
+      "broken ARIA reference": z.boolean(),
+      "broken ARIA menu": z.boolean(),
     }),
   }),
   perceivable: z.object({
     adaptable: z.object({
       "button has no text in label.": z.boolean(),
-      "Empty Button": z.boolean(),
       "Include a caption for each table.": z.boolean(),
       "input element, type of 'checkbox', has no text in label.": z.boolean(),
       "input element, type of 'checkbox', missing an associated label.": z.boolean(),
@@ -124,20 +126,21 @@ export const ConfigSchema = z.object({
       "Select elements should only have one associated label": z.boolean(),
       "textarea element missing an associated label.": z.boolean(),
       "Textarea elements should only have one associated label": z.boolean(),
+      "Form missing fieldset and legend to group multiple radio buttons": z.boolean(),
     }),
     distinguishable: z.object({
       "b (bold) element used": z.boolean(),
-      "bold element used": z.boolean(),
       "font used.": z.boolean(),
       "i (italic) element used": z.boolean(),
-      "italic element used": z.boolean(),
-      "Video and audio tags should have control attribute for pausing and volume": z.boolean(),
     }),
     textAlternatives: z.object({
       "Image used as anchor is missing valid Alt text.": z.boolean(),
       "img element missing alt attribute": z.boolean(),
       "input element has alt attribute": z.boolean(),
     }),
+  }),
+  deprecated: z.object({
+    "<acronym> tag is deprecated, use <abbr> tag instead.": z.boolean()
   }),
   get: z.function(),
 });
