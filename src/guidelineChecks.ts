@@ -56,6 +56,9 @@ export const GuidelineList = [
   CheckForU,
   CheckForItalic,
   CheckForBold,
+  CheckBrokenAria,
+  CheckAriaMenu,
+  CheckTableHeaders,
 ];
 
 function CheckImageTags($: CheerioAPI, element: Element): Diagnostic[] {
@@ -670,7 +673,6 @@ function CheckMultipleInputLabels($: CheerioAPI, element: Element): Diagnostic[]
   return [];
 }
 
-//TODO: Figure out what guideline this should be for
 function CheckInputAlt($: CheerioAPI, element: Element): Diagnostic[] {
   if (
     element.name !== "input" ||
@@ -1451,6 +1453,128 @@ function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
     },
   ];
 
+  return [];
+}
+
+function CheckBrokenAria($: CheerioAPI, element: Element): Diagnostic[] {
+  if(!element.attribs) return [];
+  let foundMatch = false;
+  if(element.attribs["aria-describedby"]){
+    let check = element.attribs["aria-describedby"];
+    
+    $('[id]').each((i, e) => {
+      if (e.attribs.id === check) {
+        foundMatch = true;
+      }
+    });
+    if(!foundMatch){
+      const range = GetStartTagPosition(element);
+      if (!range) return [];
+      return [
+        {
+          code: "4.1.2",
+          message: "Broken ARIA reference, provide a value that is associated with an id on the document",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        },
+      ];
+    }
+  } else if(element.attribs["aria-labelledby"]){
+    let check = element.attribs["aria-labelledby"];
+    
+    $('[id]').each((i, e) => {
+      if (e.attribs.id === check) {
+        foundMatch = true;
+      }
+    });
+    if(!foundMatch){
+      const range = GetStartTagPosition(element);
+      if (!range) return [];
+      return [
+        {
+          code: "4.1.2",
+          message: "Broken ARIA reference, provide a value that is associated with an id on the document",
+          range: range,
+          severity: DiagnosticSeverity.Error,
+          source: "Accessibility Checker",
+        },
+      ];
+    }
+  }
+  
+  return [];
+}
+
+//As of right now only works if the menuitem element is a child or grandchild of menu element
+function CheckAriaMenu($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for broken aria menu
+  if(!element.attribs)
+    return [];
+  if(element.attribs.role !== 'menu') return [];
+  let containsRole = false;
+  const range = GetStartTagPosition(element);
+  if (!range) return [];
+  const children = $(element).children();
+  for (let child of children) {
+    if ((child.attribs.role === "menuitem") || (child.attribs.role === 'menuitemcheckbox') || (child.attribs.role === 'menuitemradio')) {
+      containsRole = true;
+    } else{
+      for(let grandchild of $(child).children()){
+        if ((grandchild.attribs.role === "menuitem") || (grandchild.attribs.role === 'menuitemcheckbox') || (grandchild.attribs.role === 'menuitemradio')) {
+          containsRole = true;
+        }
+      }
+    }
+  }
+  if (!containsRole) {
+    return [
+      {
+        code: "4.1.2",
+        message: "Broken ARIA menu, menu needs to contain element with role = \"menuitem\", \"menuitemcheckbox\", or \"menuitemradio\".",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
+
+  return [];
+}
+
+function CheckTableHeaders($: CheerioAPI, element: Element): Diagnostic[] {
+  //Check for text or image within table headers
+  if (element.name !== "th")
+    return [];
+
+  console.log("its here bro");
+  let foundText = false;
+  $(element)
+    .contents()
+    .each((i, e) => {
+      if (e.type === "text") {
+        foundText = true;
+      } else if(e.type === "tag"){
+        if(e.name === "img"){
+          if(e.attribs.alt){
+            foundText = true;
+          }
+        }
+      }
+    });
+  if (!foundText) {
+    const range = GetStartTagPosition(element);
+    if (!range) return [];
+    return [
+      {
+        code: "1.3.1",
+        message: "Table header tags should have associated text or image with alternative text.",
+        range: range,
+        severity: DiagnosticSeverity.Error,
+        source: "Accessibility Checker",
+      },
+    ];
+  }
   return [];
 }
 
