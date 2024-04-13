@@ -62,13 +62,17 @@
               },
               "input element has alt attribute": {
                 "type": "boolean"
+              },
+              "Table header tags should have associated text or image with alternative text": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
             "default": {
               "Image used as anchor is missing valid Alt text.": true,
               "img element missing alt attribute": true,
-              "input element has alt attribute": true
+              "input element has alt attribute": true,
+              "Table header tags should have associated text or image with alternative text": true
             }
           },
           "accessibilityChecker.perceivable.adaptable": {
@@ -174,7 +178,7 @@
             },
             "additionalProperties": false,
             "default": {
-              "font used.": true,
+              "font used": true,
               "i (italic) element used": true,
               "b (bold) element used": true
             }
@@ -269,6 +273,12 @@
               },
               "There should only be one <h1> per page": {
                 "type": "boolean"
+              },
+              "Give input element a value attribute": {
+                "type": "boolean"
+              },
+              "Place text content within the <button> element": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
@@ -283,7 +293,9 @@
               "Header nesting - header following h4 is incorrect.": true,
               "Header nesting - header following h5 is incorrect.": true,
               "Include an href attribute to make text a hyperlink": true,
-              "There should only be one <h1> per page": true
+              "There should only be one <h1> per page": true,
+              "Give input element a value attribute": true,
+              "Place text content within the <button> element": true
             }
           }
         }
@@ -366,11 +378,91 @@
             "properties": {
               "<acronym> tag is deprecated, use <abbr> tag instead.": {
                 "type": "boolean"
+              },
+              "Consider using the <strong> tag instead of <b>": {
+                "type": "boolean"
+              },
+              "Consider using the <em> tag instead of <i>": {
+                "type": "boolean"
+              },
+              "<u> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<tt> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<strike> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<s> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<plaintext> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<menu> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<noframes> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<isindex> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<frameset> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<frame> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<embed> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<dir> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<center> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<blink> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<big> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<basefront> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<applet> tag is deprecated": {
+                "type": "boolean"
+              },
+              "<acronym> tag is deprecated": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false,
             "default": {
-              "<acronym> tag is deprecated, use <abbr> tag instead.": true
+              "<acronym> tag is deprecated, use <abbr> tag instead.": true,
+              "Consider using the <strong> tag instead of <b>": true,
+              "Consider using the <em> tag instead of <i>": true,
+              "<u> tag is deprecated": true,
+              "<tt> tag is deprecated": true,
+              "<strike> tag is deprecated": true,
+              "<s> tag is deprecated": true,
+              "<plaintext> tag is deprecated": true,
+              "<menu> tag is deprecated": true,
+              "<noframes> tag is deprecated": true,
+              "<isindex> tag is deprecated": true,
+              "<frameset> tag is deprecated": true,
+              "<frame> tag is deprecated": true,
+              "<embed> tag is deprecated": true,
+              "<dir> tag is deprecated": true,
+              "<center> tag is deprecated": true,
+              "<blink> tag is deprecated": true,
+              "<big> tag is deprecated": true,
+              "<basefront> tag is deprecated": true,
+              "<applet> tag is deprecated": true,
+              "<acronym> tag is deprecated": true
             }
           }
         }

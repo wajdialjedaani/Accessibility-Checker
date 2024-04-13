@@ -526,7 +526,10 @@ function CheckVideoAndAudioTags($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "button" || !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Empty Button"])
+  if (
+    element.name !== "button" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["Place text content within the <button> element"]
+  )
     return [];
   let foundText = false;
   $(element)
@@ -542,7 +545,7 @@ function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
     return [
       {
         code: "2.4.4",
-        message: "Place text content within the <button> element.",
+        message: "Place text content within the <button> element",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -553,7 +556,10 @@ function CheckButtons($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckInputButtons($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "input" || !Configuration.GetInstance().get()["perceivable"]["adaptable"]["Empty Button"])
+  if (
+    element.name !== "input" ||
+    !Configuration.GetInstance().get()["operable"]["navigable"]["Give input element a value attribute"]
+  )
     return [];
 
   if (
@@ -565,7 +571,7 @@ function CheckInputButtons($: CheerioAPI, element: Element): Diagnostic[] {
     return [
       {
         code: "2.4.4",
-        message: "Give input element a value attribute.",
+        message: "Give input element a value attribute",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
@@ -1105,7 +1111,8 @@ function CheckForMetaTimeout($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "acronym") return [];
+  if (element.name !== "acronym" || !Configuration.GetInstance().get()["deprecated"]["<acronym> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1122,7 +1129,8 @@ function CheckForAcronym($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "applet") return [];
+  if (element.name !== "applet" || !Configuration.GetInstance().get()["deprecated"]["<applet> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1139,7 +1147,8 @@ function CheckForApplet($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "basefront") return [];
+  if (element.name !== "basefront" || !Configuration.GetInstance().get()["deprecated"]["<basefront> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1156,7 +1165,7 @@ function CheckForBasefront($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "big") return [];
+  if (element.name !== "big" || !Configuration.GetInstance().get()["deprecated"]["<big> tag is deprecated"]) return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1173,7 +1182,8 @@ function CheckForBig($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "blink") return [];
+  if (element.name !== "blink" || !Configuration.GetInstance().get()["deprecated"]["<blink> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1190,7 +1200,8 @@ function CheckForBlink($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "center") return [];
+  if (element.name !== "center" || !Configuration.GetInstance().get()["deprecated"]["<center> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1207,7 +1218,7 @@ function CheckForCenter($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "dir") return [];
+  if (element.name !== "dir" || !Configuration.GetInstance().get()["deprecated"]["<dir> tag is deprecated"]) return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1224,7 +1235,8 @@ function CheckForDir($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "embed") return [];
+  if (element.name !== "embed" || !Configuration.GetInstance().get()["deprecated"]["<embed> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1241,7 +1253,8 @@ function CheckForEmbed($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "font") return [];
+  if (element.name !== "font" || !Configuration.GetInstance().get()["perceivable"]["distinguishable"]["font used"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1258,7 +1271,8 @@ function CheckForFont($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "frame") return [];
+  if (element.name !== "frame" || !Configuration.GetInstance().get()["deprecated"]["<frame> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1275,7 +1289,8 @@ function CheckForFrame($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "frameset") return [];
+  if (element.name !== "frameset" || !Configuration.GetInstance().get()["deprecated"]["<frameset> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1292,7 +1307,8 @@ function CheckForFrameset($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "isindex") return [];
+  if (element.name !== "isindex" || !Configuration.GetInstance().get()["deprecated"]["<isindex> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1309,7 +1325,8 @@ function CheckForIsIndex($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "noframes") return [];
+  if (element.name !== "noframes" || !Configuration.GetInstance().get()["deprecated"]["<noframes> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1326,7 +1343,8 @@ function CheckForNoFrames($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "menu") return [];
+  if (element.name !== "menu" || !Configuration.GetInstance().get()["deprecated"]["<menu> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1343,7 +1361,8 @@ function CheckForMenu($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "plaintext") return [];
+  if (element.name !== "plaintext" || !Configuration.GetInstance().get()["deprecated"]["<plaintext> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1360,7 +1379,7 @@ function CheckForPlaintext($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "s") return [];
+  if (element.name !== "s" || !Configuration.GetInstance().get()["deprecated"]["<s> tag is deprecated"]) return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1377,7 +1396,8 @@ function CheckForS($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "strike") return [];
+  if (element.name !== "strike" || !Configuration.GetInstance().get()["deprecated"]["<strike> tag is deprecated"])
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1394,13 +1414,13 @@ function CheckForStrike($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "tt") return [];
+  if (element.name !== "tt" || !Configuration.GetInstance().get()["deprecated"]["<tt> tag is deprecated"]) return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
     {
       code: "",
-      message: "<tt> tag is deprecated.",
+      message: "<tt> tag is deprecated",
       range: range,
       severity: DiagnosticSeverity.Error,
       source: "Accessibility Checker",
@@ -1411,7 +1431,7 @@ function CheckForTt($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "u") return [];
+  if (element.name !== "u" || !Configuration.GetInstance().get()["deprecated"]["<u> tag is deprecated"]) return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1428,7 +1448,11 @@ function CheckForU($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "i") return [];
+  if (
+    element.name !== "i" ||
+    !Configuration.GetInstance().get()["deprecated"]["Consider using the <em> tag instead of <i>"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1445,7 +1469,11 @@ function CheckForItalic($: CheerioAPI, element: Element): Diagnostic[] {
 }
 
 function CheckForBold($: CheerioAPI, element: Element): Diagnostic[] {
-  if (element.name !== "b") return [];
+  if (
+    element.name !== "b" ||
+    !Configuration.GetInstance().get()["deprecated"]["Consider using the <strong> tag instead of <b>"]
+  )
+    return [];
   const range = GetStartTagPosition(element);
   if (!range) return [];
   return [
@@ -1558,7 +1586,13 @@ function CheckAriaMenu($: CheerioAPI, element: Element): Diagnostic[] {
 
 function CheckTableHeaders($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for text or image within table headers
-  if (element.name !== "th") return [];
+  if (
+    element.name !== "th" ||
+    !Configuration.GetInstance().get()["perceivable"]["textAlternatives"][
+      "Table header tags should have associated text or image with alternative text"
+    ]
+  )
+    return [];
 
   let foundText = false;
   $(element)
@@ -1580,7 +1614,7 @@ function CheckTableHeaders($: CheerioAPI, element: Element): Diagnostic[] {
     return [
       {
         code: "1.3.1",
-        message: "Table header tags should have associated text or image with alternative text.",
+        message: "Table header tags should have associated text or image with alternative text",
         range: range,
         severity: DiagnosticSeverity.Error,
         source: "Accessibility Checker",
