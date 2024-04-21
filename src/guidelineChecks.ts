@@ -1546,8 +1546,6 @@ function CheckTableHeaders($: CheerioAPI, element: Element): Diagnostic[] {
   //Check for text or image within table headers
   if (element.name !== "th")
     return [];
-
-  console.log("its here bro");
   let foundText = false;
   $(element)
     .contents()
