@@ -977,7 +977,9 @@ function GenerateTables({ guidelines, tallies, amount, messages, codeMap }) {
     },
     options: {
       indexAxis: "y",
-      legend: { display: false },
+      plugins: {
+        legend: { display: false }
+      },
       title: {
         display: true,
         text: "Guideline Frequency",

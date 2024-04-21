@@ -52,9 +52,20 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.StatusBarAlignment.Right,
     1000
   );
+
+  const checkerStatusBar2: vscode.StatusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    1000
+  );
+
   checkerStatusBar.command = "accessibility-checker.generateReport";
-  checkerStatusBar.text = "$(file) Generate Report";
+  checkerStatusBar.text = "$(empty-window) Generate Report";
   checkerStatusBar.show();
+
+  checkerStatusBar2.command = "accessibility-checker.generateReportFile";
+  checkerStatusBar2.text = "$(new-file) Generate Report File";
+  checkerStatusBar2.show();
+
 
   const CleanupOnDocCloseDispose = vscode.workspace.onDidCloseTextDocument((document) =>
     diagnostics.delete(document.uri)
@@ -66,6 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
     ParseOnConfigUpdateDispose,
     ParseCommandDispose,
     checkerStatusBar,
+    checkerStatusBar2,
     CleanupOnDocCloseDispose,
     CreateFileCommandDispose
   );
@@ -268,6 +280,7 @@ async function GenerateReportFile(context: vscode.ExtensionContext) {
   if (desiredPathInfo) {
     fs.writeFileSync(desiredPathInfo.fsPath, htmlContent, { flag: "w", encoding: "utf8" });
   }
+
 }
 
 function CreateWebview(context: vscode.ExtensionContext) {
