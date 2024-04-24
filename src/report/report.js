@@ -794,6 +794,7 @@ function main(props) {
       messages: props.messages,
       codeMap: props.codeMap,
     });
+    GenerateList();
   }
 }
 
@@ -813,9 +814,34 @@ function GenerateTree(props) {
       }
     }
   }
+  fileTree.children.unshift({ name: "Overall", children: [], path: undefined });
 
   function recurse(tree, parent) {
     const node = new TreeNode(tree.name);
+    if (tree.name === "Overall") {
+      node.on("click", (event) => {
+        EraseContents();
+        document.querySelectorAll(".tj_container li span.tj_description.tj_leaf.active").forEach((element) => {
+          element.classList.remove("active");
+        });
+        event.target.classList.add("active");
+        if (props.guidelines.length === 0) {
+          document.getElementById("container").style.display = "none";
+          document.getElementById("empty-container").style.display = "block";
+        } else {
+          document.getElementById("container").style.display = "block";
+          document.getElementById("empty-container").style.display = "none";
+          GenerateTables({
+            guidelines: props.guidelines,
+            tallies: props.tallies,
+            amount: props.amount,
+            messages: props.messages,
+            codeMap: props.codeMap,
+          });
+          GenerateList();
+        }
+      });
+    }
     if (tree.path) {
       console.log(tree.name);
       node.on("click", (event) => {
@@ -978,7 +1004,7 @@ function GenerateTables({ guidelines, tallies, amount, messages, codeMap }) {
     options: {
       indexAxis: "y",
       plugins: {
-        legend: { display: false }
+        legend: { display: false },
       },
       title: {
         display: true,
@@ -1039,12 +1065,30 @@ function GenerateTables({ guidelines, tallies, amount, messages, codeMap }) {
   );
 }
 
-function GenerateList({ result: fileData, vscode }) {
-  const container = document.querySelector(".list-container");
+function GenerateList({ result: fileData, vscode } = { result: undefined, vscode: undefined }) {
+  if (!fileData || !vscode) {
+    console.log("test");
+    document.querySelector(".list-container").style.display = "none";
+    return;
+  }
+  const container = document.querySelector(".error-list");
+  const row = document.createElement("div");
+  row.classList.add("list-row");
+  const linkHeader = document.createElement("div");
+  linkHeader.classList.add("list-item");
+  linkHeader.classList.add("list-link-header");
+  const fileName = document.createElement("div");
+  fileName.classList.add("list-item");
+  fileName.classList.add("list-message");
+  fileName.innerHTML = "<h3>Error Message</h3>";
+  linkHeader.innerHTML = "<h3>Location</h3>";
+  row.appendChild(linkHeader);
+  row.appendChild(fileName);
+  container.appendChild(row);
+
   for (const diagnostic of fileData.diagnostics) {
     const row = document.createElement("div");
     row.classList.add("list-row");
-    const items = [];
     const link = document.createElement("a");
     link.classList.add("list-item");
     link.classList.add("list-link");
@@ -1062,6 +1106,7 @@ function GenerateList({ result: fileData, vscode }) {
     row.appendChild(fileName);
 
     container.appendChild(row);
+    document.querySelector(".list-container").style.display = "flex";
   }
 }
 
@@ -1099,7 +1144,7 @@ function EraseContents() {
   Chart.getChart("myChart")?.destroy();
   Chart.getChart("myChart2")?.destroy();
   document.querySelector("#data-table tbody").innerHTML = "";
-  document.querySelector(".list-container").innerHTML = "";
+  document.querySelector(".error-list").innerHTML = "";
   document.querySelectorAll(".tablinks").forEach((element) => element.classList.remove("active"));
 }
 

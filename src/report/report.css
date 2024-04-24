@@ -7,6 +7,16 @@
   color: white;
 }
 
+.web-dark h2,
+.vscode-dark h2 {
+  color: white;
+}
+
+.web-light h2,
+.vscode-light h2 {
+  color: black;
+}
+
 .chart-container {
   border: 1px solid;
   min-height: 300px;
@@ -43,7 +53,7 @@
 
 .table-container {
   border: 1px solid;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   padding: 10px;
   width: 100%;
   text-align: center;
@@ -77,6 +87,14 @@ th.message {
   box-sizing: border-box;
   width: 100%;
   max-height: 50vh;
+}
+
+.error-list {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 50vh;
   overflow-y: scroll;
 }
 
@@ -95,6 +113,26 @@ th.message {
 }
 
 .web-dark .list-item,
+.vscode-dark .list-item {
+  border-color: #ffffff;
+}
+
+.web-light .list-item,
+.vscode-light .list-item {
+  border-color: #000000;
+}
+
+.web-dark .list-link-header,
+.vscode-dark .list-link-header {
+  color: #ffffff;
+}
+
+.web-light .list-link-header,
+.vscode-light .list-link-header {
+  color: #000000;
+}
+
+.web-dark .list-item,
 .vscode-dark .list-message {
   color: white;
 }
@@ -109,8 +147,15 @@ th.message {
   cursor: pointer;
 }
 
+.list-link-header {
+  flex: 0 0 5rem;
+}
+
 .list-message {
   flex: 1 1 content;
+  align-self: flex-start;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .tab {
@@ -302,4 +347,13 @@ th.message {
 
 .tj_container span.tj_description.selected:hover {
   background-color: #606060;
+}
+
+.list-container {
+  border: 1px solid;
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
 }
