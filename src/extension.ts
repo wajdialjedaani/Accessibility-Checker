@@ -45,8 +45,13 @@ export function activate(context: vscode.ExtensionContext) {
     "accessibility-checker.generateReportFile",
     async () => {
       await GenerateReportFile(context);
-    }
-  );
+    });
+
+  const CreateJSONCommandDispose = vscode.commands.registerCommand(
+    "accessibility-checker.generateJson",
+    async () => {
+      await GenerateJSON(context);
+    });
 
   const checkerStatusBar: vscode.StatusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
@@ -58,6 +63,11 @@ export function activate(context: vscode.ExtensionContext) {
     1000
   );
 
+  const checkerStatusBar3: vscode.StatusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    1000
+  );
+
   checkerStatusBar.command = "accessibility-checker.generateReport";
   checkerStatusBar.text = "$(empty-window) Generate Report";
   checkerStatusBar.show();
@@ -65,6 +75,10 @@ export function activate(context: vscode.ExtensionContext) {
   checkerStatusBar2.command = "accessibility-checker.generateReportFile";
   checkerStatusBar2.text = "$(new-file) Generate Report File";
   checkerStatusBar2.show();
+
+  checkerStatusBar3.command = "accessibility-checker.generateJson";
+  checkerStatusBar3.text = "$(bracket) Generate JSON data";
+  checkerStatusBar3.show()
 
 
   const CleanupOnDocCloseDispose = vscode.workspace.onDidCloseTextDocument((document) =>
@@ -247,6 +261,30 @@ function sortCodes(codeMap: Record<string, string>){
     sortedCodes[key] = value;
   }
   return sortedCodes;
+}
+
+async function GenerateJSON(context: vscode.ExtensionContext) {
+  if (!vscode.workspace.workspaceFolders) return;
+
+  const { guidelines, tallies, amount, messages, codeMap, results } = GenerateReportData() || {
+    guidelines: [],
+    tallies: [],
+    amount: [],
+    messages: [],
+    results: [],
+  };
+  
+  const jsonContent = JSON.stringify({ guidelines, tallies, amount, messages, results })
+
+  const path = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, "ACReport.html").fsPath;
+
+  const desiredPathInfo = await window.showSaveDialog({
+    defaultUri: vscode.workspace.workspaceFolders[0].uri,
+    filters: { "JSON Document": ["json"] },
+  });
+  if (desiredPathInfo) {
+    fs.writeFileSync(desiredPathInfo.fsPath, jsonContent, { flag: "w", encoding: "utf8" });
+  }
 }
 
 async function GenerateReportFile(context: vscode.ExtensionContext) {
